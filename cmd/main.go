@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/config"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/sqlite"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/requests"
 	"log/slog"
 	"os"
 )
@@ -27,6 +28,15 @@ func main() {
 	}
 
 	_ = storage
+
+	//err = http.ListenAndServe("localhost:8080", nil)
+	//if err != nil {
+	//	log.Error("Error starting server", err)
+	//} else {
+	//	log.Info("Server started")
+	//}
+
+	requests.GetBrands(cfg.AutoriaKey)
 
 }
 
