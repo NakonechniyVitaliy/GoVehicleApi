@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/config"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/sqlite"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/requests"
@@ -21,13 +22,13 @@ func main() {
 	log.Info("starting server", slog.String("env", cfg.Env))
 	log.Debug("Debug messages are enabled")
 
-	storage, err := sqlite.New(cfg.StoragePath)
+	Storage, err := sqlite.New(cfg.StoragePath)
 	if err != nil {
 		log.Error("Error creating storage", err)
 		os.Exit(1)
 	}
 
-	_ = storage
+	_ = Storage
 
 	//err = http.ListenAndServe("localhost:8080", nil)
 	//if err != nil {
@@ -36,7 +37,11 @@ func main() {
 	//	log.Info("Server started")
 	//}
 
-	requests.GetBrands(cfg.AutoriaKey)
+	brands, _ := requests.GetBrands(cfg.AutoriaKey)
+	err = Storage.RefreshBrands(brands)
+	if err != nil {
+		fmt.Println("Error refreshing brands", err)
+	}
 
 }
 
