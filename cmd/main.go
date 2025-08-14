@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/config"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/sqlite"
@@ -41,7 +42,17 @@ func main() {
 	err = Storage.RefreshBrands(brands)
 	if err != nil {
 		fmt.Println("Error refreshing brands", err)
+	} else {
+		log.Info("brands refreshed")
 	}
+
+	brandsFromDB, err := Storage.GetBrands()
+	if err != nil {
+		log.Error("Error getting brands from storage", err)
+	}
+
+	data, _ := json.MarshalIndent(brandsFromDB, "", "  ")
+	fmt.Println(string(data))
 
 }
 
