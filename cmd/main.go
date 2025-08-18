@@ -6,6 +6,8 @@ import (
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/config"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/sqlite"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/requests"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"log/slog"
 	"os"
 )
@@ -30,6 +32,12 @@ func main() {
 	}
 
 	_ = Storage
+
+	router := chi.NewRouter()
+	router.Use(middleware.RequestID)
+	router.Use(middleware.Logger)
+	router.Use(middleware.Recoverer)
+	router.Use(middleware.URLFormat)
 
 	//err = http.ListenAndServe("localhost:8080", nil)
 	//if err != nil {

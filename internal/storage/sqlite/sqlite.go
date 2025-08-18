@@ -97,3 +97,30 @@ func (s *Storage) GetBrands() ([]models.Brand, error) {
 	return brands, nil
 
 }
+
+func (s *Storage) newBrand(brand models.Brand) error {
+	const op = "storage.brand.NewCategory"
+
+	tx, err := s.db.Begin()
+	if err != nil {
+		fmt.Errorf("%s: begin tx: %w", op, err)
+	}
+
+	stmt, err := tx.Prepare("INSERT OR IGNORE INTO brand (category_id, cnt, country_id, eng, marka_id, name, slang, value) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+	if err != nil {
+		tx.Rollback()
+		fmt.Errorf("%s: prepare: %w", op, err)
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(brand.Category, brand.Count, brand.Country, brand.EngName, brand.Marka, brand.Name, brand.Slang, brand.Value)
+	if err != nil {
+		tx.Rollback()
+	}
+
+	if err := tx.Commit(); err != nil {
+		fmt.Errorf("%s: commit: %w", op, err)
+	}
+
+	return nil
+}
