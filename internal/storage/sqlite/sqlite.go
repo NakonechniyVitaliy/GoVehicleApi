@@ -98,7 +98,7 @@ func (s *Storage) GetBrands() ([]models.Brand, error) {
 
 }
 
-func (s *Storage) newBrand(brand models.Brand) error {
+func (s *Storage) SaveBrand(brand models.Brand) error {
 	const op = "storage.brand.NewCategory"
 
 	tx, err := s.db.Begin()
