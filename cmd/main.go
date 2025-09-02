@@ -4,11 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/config"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/brand/save"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/sqlite"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/requests"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"log/slog"
+	"net/http"
 	"os"
 )
 
@@ -40,12 +42,23 @@ func main() {
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.URLFormat)
 
-	//err = http.ListenAndServe("localhost:8080", nil)
-	//if err != nil {
-	//	log.Error("Error starting server", err)
-	//} else {
-	//	log.Info("Server started")
-	//}
+	router.Post("/brand", save.New(log, Storage))
+
+	log.Info("starting server", slog.String("address", cfg.Address))
+
+	srv := &http.Server{
+		Addr:         cfg.Address,
+		Handler:      router,
+		ReadTimeout:  cfg.HTTPServer.Timeout,
+		WriteTimeout: cfg.HTTPServer.Timeout,
+		IdleTimeout:  cfg.HTTPServer.IdleTimeout,
+	}
+
+	if err := srv.ListenAndServe(); err != nil {
+		log.Error("Error starting server", err)
+	}
+
+	log.Error("failed to start server")
 
 	brands, _ := requests.GetBrands(cfg.AutoriaKey)
 	err = Storage.RefreshBrands(brands)
