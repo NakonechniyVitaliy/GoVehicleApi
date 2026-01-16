@@ -2,8 +2,15 @@ package main
 
 import (
 	"encoding/json"
+	"context"
 	"fmt"
+	"log/slog"
+	"os"
+	"time"
+
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/config"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/mongo"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/brand/save"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/sqlite"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/requests"
@@ -18,63 +25,31 @@ const (
 	envLocal = "local"
 	envProd  = "prod"
 	envDev   = "dev"
+	mongoDB  = "mongo"
+	SQLite   = "sqlite"
 )
 
 func main() {
-
 	cfg := config.MustLoad()
 
 	log := setupLogger(cfg.Env)
 	log.Info("starting server", slog.String("env", cfg.Env))
 	log.Debug("Debug messages are enabled")
 
-	Storage, err := sqlite.New(cfg.StoragePath)
+	Storage, err := setupDataBase(cfg.DataBase, cfg.StoragePath)
 	if err != nil {
-		log.Error("Error creating storage", err)
+		log.Error("failed to setup database", slog.Any("err", err))
 		os.Exit(1)
 	}
-
 	_ = Storage
 
-	router := chi.NewRouter()
-	router.Use(middleware.RequestID)
-	router.Use(middleware.Logger)
-	router.Use(middleware.Recoverer)
-	router.Use(middleware.URLFormat)
-
-	router.Post("/brand", save.New(log, Storage))
-
-	log.Info("starting server", slog.String("address", cfg.Address))
-
-	srv := &http.Server{
-		Addr:         cfg.Address,
-		Handler:      router,
-		ReadTimeout:  cfg.HTTPServer.Timeout,
-		WriteTimeout: cfg.HTTPServer.Timeout,
-		IdleTimeout:  cfg.HTTPServer.IdleTimeout,
-	}
-
-	if err := srv.ListenAndServe(); err != nil {
-		log.Error("Error starting server", err)
-	}
-
-	log.Error("failed to start server")
-
-	brands, _ := requests.GetBrands(cfg.AutoriaKey)
-	err = Storage.RefreshBrands(brands)
-	if err != nil {
-		fmt.Println("Error refreshing brands", err)
-	} else {
-		log.Info("brands refreshed")
-	}
-
-	brandsFromDB, err := Storage.GetBrands()
-	if err != nil {
-		log.Error("Error getting brands from storage", err)
-	}
-
-	data, _ := json.MarshalIndent(brandsFromDB, "", "  ")
-	fmt.Println(string(data))
+	// REFRESH BRANDS SQLITE
+	//_ = Storage
+	//brands, _ := requests.GetBrands(cfg.AutoriaKey)
+	//err = Storage.RefreshBrands(brands)
+	//if err != nil {
+	//	fmt.Println("Error refreshing brands", err)
+	//}
 
 }
 
@@ -98,4 +73,22 @@ func setupLogger(env string) *slog.Logger {
 
 	return log
 
+}
+
+func setupDataBase(db string, storagePath string) (storage.Storage, error) {
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	switch db {
+	case mongoDB:
+		return mongo.New(ctx)
+
+	case SQLite:
+		return sqlite.New(storagePath)
+
+	default:
+		return nil, fmt.Errorf("unknown database type: %s", db)
+
+	}
 }

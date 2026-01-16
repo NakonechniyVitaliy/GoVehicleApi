@@ -3,15 +3,23 @@ package sqlite
 import (
 	"database/sql"
 	"fmt"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
+
 	_ "github.com/mattn/go-sqlite3" // init sqlite3 driver
 )
 
-type Storage struct {
+type SqliteStorage struct {
 	db *sql.DB
 }
 
-func New(storagePath string) (*Storage, error) {
+func (sqlt *SqliteStorage) NewBrand() string {
+	return ""
+}
+
+func (sqlt *SqliteStorage) RefreshBrands() string {
+	return ""
+}
+
+func New(storagePath string) (*SqliteStorage, error) {
 	const op = "storage.sqlite.New"
 
 	db, err := sql.Open("sqlite3", storagePath)
@@ -31,9 +39,7 @@ func New(storagePath string) (*Storage, error) {
     	value INTEGER
 	);`
 
-	createIndex := `
-	CREATE INDEX IF NOT EXISTS marka_id ON brand (marka_id);
-	`
+	createIndex := `CREATE INDEX IF NOT EXISTS autoria_id ON brand (autoria_id);`
 
 	if _, err := db.Exec(createTable); err != nil {
 		return nil, fmt.Errorf("%s: create table: %w", op, err)
@@ -43,17 +49,7 @@ func New(storagePath string) (*Storage, error) {
 		return nil, fmt.Errorf("%s: create index: %w", op, err)
 	}
 
-	return &Storage{db: db}, nil
-
-}
-
-func (s *Storage) RefreshBrands(brands []models.Brand) error {
-	const op = "storage.brand.RefreshBrands"
-
-	tx, err := s.db.Begin()
-	if err != nil {
-		fmt.Errorf("%s: begin tx: %w", op, err)
-	}
+	return &SqliteStorage{db: db}, nil
 
 	stmt, err := tx.Prepare("INSERT OR IGNORE INTO brand (category_id, cnt, country_id, eng, marka_id, name, slang, value) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
@@ -62,6 +58,33 @@ func (s *Storage) RefreshBrands(brands []models.Brand) error {
 	}
 	defer stmt.Close()
 
+//func (s *Storage) RefreshBrands(brands []models.Brand) error {
+//	const op = "storage.brand.RefreshBrands"
+//
+//	tx, err := s.db.Begin()
+//	if err != nil {
+//		fmt.Errorf("%s: begin tx: %w", op, err)
+//	}
+//
+//	stmt, err := tx.Prepare("INSERT OR IGNORE INTO brand (autoria_id, name, category_id) VALUES (?, ?, ?)")
+//	if err != nil {
+//		tx.Rollback()
+//		fmt.Errorf("%s: prepare: %w", op, err)
+//	}
+//	defer stmt.Close()
+//
+//	for _, brand := range brands {
+//		if _, err := stmt.Exec(brand.Marka, brand.Name, brand.Category); err != nil {
+//			tx.Rollback()
+//			fmt.Errorf("%s: exec: %w", op, err)
+//		}
+//	}
+//
+//	if err := tx.Commit(); err != nil {
+//		fmt.Errorf("%s: commit: %w", op, err)
+//	}
+//	return nil
+//}
 	for _, brand := range brands {
 		if _, err := stmt.Exec(brand.Category, brand.Count, brand.Country, brand.EngName, brand.Marka, brand.Name, brand.Slang, brand.Value); err != nil {
 			tx.Rollback()
