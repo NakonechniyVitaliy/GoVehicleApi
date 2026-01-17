@@ -2,7 +2,8 @@ package mongo
 
 import (
 	"context"
-	"fmt"
+
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -20,10 +21,16 @@ func New(ctx context.Context) (*MongoStorage, error) {
 	return &MongoStorage{client: client}, nil
 }
 
-func (mng *MongoStorage) NewBrand() string {
-	return ""
+func (mng *MongoStorage) NewBrand(brand models.Brand, ctx context.Context) error {
+	collection := mng.client.Database("core").Collection("employees")
+
+	_, err := collection.InsertOne(ctx, brand)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (mng *MongoStorage) RefreshBrands() string {
-	return ""
+func (mng *MongoStorage) RefreshBrands() error {
+	return nil
 }

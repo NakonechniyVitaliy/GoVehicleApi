@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"context"
 	"fmt"
 	"log/slog"
@@ -9,16 +8,12 @@ import (
 	"time"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/config"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/brand/save"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/mongo"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/brand/save"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/sqlite"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/requests"
-	//"github.com/go-chi/chi/v5"
-	//"github.com/go-chi/chi/v5/middleware"
-	"log/slog"
-	"net/http"
-	"os"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
 const (
@@ -43,13 +38,11 @@ func main() {
 	}
 	_ = Storage
 
-	// REFRESH BRANDS SQLITE
-	//_ = Storage
-	//brands, _ := requests.GetBrands(cfg.AutoriaKey)
-	//err = Storage.RefreshBrands(brands)
-	//if err != nil {
-	//	fmt.Println("Error refreshing brands", err)
-	//}
+	router := setupRouter()
+
+	router.Route("/brand", func(r chi.Router) {
+		r.Post("/", save.New(log, Storage))
+	})
 
 }
 
@@ -92,3 +85,26 @@ func setupDataBase(db string, storagePath string) (storage.Storage, error) {
 
 	}
 }
+
+func setupRouter() chi.Router {
+	router := chi.NewRouter()
+
+	// Присваивание ID каждому запросу
+	router.Use(middleware.RequestID)
+	// Логирование
+	router.Use(middleware.Logger)
+	// Востановление после критикал ошибки
+	router.Use(middleware.Recoverer)
+	// Удобное получение параметров из сслыки
+	router.Use(middleware.URLFormat)
+
+	return router
+}
+
+// REFRESH BRANDS SQLITE
+//_ = Storage
+//brands, _ := requests.GetBrands(cfg.AutoriaKey)
+//err = Storage.RefreshBrands(brands)
+//if err != nil {
+//	fmt.Println("Error refreshing brands", err)
+//}

@@ -1,15 +1,17 @@
 package save
 
 import (
+	"context"
 	"errors"
+	"log/slog"
+	"net/http"
+
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 	"github.com/go-playground/validator/v10"
-	"log/slog"
-	"net/http"
 )
 
 type Request struct {
@@ -21,7 +23,7 @@ type Responce struct {
 }
 
 type BrandSaver interface {
-	SaveBrand(brand models.Brand) error
+	NewBrand(brand models.Brand, ctx context.Context) error
 }
 
 func New(log *slog.Logger, brandSaver BrandSaver) http.HandlerFunc {
@@ -38,9 +40,7 @@ func New(log *slog.Logger, brandSaver BrandSaver) http.HandlerFunc {
 		err := render.DecodeJSON(r.Body, &req)
 		if err != nil {
 			log.Error("failed to decode request body", slog.String("error", err.Error()))
-
 			render.JSON(w, r, resp.Error("Failed to decode request"))
-
 			return
 		}
 
@@ -48,9 +48,7 @@ func New(log *slog.Logger, brandSaver BrandSaver) http.HandlerFunc {
 
 		if err := validator.New().Struct(req); err != nil {
 			log.Error("invalid request", slog.String("error", err.Error()))
-
 			render.JSON(w, r, resp.Error("Invalid request"))
-
 			return
 		}
 
@@ -69,20 +67,16 @@ func New(log *slog.Logger, brandSaver BrandSaver) http.HandlerFunc {
 
 		log.Info("saving brand", slog.Any("brand", brand))
 
-		err = brandSaver.SaveBrand(brand)
+		err = brandSaver.NewBrand(brand, r.Context())
 		if errors.Is(err, storage.ErrBrandExists) {
 			log.Info("brand already exists", slog.String("brand", req.Brand.Name))
-
 			render.JSON(w, r, resp.Error("Brand already exists"))
-
 			return
 		}
 
 		if err != nil {
 			log.Error("failed to save brand", slog.String("error", err.Error()))
-
 			render.JSON(w, r, resp.Error("Failed to save brand"))
-
 			return
 		}
 
@@ -91,6 +85,5 @@ func New(log *slog.Logger, brandSaver BrandSaver) http.HandlerFunc {
 		render.JSON(w, r, Responce{
 			Response: resp.OK(),
 		})
-
 	}
 }
