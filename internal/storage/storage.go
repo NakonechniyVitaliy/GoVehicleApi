@@ -1,8 +1,8 @@
 package storage
 
 import (
+	"context"
 	"errors"
-	"net/http"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
 )
@@ -12,6 +12,6 @@ var (
 )
 
 type Storage interface {
-	NewBrand(brand models.Brand, r *http.Request) error
+	NewBrand(brand models.Brand, ctx context.Context) error
 	RefreshBrands() error
 }

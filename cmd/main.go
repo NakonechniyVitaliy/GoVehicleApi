@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"net/http"
 	"os"
 	"time"
 
@@ -44,6 +45,22 @@ func main() {
 		r.Post("/", save.New(log, Storage))
 	})
 
+	log.Info("starting server on", slog.String("adreess", cfg.Address))
+
+	server := &http.Server{
+		Addr:         cfg.Address,
+		Handler:      router,
+		ReadTimeout:  cfg.HTTPServer.Timeout,
+		WriteTimeout: cfg.HTTPServer.Timeout,
+		IdleTimeout:  cfg.HTTPServer.IdleTimeout,
+	}
+
+	if err := server.ListenAndServe(); err != nil {
+		log.Error("failed to start server")
+	}
+
+	log.Error("server stoped")
+
 }
 
 func setupLogger(env string) *slog.Logger {
@@ -63,9 +80,7 @@ func setupLogger(env string) *slog.Logger {
 			slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}),
 		)
 	}
-
 	return log
-
 }
 
 func setupDataBase(db string, storagePath string) (storage.Storage, error) {
@@ -82,7 +97,6 @@ func setupDataBase(db string, storagePath string) (storage.Storage, error) {
 
 	default:
 		return nil, fmt.Errorf("unknown database type: %s", db)
-
 	}
 }
 
