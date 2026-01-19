@@ -1,4 +1,4 @@
-package save
+package get
 
 import (
 	"context"
@@ -7,22 +7,28 @@ import (
 	"strconv"
 
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 )
 
+type Request struct {
+	brandID int
+}
+
 type Response struct {
 	resp.Response
+	*models.Brand
 }
 
-type BrandDeleter interface {
-	DeleteBrand(ctx context.Context, brandID int) error
+type BrandGetter interface {
+	GetBrand(ctx context.Context, brandID int) (*models.Brand, error)
 }
 
-func Delete(log *slog.Logger, brandDeleter BrandDeleter) http.HandlerFunc {
+func Get(log *slog.Logger, brandGetter BrandGetter) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.brand.delete.Delete"
+		const op = "handlers.brand.get.Get"
 
 		log = log.With(
 			slog.String("op", op),
@@ -37,19 +43,18 @@ func Delete(log *slog.Logger, brandDeleter BrandDeleter) http.HandlerFunc {
 		}
 
 		log.Info("ID retrieved successfully", slog.Any("brandID", brandID))
-		log.Info("deleting brand")
+		log.Info("getting brand")
 
-		err = brandDeleter.DeleteBrand(r.Context(), brandID)
+		brand, err := brandGetter.GetBrand(r.Context(), brandID)
 		if err != nil {
-			log.Error("failed to delete brand", slog.String("error", err.Error()))
-			render.JSON(w, r, resp.Error("Failed to delete brand"))
+			log.Error("failed to get brand", slog.String("error", err.Error()))
+			render.JSON(w, r, resp.Error("Failed to get brand"))
 			return
 		}
 
-		log.Info("brand deleted", slog.Int("brandID", brandID))
-
 		render.JSON(w, r, Response{
 			Response: resp.OK(),
+			Brand:    brand,
 		})
 	}
 }

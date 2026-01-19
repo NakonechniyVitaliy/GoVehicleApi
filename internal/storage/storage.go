@@ -8,11 +8,13 @@ import (
 )
 
 var (
-	ErrBrandExists = errors.New("URL exists")
+	ErrBrandExists   = errors.New("URL exists")
+	ErrBrandNotFound = errors.New("brand not found")
 )
 
 type Storage interface {
-	NewBrand(brand models.Brand, ctx context.Context) error
+	NewBrand(ctx context.Context, brand models.Brand) error
 	RefreshBrands() error
-	DeleteBrand(brandID int, ctx context.Context) error
+	DeleteBrand(ctx context.Context, brandID int) error
+	GetBrand(ctx context.Context, brandID int) (*models.Brand, error)
 }
