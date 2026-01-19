@@ -37,7 +37,7 @@ func main() {
 		log.Error("failed to setup database", slog.Any("err", err))
 		os.Exit(1)
 	}
-	_ = Storage
+	log.Info("Database successfully enabled", slog.String("database", cfg.DataBase))
 
 	router := setupRouter()
 

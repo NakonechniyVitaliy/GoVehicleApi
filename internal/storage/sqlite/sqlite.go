@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"net/http"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
 	_ "github.com/mattn/go-sqlite3" // init sqlite3 driver
@@ -14,7 +13,7 @@ type SqliteStorage struct {
 	db *sql.DB
 }
 
-func (s *SqliteStorage) NewBrand(brand models.Brand, ctx context.Context,) error {
+func (s *SqliteStorage) NewBrand(brand models.Brand, ctx context.Context) error {
 	const op = "storage.brand.NewCategory"
 
 	tx, err := s.db.Begin()
@@ -41,7 +40,6 @@ func (s *SqliteStorage) NewBrand(brand models.Brand, ctx context.Context,) error
 	return nil
 }
 
-
 func (sqlt *SqliteStorage) RefreshBrands() error {
 	return nil
 }
@@ -66,7 +64,7 @@ func New(storagePath string) (*SqliteStorage, error) {
     	value INTEGER
 	);`
 
-	createIndex := `CREATE INDEX IF NOT EXISTS autoria_id ON brand (autoria_id);`
+	createIndex := `CREATE INDEX IF NOT EXISTS marka_id ON brand (marka_id);`
 
 	if _, err := db.Exec(createTable); err != nil {
 		return nil, fmt.Errorf("%s: create table: %w", op, err)
@@ -78,8 +76,6 @@ func New(storagePath string) (*SqliteStorage, error) {
 
 	return &SqliteStorage{db: db}, nil
 }
-
-
 
 //stmt, err := tx.Prepare("INSERT OR IGNORE INTO brand (category_id, cnt, country_id, eng, marka_id, name, slang, value) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
 //if err != nil {
@@ -126,7 +122,7 @@ func New(storagePath string) (*SqliteStorage, error) {
 //		fmt.Errorf("%s: commit: %w", op, err)
 //	}
 //	return nil
-}
+// }
 
 //func (s *Storage) GetBrands() ([]models.Brand, error) {
 //	const op = "storage.brand.GetBrands"

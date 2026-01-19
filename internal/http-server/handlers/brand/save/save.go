@@ -43,7 +43,6 @@ func New(log *slog.Logger, brandSaver BrandSaver) http.HandlerFunc {
 			render.JSON(w, r, resp.Error("Failed to decode request"))
 			return
 		}
-
 		log.Info("request body decoded", slog.Any("request", req))
 
 		if err := validator.New().Struct(req); err != nil {
