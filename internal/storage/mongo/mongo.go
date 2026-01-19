@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -30,6 +31,17 @@ func (mng *MongoStorage) NewBrand(brand models.Brand, ctx context.Context) error
 		return err
 	}
 	return nil
+}
+
+func (mng *MongoStorage) DeleteBrand(brandID int, ctx context.Context) error {
+	collection := mng.client.Database("core").Collection("brand")
+	filter := bson.D{{"marka_id", brandID}}
+
+	_, err := collection.DeleteOne(ctx, filter)
+	if err != nil {
+		return err
+	}
+	return err
 }
 
 func (mng *MongoStorage) RefreshBrands() error {

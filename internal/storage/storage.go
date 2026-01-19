@@ -14,4 +14,5 @@ var (
 type Storage interface {
 	NewBrand(brand models.Brand, ctx context.Context) error
 	RefreshBrands() error
+	DeleteBrand(brandID int, ctx context.Context) error
 }

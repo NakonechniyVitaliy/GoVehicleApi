@@ -13,6 +13,33 @@ type SqliteStorage struct {
 	db *sql.DB
 }
 
+func (s *SqliteStorage) DeleteBrand(brandID int, ctx context.Context) error {
+	const op = "storage.brand.DeleteCategory"
+
+	tx, err := s.db.Begin()
+	if err != nil {
+		fmt.Errorf("%s: begin tx: %w", op, err)
+	}
+
+	stmt, err := tx.Prepare("DELETE FROM brand WHERE marka_id = ?")
+	if err != nil {
+		tx.Rollback()
+		fmt.Errorf("%s: prepare: %w", op, err)
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(brandID)
+	if err != nil {
+		tx.Rollback()
+	}
+
+	if err := tx.Commit(); err != nil {
+		fmt.Errorf("%s: commit: %w", op, err)
+	}
+
+	return nil
+}
+
 func (s *SqliteStorage) NewBrand(brand models.Brand, ctx context.Context) error {
 	const op = "storage.brand.NewCategory"
 

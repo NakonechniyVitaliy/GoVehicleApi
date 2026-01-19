@@ -9,7 +9,8 @@ import (
 	"time"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/config"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/brand/save"
+	deleteHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/brand/delete"
+	saveHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/brand/save"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/mongo"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/sqlite"
@@ -42,7 +43,8 @@ func main() {
 	router := setupRouter()
 
 	router.Route("/brand", func(r chi.Router) {
-		r.Post("/", save.New(log, Storage))
+		r.Post("/", saveHandler.New(log, Storage))
+		r.Delete("/{id}", deleteHandler.Delete(log, Storage))
 	})
 
 	log.Info("starting server on", slog.String("adreess", cfg.Address))
