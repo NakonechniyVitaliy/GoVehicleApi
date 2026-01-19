@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
 	_ "github.com/mattn/go-sqlite3" // init sqlite3 driver
 )
 
@@ -13,35 +14,67 @@ type SqliteStorage struct {
 	db *sql.DB
 }
 
-func (s *SqliteStorage) DeleteBrand(brandID int, ctx context.Context) error {
-	const op = "storage.brand.DeleteCategory"
+func (s *SqliteStorage) GetBrand(ctx context.Context, brandID int) (*models.Brand, error) {
+	const op = "storage.brand.GetBrand"
 
-	tx, err := s.db.Begin()
+	const query = `
+		SELECT
+			category_id,
+			cnt,
+			country_id,
+			eng,
+			marka_id,
+			name,
+			slang,
+			value
+		FROM brand
+		WHERE marka_id = ?
+	`
+	var brand models.Brand
+	err := s.db.QueryRowContext(ctx, query, brandID).Scan(
+		&brand.Category,
+		&brand.Count,
+		&brand.Country,
+		&brand.EngName,
+		&brand.Marka,
+		&brand.Name,
+		&brand.Slang,
+		&brand.Value,
+	)
 	if err != nil {
-		fmt.Errorf("%s: begin tx: %w", op, err)
+		fmt.Errorf("%s: Error to return brand %w", op, err)
+		return nil, err
 	}
 
-	stmt, err := tx.Prepare("DELETE FROM brand WHERE marka_id = ?")
-	if err != nil {
-		tx.Rollback()
-		fmt.Errorf("%s: prepare: %w", op, err)
-	}
-	defer stmt.Close()
+	return &brand, nil
+}
 
-	_, err = stmt.Exec(brandID)
+func (s *SqliteStorage) DeleteBrand(ctx context.Context, brandID int) error {
+	const op = "storage.brand.DeleteBrand"
+
+	res, err := s.db.ExecContext(
+		ctx,
+		"DELETE FROM brand WHERE marka_id = ?",
+		brandID,
+	)
 	if err != nil {
-		tx.Rollback()
+		return fmt.Errorf("%s: %w", op, err)
 	}
 
-	if err := tx.Commit(); err != nil {
-		fmt.Errorf("%s: commit: %w", op, err)
+	affected, err := res.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	}
+
+	if affected == 0 {
+		return storage.ErrBrandNotFound
 	}
 
 	return nil
 }
 
-func (s *SqliteStorage) NewBrand(brand models.Brand, ctx context.Context) error {
-	const op = "storage.brand.NewCategory"
+func (s *SqliteStorage) NewBrand(ctx context.Context, brand models.Brand) error {
+	const op = "storage.brand.NewBrand"
 
 	tx, err := s.db.Begin()
 	if err != nil {

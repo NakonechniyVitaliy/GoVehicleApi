@@ -18,12 +18,12 @@ type Request struct {
 	Brand models.Brand
 }
 
-type Responce struct {
+type Response struct {
 	resp.Response
 }
 
 type BrandSaver interface {
-	NewBrand(brand models.Brand, ctx context.Context) error
+	NewBrand(ctx context.Context, brand models.Brand) error
 }
 
 func New(log *slog.Logger, brandSaver BrandSaver) http.HandlerFunc {
@@ -66,7 +66,7 @@ func New(log *slog.Logger, brandSaver BrandSaver) http.HandlerFunc {
 
 		log.Info("saving brand", slog.Any("brand", brand))
 
-		err = brandSaver.NewBrand(brand, r.Context())
+		err = brandSaver.NewBrand(r.Context(), brand)
 		if errors.Is(err, storage.ErrBrandExists) {
 			log.Info("brand already exists", slog.String("brand", req.Brand.Name))
 			render.JSON(w, r, resp.Error("Brand already exists"))
@@ -81,7 +81,7 @@ func New(log *slog.Logger, brandSaver BrandSaver) http.HandlerFunc {
 
 		log.Info("brand saved", slog.String("brand", req.Brand.Name))
 
-		render.JSON(w, r, Responce{
+		render.JSON(w, r, Response{
 			Response: resp.OK(),
 		})
 	}

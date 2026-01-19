@@ -10,6 +10,7 @@ import (
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/config"
 	deleteHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/brand/delete"
+	getHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/brand/get"
 	saveHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/brand/save"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/mongo"
@@ -45,6 +46,7 @@ func main() {
 	router.Route("/brand", func(r chi.Router) {
 		r.Post("/", saveHandler.New(log, Storage))
 		r.Delete("/{id}", deleteHandler.Delete(log, Storage))
+		r.Get("/{id}", getHandler.Get(log, Storage))
 	})
 
 	log.Info("starting server on", slog.String("adreess", cfg.Address))
