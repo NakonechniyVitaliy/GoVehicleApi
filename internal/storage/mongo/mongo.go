@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
@@ -31,6 +32,39 @@ func (mng *MongoStorage) NewBrand(ctx context.Context, brand models.Brand) error
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func (mng *MongoStorage) UpdateBrand(ctx context.Context, brand models.Brand) error {
+	const op = "storage.brand.UpdateBrand"
+
+	collection := mng.client.Database("core").Collection("brand")
+
+	filter := bson.M{
+		"marka_id": brand.Marka,
+	}
+
+	update := bson.M{
+		"$set": bson.M{
+			"category_id": brand.Category,
+			"cnt":         brand.Count,
+			"country_id":  brand.Country,
+			"eng":         brand.EngName,
+			"name":        brand.Name,
+			"slang":       brand.Slang,
+			"value":       brand.Value,
+		},
+	}
+
+	res, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	}
+
+	if res.MatchedCount == 0 {
+		return storage.ErrBrandNotFound
+	}
+
 	return nil
 }
 

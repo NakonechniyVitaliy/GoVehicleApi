@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
@@ -49,6 +50,48 @@ func (s *SqliteStorage) GetBrand(ctx context.Context, brandID int) (*models.Bran
 	return &brand, nil
 }
 
+func (s *SqliteStorage) UpdateBrand(ctx context.Context, brand models.Brand) error {
+	const op = "storage.brand.UpdateBrand"
+
+	const query = `
+		UPDATE brand
+		SET
+			category_id = ?,
+			cnt = ?,
+			country_id = ?,
+			eng = ?,
+			name = ?,
+			slang = ?
+		WHERE marka_id = ?
+	`
+
+	res, err := s.db.ExecContext(
+		ctx,
+		query,
+		brand.Category,
+		brand.Count,
+		brand.Country,
+		brand.EngName,
+		brand.Name,
+		brand.Slang,
+		brand.Marka,
+	)
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	}
+
+	affected, err := res.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	}
+
+	if affected == 0 {
+		return storage.ErrBrandNotFound
+	}
+
+	return nil
+}
+
 func (s *SqliteStorage) DeleteBrand(ctx context.Context, brandID int) error {
 	const op = "storage.brand.DeleteBrand"
 
@@ -76,31 +119,51 @@ func (s *SqliteStorage) DeleteBrand(ctx context.Context, brandID int) error {
 func (s *SqliteStorage) NewBrand(ctx context.Context, brand models.Brand) error {
 	const op = "storage.brand.NewBrand"
 
-	tx, err := s.db.Begin()
+	const query = `
+		INSERT INTO brand (
+			category_id,
+			cnt,
+			country_id,
+			eng,
+			marka_id,
+			name,
+			slang,
+			value
+		) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+	`
+
+	res, err := s.db.ExecContext(
+		ctx,
+		query,
+		brand.Category,
+		brand.Count,
+		brand.Country,
+		brand.EngName,
+		brand.Marka,
+		brand.Name,
+		brand.Slang,
+		brand.Value,
+	)
 	if err != nil {
-		fmt.Errorf("%s: begin tx: %w", op, err)
+		if strings.Contains(err.Error(), "UNIQUE") {
+			return storage.ErrBrandExists
+		}
+		return fmt.Errorf("%s: %w", op, err)
 	}
 
-	stmt, err := tx.Prepare("INSERT OR IGNORE INTO brand (category_id, cnt, country_id, eng, marka_id, name, slang, value) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+	affected, err := res.RowsAffected()
 	if err != nil {
-		tx.Rollback()
-		fmt.Errorf("%s: prepare: %w", op, err)
-	}
-	defer stmt.Close()
-
-	_, err = stmt.Exec(brand.Category, brand.Count, brand.Country, brand.EngName, brand.Marka, brand.Name, brand.Slang, brand.Value)
-	if err != nil {
-		tx.Rollback()
+		return fmt.Errorf("%s: %w", op, err)
 	}
 
-	if err := tx.Commit(); err != nil {
-		fmt.Errorf("%s: commit: %w", op, err)
+	if affected == 0 {
+		return storage.ErrBrandExists
 	}
 
 	return nil
 }
 
-func (sqlt *SqliteStorage) RefreshBrands() error {
+func (s *SqliteStorage) RefreshBrands() error {
 	return nil
 }
 

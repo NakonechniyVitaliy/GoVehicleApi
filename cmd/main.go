@@ -12,6 +12,7 @@ import (
 	deleteHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/brand/delete"
 	getHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/brand/get"
 	saveHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/brand/save"
+	updateHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/brand/update"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/mongo"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/sqlite"
@@ -47,6 +48,7 @@ func main() {
 		r.Post("/", saveHandler.New(log, Storage))
 		r.Delete("/{id}", deleteHandler.Delete(log, Storage))
 		r.Get("/{id}", getHandler.Get(log, Storage))
+		r.Put("/", updateHandler.Update(log, Storage))
 	})
 
 	log.Info("starting server on", slog.String("adreess", cfg.Address))

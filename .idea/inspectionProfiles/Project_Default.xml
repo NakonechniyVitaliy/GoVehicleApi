@@ -5,6 +5,9 @@
       <functions>
         <function importPath="go.mongodb.org/mongo-driver/mongo" name="Connect" />
       </functions>
+      <methods>
+        <method importPath="database/sql" receiver="*DB" name="ExecContext" />
+      </methods>
     </inspection_tool>
   </profile>
 </component>
