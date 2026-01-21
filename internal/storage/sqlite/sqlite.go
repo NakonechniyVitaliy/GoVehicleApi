@@ -43,8 +43,7 @@ func (s *SqliteStorage) GetBrand(ctx context.Context, brandID int) (*models.Bran
 		&brand.Value,
 	)
 	if err != nil {
-		fmt.Errorf("%s: Error to return brand %w", op, err)
-		return nil, err
+		return nil, fmt.Errorf("%s: Error to return brand %w", op, err)
 	}
 
 	return &brand, nil
@@ -187,14 +186,8 @@ func New(storagePath string) (*SqliteStorage, error) {
     	value INTEGER
 	);`
 
-	createIndex := `CREATE INDEX IF NOT EXISTS marka_id ON brand (marka_id);`
-
 	if _, err := db.Exec(createTable); err != nil {
 		return nil, fmt.Errorf("%s: create table: %w", op, err)
-	}
-
-	if _, err := db.Exec(createIndex); err != nil {
-		return nil, fmt.Errorf("%s: create index: %w", op, err)
 	}
 
 	return &SqliteStorage{db: db}, nil

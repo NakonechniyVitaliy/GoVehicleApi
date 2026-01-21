@@ -13,22 +13,30 @@ import (
 
 type MongoStorage struct {
 	client *mongo.Client
+	brands *mongo.Collection
 }
 
 func New(ctx context.Context) (*MongoStorage, error) {
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://127.0.0.1:27017"))
-
 	if err != nil {
 		return nil, err
 	}
 
-	return &MongoStorage{client: client}, nil
+	brandCollection := client.Database("core").Collection("brands")
+	brandCollection.Indexes().CreateOne(ctx, mongo.IndexModel{
+		Keys:    bson.M{"marka_id": 1},
+		Options: options.Index().SetUnique(true),
+	})
+
+	return &MongoStorage{
+		client: client,
+		brands: brandCollection,
+	}, nil
 }
 
 func (mng *MongoStorage) NewBrand(ctx context.Context, brand models.Brand) error {
-	collection := mng.client.Database("core").Collection("brand")
 
-	_, err := collection.InsertOne(ctx, brand)
+	_, err := mng.brands.InsertOne(ctx, brand)
 	if err != nil {
 		return err
 	}
@@ -37,8 +45,6 @@ func (mng *MongoStorage) NewBrand(ctx context.Context, brand models.Brand) error
 
 func (mng *MongoStorage) UpdateBrand(ctx context.Context, brand models.Brand) error {
 	const op = "storage.brand.UpdateBrand"
-
-	collection := mng.client.Database("core").Collection("brand")
 
 	filter := bson.M{
 		"marka_id": brand.Marka,
@@ -56,7 +62,7 @@ func (mng *MongoStorage) UpdateBrand(ctx context.Context, brand models.Brand) er
 		},
 	}
 
-	res, err := collection.UpdateOne(ctx, filter, update)
+	res, err := mng.brands.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return fmt.Errorf("%s: %w", op, err)
 	}
@@ -69,11 +75,10 @@ func (mng *MongoStorage) UpdateBrand(ctx context.Context, brand models.Brand) er
 }
 
 func (mng *MongoStorage) GetBrand(ctx context.Context, brandID int) (*models.Brand, error) {
-	collection := mng.client.Database("core").Collection("brand")
 	filter := bson.D{{"marka_id", brandID}}
 
 	var brand models.Brand
-	err := collection.FindOne(ctx, filter).Decode(&brand)
+	err := mng.brands.FindOne(ctx, filter).Decode(&brand)
 
 	switch {
 	case err == nil:
@@ -87,14 +92,18 @@ func (mng *MongoStorage) GetBrand(ctx context.Context, brandID int) (*models.Bra
 }
 
 func (mng *MongoStorage) DeleteBrand(ctx context.Context, brandID int) error {
-	collection := mng.client.Database("core").Collection("brand")
 	filter := bson.D{{"marka_id", brandID}}
 
-	_, err := collection.DeleteOne(ctx, filter)
+	res, err := mng.brands.DeleteOne(ctx, filter)
 	if err != nil {
 		return err
 	}
-	return err
+
+	if res.DeletedCount == 0 {
+		return storage.ErrBrandNotFound
+	}
+	return nil
+
 }
 
 func (mng *MongoStorage) RefreshBrands() error {
