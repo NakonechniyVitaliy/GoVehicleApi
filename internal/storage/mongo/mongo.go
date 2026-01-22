@@ -94,9 +94,7 @@ func (mng *MongoStorage) GetBrand(ctx context.Context, brandID int) (*models.Bra
 func (mng *MongoStorage) GetAllBrands(ctx context.Context) ([]models.Brand, error) {
 	const op = "storage.brand.UpdateBrand"
 
-	collection := mng.client.Database("core").Collection("brand")
-
-	result, err := collection.Find(ctx, bson.M{})
+	result, err := mng.brands.Find(ctx, bson.M{})
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
