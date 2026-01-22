@@ -18,35 +18,41 @@ type SqliteStorage struct {
 func (s *SqliteStorage) GetBrand(ctx context.Context, brandID int) (*models.Brand, error) {
 	const op = "storage.brand.GetBrand"
 
-	const query = `
-		SELECT
-			category_id,
-			cnt,
-			country_id,
-			eng,
-			marka_id,
-			name,
-			slang,
-			value
-		FROM brand
-		WHERE marka_id = ?
-	`
+	const query = `SELECT category_id, cnt, country_id, eng, marka_id, name, slang, value FROM brand WHERE marka_id = ?`
+
 	var brand models.Brand
 	err := s.db.QueryRowContext(ctx, query, brandID).Scan(
-		&brand.Category,
-		&brand.Count,
-		&brand.Country,
-		&brand.EngName,
-		&brand.Marka,
-		&brand.Name,
-		&brand.Slang,
-		&brand.Value,
+		&brand.Category, &brand.Count, &brand.Country, &brand.EngName, &brand.Marka, &brand.Name, &brand.Slang, &brand.Value,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("%s: Error to return brand %w", op, err)
 	}
 
 	return &brand, nil
+}
+
+func (s *SqliteStorage) GetAllBrands(ctx context.Context) ([]models.Brand, error) {
+	const op = "storage.brand.GetBrands"
+
+	const query = `SELECT category_id, cnt, country_id, eng, marka_id, name, slang, value FROM brand`
+
+	rows, err := s.db.QueryContext(ctx, query)
+	if err != nil {
+		return nil, fmt.Errorf("%s: exec: %w", op, err)
+	}
+	defer rows.Close()
+
+	var brands []models.Brand
+	for rows.Next() {
+		var b models.Brand
+		if err := rows.Scan(
+			&b.Category, &b.Count, &b.Country, &b.EngName, &b.Marka, &b.Name, &b.Slang, &b.Value); err != nil {
+			return nil, fmt.Errorf("%s: scan: %w", op, err)
+		}
+		brands = append(brands, b)
+	}
+
+	return brands, nil
 }
 
 func (s *SqliteStorage) UpdateBrand(ctx context.Context, brand models.Brand) error {
@@ -239,27 +245,3 @@ func New(storagePath string) (*SqliteStorage, error) {
 //	}
 //	return nil
 // }
-
-//func (s *Storage) GetBrands() ([]models.Brand, error) {
-//	const op = "storage.brand.GetBrands"
-//
-//	rows, err := s.db.Query("SELECT category_id, cnt, country_id, eng, marka_id, name, slang, value FROM brand")
-//	if err != nil {
-//		fmt.Errorf("%s: exec: %w", op, err)
-//	}
-//	defer rows.Close()
-//
-//	var brands []models.Brand
-//	for rows.Next() {
-//		var b models.Brand
-//		if err := rows.Scan(
-//			&b.Category, &b.Count, &b.Country, &b.EngName, &b.Marka, &b.Name, &b.Slang, &b.Value); err != nil {
-//			return nil, fmt.Errorf("%s: scan: %w", op, err)
-//		}
-//		brands = append(brands, b)
-//	}
-//
-//	return brands, nil
-//
-//}
-//

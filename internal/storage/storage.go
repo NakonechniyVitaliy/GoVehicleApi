@@ -17,5 +17,6 @@ type Storage interface {
 	DeleteBrand(ctx context.Context, brandID int) error
 	GetBrand(ctx context.Context, brandID int) (*models.Brand, error)
 	UpdateBrand(ctx context.Context, brand models.Brand) error
+	GetAllBrands(ctx context.Context) ([]models.Brand, error)
 	RefreshBrands() error
 }

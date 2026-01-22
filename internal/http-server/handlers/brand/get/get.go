@@ -58,3 +58,28 @@ func Get(log *slog.Logger, brandGetter BrandGetter) http.HandlerFunc {
 		})
 	}
 }
+
+func GetAll(log *slog.Logger, brandGetter BrandGetter) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		const op = "handlers.brand.get.Get"
+
+		log = log.With(
+			slog.String("op", op),
+			slog.String("request_id", middleware.GetReqID(r.Context())),
+		)
+
+		log.Info("getting brands")
+
+		brand, err := brandGetter.GetAllBrand(r.Context())
+		if err != nil {
+			log.Error("failed to get brand", slog.String("error", err.Error()))
+			render.JSON(w, r, resp.Error("Failed to get brand"))
+			return
+		}
+
+		render.JSON(w, r, Response{
+			Response: resp.OK(),
+			Brand:    brand,
+		})
+	}
+}

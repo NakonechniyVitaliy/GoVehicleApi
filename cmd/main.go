@@ -48,6 +48,7 @@ func main() {
 		r.Post("/", saveHandler.New(log, Storage))
 		r.Delete("/{id}", deleteHandler.Delete(log, Storage))
 		r.Get("/{id}", getHandler.Get(log, Storage))
+		r.Get("/all", getHandler.GetAll(log, Storage))
 		r.Put("/", updateHandler.Update(log, Storage))
 	})
 

@@ -91,6 +91,25 @@ func (mng *MongoStorage) GetBrand(ctx context.Context, brandID int) (*models.Bra
 	}
 }
 
+func (mng *MongoStorage) GetAllBrands(ctx context.Context) ([]models.Brand, error) {
+	const op = "storage.brand.UpdateBrand"
+
+	collection := mng.client.Database("core").Collection("brand")
+
+	result, err := collection.Find(ctx, bson.M{})
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+
+	var brands []models.Brand
+	if err := result.All(ctx, brands); err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+
+	return brands, nil
+
+}
+
 func (mng *MongoStorage) DeleteBrand(ctx context.Context, brandID int) error {
 	filter := bson.D{{"marka_id", brandID}}
 
