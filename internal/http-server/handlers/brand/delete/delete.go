@@ -17,7 +17,7 @@ type Response struct {
 }
 
 type BrandDeleter interface {
-	DeleteBrand(ctx context.Context, brandID int) error
+	Delete(ctx context.Context, brandID int) error
 }
 
 func Delete(log *slog.Logger, brandDeleter BrandDeleter) http.HandlerFunc {
@@ -39,7 +39,7 @@ func Delete(log *slog.Logger, brandDeleter BrandDeleter) http.HandlerFunc {
 		log.Info("ID retrieved successfully", slog.Any("brandID", brandID))
 		log.Info("deleting brand")
 
-		err = brandDeleter.DeleteBrand(r.Context(), brandID)
+		err = brandDeleter.Delete(r.Context(), brandID)
 		if err != nil {
 			log.Error("failed to delete brand", slog.String("error", err.Error()))
 			render.JSON(w, r, resp.Error("Failed to delete brand"))

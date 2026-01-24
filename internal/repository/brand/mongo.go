@@ -1,4 +1,4 @@
-package mongo
+package brand
 
 import (
 	"context"
@@ -8,33 +8,19 @@ import (
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type MongoStorage struct {
-	client *mongo.Client
+type MongoRepository struct {
 	brands *mongo.Collection
 }
 
-func New(ctx context.Context) (*MongoStorage, error) {
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://127.0.0.1:27017"))
-	if err != nil {
-		return nil, err
+func NewMongo(db *mongo.Database) *MongoRepository {
+	return &MongoRepository{
+		brands: db.Collection("brands"),
 	}
-
-	brandCollection := client.Database("core").Collection("brands")
-	brandCollection.Indexes().CreateOne(ctx, mongo.IndexModel{
-		Keys:    bson.M{"marka_id": 1},
-		Options: options.Index().SetUnique(true),
-	})
-
-	return &MongoStorage{
-		client: client,
-		brands: brandCollection,
-	}, nil
 }
 
-func (mng *MongoStorage) NewBrand(ctx context.Context, brand models.Brand) error {
+func (mng *MongoRepository) Create(ctx context.Context, brand models.Brand) error {
 
 	_, err := mng.brands.InsertOne(ctx, brand)
 	if err != nil {
@@ -43,11 +29,11 @@ func (mng *MongoStorage) NewBrand(ctx context.Context, brand models.Brand) error
 	return nil
 }
 
-func (mng *MongoStorage) UpdateBrand(ctx context.Context, brand models.Brand) error {
+func (mng *MongoRepository) Update(ctx context.Context, brand models.Brand) error {
 	const op = "storage.brand.UpdateBrand"
 
 	filter := bson.M{
-		"marka_id": brand.Marka,
+		"marka_id": brand.MarkaID,
 	}
 
 	update := bson.M{
@@ -74,7 +60,7 @@ func (mng *MongoStorage) UpdateBrand(ctx context.Context, brand models.Brand) er
 	return nil
 }
 
-func (mng *MongoStorage) GetBrand(ctx context.Context, brandID int) (*models.Brand, error) {
+func (mng *MongoRepository) GetByID(ctx context.Context, brandID int) (*models.Brand, error) {
 	filter := bson.D{{"marka_id", brandID}}
 
 	var brand models.Brand
@@ -91,7 +77,7 @@ func (mng *MongoStorage) GetBrand(ctx context.Context, brandID int) (*models.Bra
 	}
 }
 
-func (mng *MongoStorage) GetAllBrands(ctx context.Context) ([]models.Brand, error) {
+func (mng *MongoRepository) GetAll(ctx context.Context) ([]models.Brand, error) {
 	const op = "storage.brand.UpdateBrand"
 
 	result, err := mng.brands.Find(ctx, bson.M{})
@@ -108,7 +94,7 @@ func (mng *MongoStorage) GetAllBrands(ctx context.Context) ([]models.Brand, erro
 
 }
 
-func (mng *MongoStorage) DeleteBrand(ctx context.Context, brandID int) error {
+func (mng *MongoRepository) Delete(ctx context.Context, brandID int) error {
 	filter := bson.D{{"marka_id", brandID}}
 
 	res, err := mng.brands.DeleteOne(ctx, filter)
@@ -123,6 +109,6 @@ func (mng *MongoStorage) DeleteBrand(ctx context.Context, brandID int) error {
 
 }
 
-func (mng *MongoStorage) RefreshBrands() error {
+func (mng *MongoRepository) RefreshBrands() error {
 	return nil
 }

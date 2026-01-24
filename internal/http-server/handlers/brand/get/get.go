@@ -23,7 +23,8 @@ type Response struct {
 }
 
 type BrandGetter interface {
-	GetBrand(ctx context.Context, brandID int) (*models.Brand, error)
+	GetByID(ctx context.Context, brandID int) (*models.Brand, error)
+	GetAll(context.Context) ([]models.Brand, error)
 }
 
 func Get(log *slog.Logger, brandGetter BrandGetter) http.HandlerFunc {
@@ -45,7 +46,7 @@ func Get(log *slog.Logger, brandGetter BrandGetter) http.HandlerFunc {
 		log.Info("ID retrieved successfully", slog.Any("brandID", brandID))
 		log.Info("getting brand")
 
-		brand, err := brandGetter.GetBrand(r.Context(), brandID)
+		brand, err := brandGetter.GetByID(r.Context(), brandID)
 		if err != nil {
 			log.Error("failed to get brand", slog.String("error", err.Error()))
 			render.JSON(w, r, resp.Error("Failed to get brand"))
@@ -70,7 +71,7 @@ func GetAll(log *slog.Logger, brandGetter BrandGetter) http.HandlerFunc {
 
 		log.Info("getting brands")
 
-		brand, err := brandGetter.GetAllBrand(r.Context())
+		brand, err := brandGetter.GetAll(r.Context())
 		if err != nil {
 			log.Error("failed to get brand", slog.String("error", err.Error()))
 			render.JSON(w, r, resp.Error("Failed to get brand"))

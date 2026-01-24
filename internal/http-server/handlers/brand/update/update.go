@@ -21,7 +21,7 @@ type Response struct {
 }
 
 type BrandUpdater interface {
-	UpdateBrand(ctx context.Context, brand models.Brand) error
+	Update(ctx context.Context, brand models.Brand) error
 }
 
 func Update(log *slog.Logger, brandUpdater BrandUpdater) http.HandlerFunc {
@@ -53,13 +53,13 @@ func Update(log *slog.Logger, brandUpdater BrandUpdater) http.HandlerFunc {
 			Count:    req.Brand.Count,
 			Country:  req.Brand.Country,
 			EngName:  req.Brand.EngName,
-			Marka:    req.Brand.Marka,
+			MarkaID:  req.Brand.MarkaID,
 			Name:     req.Brand.Name,
 			Slang:    req.Brand.Slang,
 			Value:    req.Brand.Value,
 		}
 
-		err = brandUpdater.UpdateBrand(r.Context(), brand)
+		err = brandUpdater.Update(r.Context(), brand)
 		if err != nil {
 			log.Error("failed to update brand", slog.String("error", err.Error()))
 			render.JSON(w, r, resp.Error("Failed to update brand"))
