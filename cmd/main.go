@@ -58,7 +58,6 @@ func main() {
 	router := setupRouter()
 
 	router.Route("/brand", func(r chi.Router) {
-
 		r.Post("/", saveBrandHandler.New(log, brandRepo))
 		r.Delete("/{id}", deleteBrandHandler.Delete(log, brandRepo))
 		r.Get("/{id}", getBrandHandler.Get(log, brandRepo))
@@ -66,7 +65,6 @@ func main() {
 		r.Put("/", updateBrandHandler.Update(log, brandRepo))
 	})
 	router.Route("/vehicle-type", func(r chi.Router) {
-
 		r.Post("/", saveVehicleTypeHandler.New(log, vehicleTypeRepo))
 		r.Delete("/{id}", deleteVehicleTypeHandler.Delete(log, vehicleTypeRepo))
 		r.Get("/{id}", getVehicleTypeHandler.Get(log, vehicleTypeRepo))

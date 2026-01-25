@@ -17,9 +17,14 @@ type Request struct {
 	brandID int
 }
 
-type Response struct {
-	resp.Response
-	*models.Brand
+type ResponseGet struct {
+	Response resp.Response
+	Brand    *models.Brand
+}
+
+type ResponseGetAll struct {
+	Response resp.Response
+	Brands   []models.Brand
 }
 
 type BrandGetter interface {
@@ -53,7 +58,7 @@ func Get(log *slog.Logger, brandGetter BrandGetter) http.HandlerFunc {
 			return
 		}
 
-		render.JSON(w, r, Response{
+		render.JSON(w, r, ResponseGet{
 			Response: resp.OK(),
 			Brand:    brand,
 		})
@@ -71,16 +76,16 @@ func GetAll(log *slog.Logger, brandGetter BrandGetter) http.HandlerFunc {
 
 		log.Info("getting brands")
 
-		brand, err := brandGetter.GetAll(r.Context())
+		brands, err := brandGetter.GetAll(r.Context())
 		if err != nil {
 			log.Error("failed to get brand", slog.String("error", err.Error()))
 			render.JSON(w, r, resp.Error("Failed to get brand"))
 			return
 		}
 
-		render.JSON(w, r, Response{
+		render.JSON(w, r, ResponseGetAll{
 			Response: resp.OK(),
-			Brand:    brand,
+			Brands:   brands,
 		})
 	}
 }
