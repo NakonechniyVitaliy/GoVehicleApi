@@ -49,6 +49,7 @@ func Update(log *slog.Logger, vehicleTypeUpdater VehicleTypeUpdater) http.Handle
 		}
 
 		vehicleType := models.VehicleType{
+			ID:         req.VehicleType.ID,
 			Ablative:   req.VehicleType.Ablative,
 			CategoryID: req.VehicleType.CategoryID,
 			Name:       req.VehicleType.Name,

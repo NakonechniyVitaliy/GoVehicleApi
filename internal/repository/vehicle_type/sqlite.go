@@ -86,6 +86,7 @@ func (s *SqliteRepository) Update(ctx context.Context, vehicleType models.Vehicl
 		vehicleType.Plural,
 		vehicleType.Rewrite,
 		vehicleType.Singular,
+		vehicleType.ID,
 	)
 	if err != nil {
 		return fmt.Errorf("%s: %w", op, err)
