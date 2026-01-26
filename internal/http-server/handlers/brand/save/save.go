@@ -51,8 +51,6 @@ func New(log *slog.Logger, brandSaver BrandSaver) http.HandlerFunc {
 			return
 		}
 
-		//brand := models.Brand{1, 2, 220, "TestEngName", 777, "Test", "TEst", 10}
-
 		brand := models.Brand{
 			Category: req.Brand.Category,
 			Count:    req.Brand.Count,

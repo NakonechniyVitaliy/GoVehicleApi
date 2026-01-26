@@ -3,6 +3,7 @@ package router
 import (
 	"log/slog"
 
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/config"
 	deleteBrandHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/brand/delete"
 	getBrandHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/brand/get"
 	saveBrandHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/brand/save"
@@ -17,7 +18,12 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-func SetupRouter(log *slog.Logger, brandRepo brand.Repository, vehicleTypeRepo vehicleType.Repository) chi.Router {
+func SetupRouter(
+	log *slog.Logger,
+	brandRepo brand.Repository,
+	vehicleTypeRepo vehicleType.Repository,
+	cfg *config.Config) chi.Router {
+
 	router := chi.NewRouter()
 
 	router.Use(middleware.RequestID) // Присваивание ID каждому запросу
@@ -26,7 +32,7 @@ func SetupRouter(log *slog.Logger, brandRepo brand.Repository, vehicleTypeRepo v
 	router.Use(middleware.URLFormat) // Удобное получение параметров из сслыки
 
 	SetupVehicleTypeRoutes(router, log, vehicleTypeRepo)
-	SetupBrandRoutes(router, log, brandRepo)
+	SetupBrandRoutes(router, log, brandRepo, cfg)
 
 	return router
 }
@@ -41,12 +47,18 @@ func SetupVehicleTypeRoutes(router chi.Router, log *slog.Logger, vehicleTypeRepo
 	})
 }
 
-func SetupBrandRoutes(router chi.Router, log *slog.Logger, brandRepo brand.Repository) {
+func SetupBrandRoutes(
+	router chi.Router,
+	log *slog.Logger,
+	brandRepo brand.Repository,
+	cfg *config.Config,
+) {
 	router.Route("/brand", func(r chi.Router) {
 		r.Post("/", saveBrandHandler.New(log, brandRepo))
 		r.Delete("/{id}", deleteBrandHandler.Delete(log, brandRepo))
 		r.Get("/{id}", getBrandHandler.Get(log, brandRepo))
 		r.Get("/all", getBrandHandler.GetAll(log, brandRepo))
 		r.Put("/", updateBrandHandler.Update(log, brandRepo))
+		r.Put("/refresh", updateBrandHandler.Refresh(log, brandRepo, cfg))
 	})
 }

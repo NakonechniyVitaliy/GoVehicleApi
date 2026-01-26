@@ -45,10 +45,9 @@ func main() {
 	}
 	log.Info("repositories successfully setup", slog.String("database", cfg.DataBase))
 
-	appRouter := router.SetupRouter(log, brandRepo, vehicleTypeRepo)
+	appRouter := router.SetupRouter(log, brandRepo, vehicleTypeRepo, cfg)
 
 	log.Info("starting server on", slog.String("adreess", cfg.Address))
-
 	server := &http.Server{
 		Addr:         cfg.Address,
 		Handler:      appRouter,
@@ -124,11 +123,3 @@ func setupDataBase(db string, storagePath string) (storage.Storage, error) {
 		return nil, fmt.Errorf("unknown database type: %s", db)
 	}
 }
-
-// REFRESH BRANDS SQLITE
-//_ = Storage
-//brands, _ := requests.GetBrands(cfg.AutoriaKey)
-//err = Storage.RefreshBrands(brands)
-//if err != nil {
-//	fmt.Println("Error refreshing brands", err)
-//}

@@ -12,5 +12,5 @@ type Repository interface {
 	GetByID(ctx context.Context, brandID int) (*models.Brand, error)
 	Update(ctx context.Context, brand models.Brand) error
 	GetAll(ctx context.Context) ([]models.Brand, error)
-	RefreshBrands() error
+	InsertOrUpdate(ctx context.Context, brands []models.Brand) error
 }

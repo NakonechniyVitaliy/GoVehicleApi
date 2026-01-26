@@ -22,7 +22,7 @@ func NewSqlite(db *sql.DB) *SqliteRepository {
 }
 
 func (s *SqliteRepository) GetByID(ctx context.Context, brandID int) (*models.Brand, error) {
-	const op = "storage.brands.GetBrand"
+	const op = "storage.brands.GetByID"
 
 	const query = `SELECT category_id, cnt, country_id, eng, marka_id, name, slang, value FROM brands WHERE marka_id = ?`
 
@@ -38,7 +38,7 @@ func (s *SqliteRepository) GetByID(ctx context.Context, brandID int) (*models.Br
 }
 
 func (s *SqliteRepository) GetAll(ctx context.Context) ([]models.Brand, error) {
-	const op = "storage.brands.GetBrands"
+	const op = "storage.brands.GetAll"
 
 	const query = `SELECT category_id, cnt, country_id, eng, marka_id, name, slang, value FROM brands`
 
@@ -62,7 +62,7 @@ func (s *SqliteRepository) GetAll(ctx context.Context) ([]models.Brand, error) {
 }
 
 func (s *SqliteRepository) Update(ctx context.Context, brand models.Brand) error {
-	const op = "storage.brand.UpdateBrand"
+	const op = "storage.brand.Update"
 
 	const query = `
 		UPDATE brands
@@ -174,6 +174,7 @@ func (s *SqliteRepository) Create(ctx context.Context, brand models.Brand) error
 	return nil
 }
 
-func (s *SqliteRepository) RefreshBrands() error {
+func (s *SqliteRepository) InsertOrUpdate(ctx context.Context, brands []models.Brand) error {
+	const op = "storage.brand.InsertOrUpdate"
 	return nil
 }

@@ -37,11 +37,11 @@ func (s *SqliteStorage) GetName() string {
 func migrate(db *sql.DB) error {
 	queryBrands := `
 	CREATE TABLE IF NOT EXISTS brands (
+	    marka_id INTEGER PRIMARY KEY UNIQUE,
 	    category_id INTEGER,
 	    cnt INTEGER,
 	    country_id INTEGER,
 	    eng TEXT,
-	    marka_id INTEGER PRIMARY KEY,
 	    name TEXT,
 	    slang TEXT,
 	    value INTEGER

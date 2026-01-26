@@ -109,6 +109,7 @@ func (mng *MongoRepository) Delete(ctx context.Context, brandID int) error {
 
 }
 
-func (mng *MongoRepository) RefreshBrands() error {
+func (mng *MongoRepository) InsertOrUpdate(ctx context.Context, brands []models.Brand) error {
+	const op = "storage.brand.InsertOrUpdate"
 	return nil
 }

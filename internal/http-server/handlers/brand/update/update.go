@@ -1,12 +1,14 @@
 package update
 
 import (
-	"context"
 	"log/slog"
 	"net/http"
 
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/config"
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/brand"
+	brandService "github.com/NakonechniyVitaliy/GoVehicleApi/internal/service"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 	"github.com/go-playground/validator/v10"
@@ -20,11 +22,7 @@ type Response struct {
 	resp.Response
 }
 
-type BrandUpdater interface {
-	Update(ctx context.Context, brand models.Brand) error
-}
-
-func Update(log *slog.Logger, brandUpdater BrandUpdater) http.HandlerFunc {
+func Update(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.brand.update.Update"
 
@@ -48,7 +46,7 @@ func Update(log *slog.Logger, brandUpdater BrandUpdater) http.HandlerFunc {
 			return
 		}
 
-		brand := models.Brand{
+		updatedBrand := models.Brand{
 			Category: req.Brand.Category,
 			Count:    req.Brand.Count,
 			Country:  req.Brand.Country,
@@ -59,7 +57,7 @@ func Update(log *slog.Logger, brandUpdater BrandUpdater) http.HandlerFunc {
 			Value:    req.Brand.Value,
 		}
 
-		err = brandUpdater.Update(r.Context(), brand)
+		err = repository.Update(r.Context(), updatedBrand)
 		if err != nil {
 			log.Error("failed to update brand", slog.String("error", err.Error()))
 			render.JSON(w, r, resp.Error("Failed to update brand"))
@@ -69,6 +67,23 @@ func Update(log *slog.Logger, brandUpdater BrandUpdater) http.HandlerFunc {
 		render.JSON(w, r, Response{
 			Response: resp.OK(),
 		})
+
+	}
+}
+
+func Refresh(log *slog.Logger, repository brand.Repository, cfg *config.Config) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		const op = "handlers.brand.update.Refresh"
+
+		log = log.With(
+			slog.String("op", op),
+			slog.String("request_id", middleware.GetReqID(r.Context())),
+		)
+
+		err := brandService.RefreshBrand(cfg, repository, r)
+		if err != nil {
+			return
+		}
 
 	}
 }
