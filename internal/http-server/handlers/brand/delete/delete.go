@@ -1,12 +1,12 @@
 package save
 
 import (
-	"context"
 	"log/slog"
 	"net/http"
 	"strconv"
 
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/brand"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
@@ -16,11 +16,7 @@ type Response struct {
 	resp.Response
 }
 
-type BrandDeleter interface {
-	Delete(ctx context.Context, brandID int) error
-}
-
-func Delete(log *slog.Logger, brandDeleter BrandDeleter) http.HandlerFunc {
+func Delete(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.brand.delete.Delete"
 
@@ -39,7 +35,7 @@ func Delete(log *slog.Logger, brandDeleter BrandDeleter) http.HandlerFunc {
 		log.Info("ID retrieved successfully", slog.Any("brandID", brandID))
 		log.Info("deleting brand")
 
-		err = brandDeleter.Delete(r.Context(), brandID)
+		err = repository.Delete(r.Context(), brandID)
 		if err != nil {
 			log.Error("failed to delete brand", slog.String("error", err.Error()))
 			render.JSON(w, r, resp.Error("Failed to delete brand"))

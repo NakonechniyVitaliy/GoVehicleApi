@@ -1,13 +1,13 @@
 package save
 
 import (
-	"context"
 	"errors"
 	"log/slog"
 	"net/http"
 
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
+	vehicleType "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/vehicle_type"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
@@ -22,11 +22,7 @@ type Response struct {
 	resp.Response
 }
 
-type VehicleTypeSaver interface {
-	Create(ctx context.Context, vehicleType models.VehicleType) error
-}
-
-func New(log *slog.Logger, vehicleTypeSaver VehicleTypeSaver) http.HandlerFunc {
+func New(log *slog.Logger, repository vehicleType.Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.vehicleType.save.New"
 
@@ -51,7 +47,7 @@ func New(log *slog.Logger, vehicleTypeSaver VehicleTypeSaver) http.HandlerFunc {
 			return
 		}
 
-		vehicleType := models.VehicleType{
+		newVehicleType := models.VehicleType{
 			Ablative:   req.VehicleType.Ablative,
 			CategoryID: req.VehicleType.CategoryID,
 			Name:       req.VehicleType.Name,
@@ -60,9 +56,9 @@ func New(log *slog.Logger, vehicleTypeSaver VehicleTypeSaver) http.HandlerFunc {
 			Singular:   req.VehicleType.Singular,
 		}
 
-		log.Info("saving vehicle type", slog.Any("vehicle type", vehicleType))
+		log.Info("saving vehicle type", slog.Any("vehicle type", newVehicleType))
 
-		err = vehicleTypeSaver.Create(r.Context(), vehicleType)
+		err = repository.Create(r.Context(), newVehicleType)
 		if errors.Is(err, storage.ErrVehicleTypeExists) {
 			log.Info("vehicleType already exists", slog.String("vehicle type", req.VehicleType.Name))
 			render.JSON(w, r, resp.Error("vehicle type already exists"))

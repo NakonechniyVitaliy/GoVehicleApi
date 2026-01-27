@@ -1,13 +1,13 @@
 package save
 
 import (
-	"context"
 	"errors"
 	"log/slog"
 	"net/http"
 
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/brand"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
@@ -22,11 +22,7 @@ type Response struct {
 	resp.Response
 }
 
-type BrandSaver interface {
-	Create(ctx context.Context, brand models.Brand) error
-}
-
-func New(log *slog.Logger, brandSaver BrandSaver) http.HandlerFunc {
+func New(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.brand.save.New"
 
@@ -51,7 +47,7 @@ func New(log *slog.Logger, brandSaver BrandSaver) http.HandlerFunc {
 			return
 		}
 
-		brand := models.Brand{
+		newBrand := models.Brand{
 			Category: req.Brand.Category,
 			Count:    req.Brand.Count,
 			Country:  req.Brand.Country,
@@ -62,9 +58,9 @@ func New(log *slog.Logger, brandSaver BrandSaver) http.HandlerFunc {
 			Value:    req.Brand.Value,
 		}
 
-		log.Info("saving brand", slog.Any("brand", brand))
+		log.Info("saving brand", slog.Any("brand", newBrand))
 
-		err = brandSaver.Create(r.Context(), brand)
+		err = repository.Create(r.Context(), newBrand)
 		if errors.Is(err, storage.ErrBrandExists) {
 			log.Info("brand already exists", slog.String("brand", req.Brand.Name))
 			render.JSON(w, r, resp.Error("Brand already exists"))

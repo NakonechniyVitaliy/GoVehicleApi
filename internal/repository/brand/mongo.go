@@ -8,6 +8,7 @@ import (
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type MongoRepository struct {
@@ -112,6 +113,18 @@ func (mng *MongoRepository) Delete(ctx context.Context, brandID int) error {
 func (mng *MongoRepository) InsertOrUpdate(ctx context.Context, brand models.Brand) error {
 	const op = "storage.brand.InsertOrUpdate"
 
-	filter := bson.D{{"marka_id", brand.MarkaID}}
+	filter := bson.M{"marka_id": brand.MarkaID}
 
+	update := bson.M{
+		"$set": brand,
+	}
+
+	opts := options.Update().SetUpsert(true)
+
+	_, err := mng.brands.UpdateOne(ctx, filter, update, opts)
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	}
+
+	return nil
 }

@@ -1,12 +1,12 @@
 package save
 
 import (
-	"context"
 	"log/slog"
 	"net/http"
 	"strconv"
 
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
+	vehicleType "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/vehicle_type"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
@@ -16,11 +16,7 @@ type Response struct {
 	resp.Response
 }
 
-type VehicleTypeDeleter interface {
-	Delete(ctx context.Context, vehicleTypeID int) error
-}
-
-func Delete(log *slog.Logger, vehicleTypeDeleter VehicleTypeDeleter) http.HandlerFunc {
+func Delete(log *slog.Logger, repository vehicleType.Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.vehicleType.delete.Delete"
 
@@ -39,7 +35,7 @@ func Delete(log *slog.Logger, vehicleTypeDeleter VehicleTypeDeleter) http.Handle
 		log.Info("ID retrieved successfully", slog.Any("vehicle type ID", vehicleTypeID))
 		log.Info("deleting vehicle type")
 
-		err = vehicleTypeDeleter.Delete(r.Context(), vehicleTypeID)
+		err = repository.Delete(r.Context(), vehicleTypeID)
 		if err != nil {
 			log.Error("failed to delete vehicle type", slog.String("error", err.Error()))
 			render.JSON(w, r, resp.Error("Failed to delete vehicle type"))

@@ -1,13 +1,13 @@
 package get
 
 import (
-	"context"
 	"log/slog"
 	"net/http"
 	"strconv"
 
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/brand"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
@@ -27,12 +27,7 @@ type ResponseGetAll struct {
 	Brands   []models.Brand
 }
 
-type BrandGetter interface {
-	GetByID(ctx context.Context, brandID int) (*models.Brand, error)
-	GetAll(context.Context) ([]models.Brand, error)
-}
-
-func Get(log *slog.Logger, brandGetter BrandGetter) http.HandlerFunc {
+func Get(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.brand.get.Get"
 
@@ -51,7 +46,7 @@ func Get(log *slog.Logger, brandGetter BrandGetter) http.HandlerFunc {
 		log.Info("ID retrieved successfully", slog.Any("brandID", brandID))
 		log.Info("getting brand")
 
-		brand, err := brandGetter.GetByID(r.Context(), brandID)
+		brand, err := repository.GetByID(r.Context(), brandID)
 		if err != nil {
 			log.Error("failed to get brand", slog.String("error", err.Error()))
 			render.JSON(w, r, resp.Error("Failed to get brand"))
@@ -65,7 +60,7 @@ func Get(log *slog.Logger, brandGetter BrandGetter) http.HandlerFunc {
 	}
 }
 
-func GetAll(log *slog.Logger, brandGetter BrandGetter) http.HandlerFunc {
+func GetAll(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.brand.get.Get"
 
@@ -76,7 +71,7 @@ func GetAll(log *slog.Logger, brandGetter BrandGetter) http.HandlerFunc {
 
 		log.Info("getting brands")
 
-		brands, err := brandGetter.GetAll(r.Context())
+		brands, err := repository.GetAll(r.Context())
 		if err != nil {
 			log.Error("failed to get brand", slog.String("error", err.Error()))
 			render.JSON(w, r, resp.Error("Failed to get brand"))

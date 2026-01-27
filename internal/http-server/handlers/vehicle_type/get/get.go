@@ -1,13 +1,13 @@
 package get
 
 import (
-	"context"
 	"log/slog"
 	"net/http"
 	"strconv"
 
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
+	vehicleType "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/vehicle_type"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
@@ -27,12 +27,7 @@ type ResponseGetAll struct {
 	VehicleTypes []models.VehicleType
 }
 
-type VehicleTypeGetter interface {
-	GetByID(ctx context.Context, VehicleTypeID int) (*models.VehicleType, error)
-	GetAll(context.Context) ([]models.VehicleType, error)
-}
-
-func Get(log *slog.Logger, VehicleTypeGetter VehicleTypeGetter) http.HandlerFunc {
+func Get(log *slog.Logger, repository vehicleType.Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.VehicleType.get.Get"
 
@@ -51,7 +46,7 @@ func Get(log *slog.Logger, VehicleTypeGetter VehicleTypeGetter) http.HandlerFunc
 		log.Info("ID retrieved successfully", slog.Any("Vehicle type ID", VehicleTypeID))
 		log.Info("getting VehicleType")
 
-		VehicleType, err := VehicleTypeGetter.GetByID(r.Context(), VehicleTypeID)
+		VehicleType, err := repository.GetByID(r.Context(), VehicleTypeID)
 		if err != nil {
 			log.Error("failed to get vehicle type", slog.String("error", err.Error()))
 			render.JSON(w, r, resp.Error("Failed to get vehicle type"))
@@ -65,7 +60,7 @@ func Get(log *slog.Logger, VehicleTypeGetter VehicleTypeGetter) http.HandlerFunc
 	}
 }
 
-func GetAll(log *slog.Logger, VehicleTypeGetter VehicleTypeGetter) http.HandlerFunc {
+func GetAll(log *slog.Logger, repository vehicleType.Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.VehicleType.get.Get"
 
@@ -76,7 +71,7 @@ func GetAll(log *slog.Logger, VehicleTypeGetter VehicleTypeGetter) http.HandlerF
 
 		log.Info("getting VehicleTypes")
 
-		VehicleTypes, err := VehicleTypeGetter.GetAll(r.Context())
+		VehicleTypes, err := repository.GetAll(r.Context())
 		if err != nil {
 			log.Error("failed to get vehicle type", slog.String("error", err.Error()))
 			render.JSON(w, r, resp.Error("Failed to get vehicle type"))
