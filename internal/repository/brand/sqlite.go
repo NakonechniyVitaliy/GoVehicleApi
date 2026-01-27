@@ -24,11 +24,11 @@ func NewSqlite(db *sql.DB) *SqliteRepository {
 func (s *SqliteRepository) GetByID(ctx context.Context, brandID int) (*models.Brand, error) {
 	const op = "storage.brands.GetByID"
 
-	const query = `SELECT category_id, cnt, country_id, eng, marka_id, name, slang, value FROM brands WHERE marka_id = ?`
+	const query = `SELECT marka_id, category_id, cnt, country_id, eng, name, slang, value FROM brands WHERE marka_id = ?`
 
 	var brand models.Brand
 	err := s.db.QueryRowContext(ctx, query, brandID).Scan(
-		&brand.Category, &brand.Count, &brand.Country, &brand.EngName, &brand.MarkaID, &brand.Name, &brand.Slang, &brand.Value,
+		&brand.MarkaID, &brand.Category, &brand.Count, &brand.Country, &brand.EngName, &brand.Name, &brand.Slang, &brand.Value,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("%s: Error to return brand %w", op, err)
@@ -40,7 +40,7 @@ func (s *SqliteRepository) GetByID(ctx context.Context, brandID int) (*models.Br
 func (s *SqliteRepository) GetAll(ctx context.Context) ([]models.Brand, error) {
 	const op = "storage.brands.GetAll"
 
-	const query = `SELECT category_id, cnt, country_id, eng, marka_id, name, slang, value FROM brands`
+	const query = `SELECT marka_id, category_id, cnt, country_id, eng, name, slang, value FROM brands`
 
 	rows, err := s.db.QueryContext(ctx, query)
 	if err != nil {
@@ -132,11 +132,11 @@ func (s *SqliteRepository) Create(ctx context.Context, brand models.Brand) error
 
 	const query = `
 		INSERT INTO brands (
+			marka_id,
 			category_id,
 			cnt,
 			country_id,
 			eng,
-			marka_id,
 			name,
 			slang,
 			value
@@ -146,11 +146,11 @@ func (s *SqliteRepository) Create(ctx context.Context, brand models.Brand) error
 	res, err := s.db.ExecContext(
 		ctx,
 		query,
+		brand.MarkaID,
 		brand.Category,
 		brand.Count,
 		brand.Country,
 		brand.EngName,
-		brand.MarkaID,
 		brand.Name,
 		brand.Slang,
 		brand.Value,
@@ -174,7 +174,44 @@ func (s *SqliteRepository) Create(ctx context.Context, brand models.Brand) error
 	return nil
 }
 
-func (s *SqliteRepository) InsertOrUpdate(ctx context.Context, brands []models.Brand) error {
+func (s *SqliteRepository) InsertOrUpdate(ctx context.Context, brand models.Brand) error {
 	const op = "storage.brand.InsertOrUpdate"
+
+	const query = `
+		INSERT INTO brands (
+			marka_id,
+			category_id,
+			cnt,
+			country_id,
+			eng,
+			name,
+			slang,
+			value
+		) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+		ON CONFLICT(marka_id) DO UPDATE SET 
+			category_id = excluded.category_id,
+			cnt = excluded.cnt,
+			country_id = excluded.country_id,
+			eng = excluded.eng,
+			name = excluded.name,
+			slang = excluded.slang,
+			value = excluded.value
+	`
+	_, err := s.db.ExecContext(
+		ctx,
+		query,
+		brand.MarkaID,
+		brand.Category,
+		brand.Count,
+		brand.Country,
+		brand.EngName,
+		brand.Name,
+		brand.Slang,
+		brand.Value,
+	)
+
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	}
 	return nil
 }

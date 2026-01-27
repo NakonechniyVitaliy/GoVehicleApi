@@ -82,8 +82,13 @@ func Refresh(log *slog.Logger, repository brand.Repository, cfg *config.Config) 
 
 		err := brandService.RefreshBrand(cfg, repository, r)
 		if err != nil {
+			log.Error("failed to update brands", slog.String("error", err.Error()))
+			render.JSON(w, r, resp.Error("Failed to update brand"))
 			return
 		}
 
+		render.JSON(w, r, Response{
+			Response: resp.OK(),
+		})
 	}
 }

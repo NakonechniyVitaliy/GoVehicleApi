@@ -15,9 +15,11 @@ func RefreshBrand(cfg *config.Config, repository brand.Repository, r *http.Reque
 		return err
 	}
 
-	err = repository.InsertOrUpdate(r.Context(), brands)
-	if err != nil {
-		return err
+	for _, oneBrand := range brands {
+		err = repository.InsertOrUpdate(r.Context(), oneBrand)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

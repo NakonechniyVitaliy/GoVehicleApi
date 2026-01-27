@@ -109,7 +109,9 @@ func (mng *MongoRepository) Delete(ctx context.Context, brandID int) error {
 
 }
 
-func (mng *MongoRepository) InsertOrUpdate(ctx context.Context, brands []models.Brand) error {
+func (mng *MongoRepository) InsertOrUpdate(ctx context.Context, brand models.Brand) error {
 	const op = "storage.brand.InsertOrUpdate"
-	return nil
+
+	filter := bson.D{{"marka_id", brand.MarkaID}}
+
 }
