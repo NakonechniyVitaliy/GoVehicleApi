@@ -1,14 +1,14 @@
-package service
+package brand
 
 import (
-	"net/http"
+	"context"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/config"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/brand"
 	brandRequests "github.com/NakonechniyVitaliy/GoVehicleApi/internal/requests/autoria/brands"
 )
 
-func RefreshBrand(cfg *config.Config, repository brand.Repository, r *http.Request) error {
+func RefreshBrands(ctx context.Context, cfg *config.Config, repository brand.Repository) error {
 
 	brands, err := brandRequests.GetBrands(cfg.AutoriaKey)
 	if err != nil {
@@ -16,12 +16,11 @@ func RefreshBrand(cfg *config.Config, repository brand.Repository, r *http.Reque
 	}
 
 	for _, oneBrand := range brands {
-		err = repository.InsertOrUpdate(r.Context(), oneBrand)
+		err = repository.InsertOrUpdate(ctx, oneBrand)
 		if err != nil {
 			return err
 		}
 	}
 
 	return nil
-
 }

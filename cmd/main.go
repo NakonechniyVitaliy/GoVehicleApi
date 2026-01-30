@@ -11,6 +11,7 @@ import (
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/config"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/router"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/brand"
+	vehicleCategory "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/vehicle_category"
 	vehicleType "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/vehicle_type"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/mongo"
@@ -39,13 +40,13 @@ func main() {
 	}
 	log.Info("Database successfully enabled", slog.String("database", cfg.DataBase))
 
-	brandRepo, vehicleTypeRepo, err := setupRepositories(Storage)
+	brandRepo, vehicleTypeRepo, vehicleCategoryRepo, err := setupRepositories(Storage)
 	if err != nil {
 		log.Error("failed to setup repositories", slog.Any("err", err))
 	}
 	log.Info("repositories successfully setup", slog.String("database", cfg.DataBase))
 
-	appRouter := router.SetupRouter(log, brandRepo, vehicleTypeRepo, cfg)
+	appRouter := router.SetupRouter(log, brandRepo, vehicleTypeRepo, vehicleCategoryRepo, cfg)
 
 	log.Info("starting server on", slog.String("adreess", cfg.Address))
 	server := &http.Server{
@@ -84,7 +85,7 @@ func setupLogger(env string) *slog.Logger {
 	return log
 }
 
-func setupRepositories(Storage storage.Storage) (brand.Repository, vehicleType.Repository, error) {
+func setupRepositories(Storage storage.Storage) (brand.Repository, vehicleType.Repository, vehicleCategory.Repository, error) {
 
 	switch Storage.GetName() {
 
@@ -93,16 +94,19 @@ func setupRepositories(Storage storage.Storage) (brand.Repository, vehicleType.R
 		mongoStorage := Storage.(*mongo.MongoStorage)
 		brandRepo := brand.NewMongo(mongoStorage.DB)
 		vehicleTypeRepo := vehicleType.NewMongo(mongoStorage.DB)
-		return brandRepo, vehicleTypeRepo, nil
+		vehicleCategoryRepo := vehicleCategory.NewMongo(mongoStorage.DB)
+
+		return brandRepo, vehicleTypeRepo, vehicleCategoryRepo, nil
 
 	case Sqlite:
 		sqliteStorage := Storage.(*sqlite.SqliteStorage)
 		brandRepo := brand.NewSqlite(sqliteStorage.DB)
 		vehicleTypeRepo := vehicleType.NewSqlite(sqliteStorage.DB)
-		return brandRepo, vehicleTypeRepo, nil
+		vehicleCategoryRepo := vehicleCategory.NewSqlite(sqliteStorage.DB)
+		return brandRepo, vehicleTypeRepo, vehicleCategoryRepo, nil
 
 	default:
-		return nil, nil, nil
+		return nil, nil, nil, nil
 	}
 
 }

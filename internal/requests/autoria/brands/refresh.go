@@ -6,16 +6,13 @@ import (
 	"net/http"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/requests/autoria"
 	"github.com/go-chi/render"
-)
-
-const (
-	GET_BRANDS = "https://developers.ria.com/auto/new/marks?category_id=1&api_key="
 )
 
 func GetBrands(key string) ([]models.Brand, error) {
 
-	url := GET_BRANDS + key
+	url := autoria.GET_BRANDS + key
 
 	resp, err := http.Get(url)
 	if err != nil {

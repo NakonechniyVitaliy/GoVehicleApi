@@ -45,8 +45,8 @@ func migrate(ctx context.Context, database *mongo.Database) error {
 
 	brands := database.Collection("brands")
 	_, err := brands.Indexes().CreateOne(ctx, mongo.IndexModel{
-		Keys:    bson.M{"marka_id": 1},
-		Options: options.Index().SetUnique(true),
+		Keys:    bson.M{"id": 1},
+		Options: options.Index(),
 	})
 	if err != nil {
 		return err
@@ -55,7 +55,16 @@ func migrate(ctx context.Context, database *mongo.Database) error {
 	vehicleTypes := database.Collection("vehicle_types")
 	_, err = vehicleTypes.Indexes().CreateOne(ctx, mongo.IndexModel{
 		Keys:    bson.M{"id": 1},
-		Options: options.Index().SetUnique(true),
+		Options: options.Index(),
+	})
+	if err != nil {
+		return err
+	}
+
+	vehicleCategories := database.Collection("vehicle_categories")
+	_, err = vehicleCategories.Indexes().CreateOne(ctx, mongo.IndexModel{
+		Keys:    bson.M{"id": 1},
+		Options: options.Index(),
 	})
 	if err != nil {
 		return err

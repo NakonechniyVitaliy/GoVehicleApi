@@ -22,11 +22,6 @@ type ResponseGet struct {
 	Brand    *models.Brand
 }
 
-type ResponseGetAll struct {
-	Response resp.Response
-	Brands   []models.Brand
-}
-
 func Get(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.brand.get.Get"
@@ -46,7 +41,7 @@ func Get(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
 		log.Info("ID retrieved successfully", slog.Any("brandID", brandID))
 		log.Info("getting brand")
 
-		brand, err := repository.GetByID(r.Context(), brandID)
+		requestedBrand, err := repository.GetByID(r.Context(), brandID)
 		if err != nil {
 			log.Error("failed to get brand", slog.String("error", err.Error()))
 			render.JSON(w, r, resp.Error("Failed to get brand"))
@@ -55,32 +50,7 @@ func Get(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
 
 		render.JSON(w, r, ResponseGet{
 			Response: resp.OK(),
-			Brand:    brand,
-		})
-	}
-}
-
-func GetAll(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.brand.get.Get"
-
-		log = log.With(
-			slog.String("op", op),
-			slog.String("request_id", middleware.GetReqID(r.Context())),
-		)
-
-		log.Info("getting brands")
-
-		brands, err := repository.GetAll(r.Context())
-		if err != nil {
-			log.Error("failed to get brand", slog.String("error", err.Error()))
-			render.JSON(w, r, resp.Error("Failed to get brand"))
-			return
-		}
-
-		render.JSON(w, r, ResponseGetAll{
-			Response: resp.OK(),
-			Brands:   brands,
+			Brand:    requestedBrand,
 		})
 	}
 }

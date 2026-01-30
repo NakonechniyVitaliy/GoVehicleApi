@@ -37,19 +37,20 @@ func (s *SqliteStorage) GetName() string {
 func migrate(db *sql.DB) error {
 	queryBrands := `
 	CREATE TABLE IF NOT EXISTS brands (
-	    marka_id INTEGER PRIMARY KEY UNIQUE,
+	    id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+	    marka_id INTEGER,
 	    category_id INTEGER,
 	    cnt INTEGER,
 	    country_id INTEGER,
 	    eng TEXT,
 	    name TEXT,
 	    slang TEXT,
-	    value INTEGER
+	    value INTEGER 
 	);`
 
 	queryVehicleTypes := `
 	CREATE TABLE IF NOT EXISTS vehicle_types (
-	    id INTEGER PRIMARY KEY AUTOINCREMENT,
+	    id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
 	    ablative TEXT,
 	    category_id INTEGER,
 	    name TEXT UNIQUE,
@@ -58,11 +59,22 @@ func migrate(db *sql.DB) error {
 		singular TEXT
 	);`
 
+	queryVehicleCategories := `
+	CREATE TABLE IF NOT EXISTS vehicle_categories (
+	    id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+		name TEXT,
+		value INTEGER UNIQUE 
+	);`
+
 	_, err := db.Exec(queryBrands)
 	if err != nil {
 		return err
 	}
 	_, err = db.Exec(queryVehicleTypes)
+	if err != nil {
+		return err
+	}
+	_, err = db.Exec(queryVehicleCategories)
 	if err != nil {
 		return err
 	}

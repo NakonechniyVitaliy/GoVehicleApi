@@ -1,6 +1,7 @@
 package models
 
 type Brand struct {
+	ID       int    `json:"id" bson:"id"`
 	Category int    `json:"category_id" bson:"category_id"`
 	Count    int    `json:"cnt" bson:"cnt"`
 	Country  int    `json:"country_id" bson:"country_id"`

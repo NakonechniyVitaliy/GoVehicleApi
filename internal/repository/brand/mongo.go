@@ -87,7 +87,7 @@ func (mng *MongoRepository) GetAll(ctx context.Context) ([]models.Brand, error) 
 	}
 
 	var brands []models.Brand
-	if err := result.All(ctx, brands); err != nil {
+	if err := result.All(ctx, &brands); err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 

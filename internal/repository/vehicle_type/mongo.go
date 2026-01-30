@@ -85,7 +85,7 @@ func (mng *MongoRepository) GetAll(ctx context.Context) ([]models.VehicleType, e
 	}
 
 	var vehicleTypes []models.VehicleType
-	if err := result.All(ctx, vehicleTypes); err != nil {
+	if err := result.All(ctx, &vehicleTypes); err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
