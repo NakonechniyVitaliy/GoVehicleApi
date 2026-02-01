@@ -45,6 +45,7 @@ func Update(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
 		}
 
 		updatedBrand := models.Brand{
+			ID:       req.Brand.ID,
 			Category: req.Brand.Category,
 			Count:    req.Brand.Count,
 			Country:  req.Brand.Country,
