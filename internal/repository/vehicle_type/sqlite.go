@@ -171,3 +171,33 @@ func (s *SqliteRepository) Create(ctx context.Context, vehicleType models.Vehicl
 
 	return nil
 }
+
+func (s *SqliteRepository) InsertOrUpdate(ctx context.Context, vehicleType models.VehicleType) error {
+	const op = "storage.vehicleType.InsertOrUpdate"
+
+	const query = `
+		INSERT INTO vehicle_types (
+		ablative, category_id, name, plural, rewrite, singular
+		) VALUES (?, ?, ?, ?, ?, ?)
+		ON CONFLICT(category_id) DO UPDATE SET 
+			ablative = excluded.ablative,
+			name = excluded.name,
+			plural = excluded.plural,
+			rewrite = excluded.rewrite,
+			singular = excluded.singular
+	`
+	_, err := s.db.ExecContext(
+		ctx,
+		query,
+		vehicleType.Ablative,
+		vehicleType.Name,
+		vehicleType.Plural,
+		vehicleType.Rewrite,
+		vehicleType.Singular,
+	)
+
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	}
+	return nil
+}

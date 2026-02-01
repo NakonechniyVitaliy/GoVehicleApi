@@ -12,4 +12,5 @@ type Repository interface {
 	GetByID(ctx context.Context, vehicleTypeID int) (*models.VehicleType, error)
 	Update(ctx context.Context, vehicleType models.VehicleType) error
 	GetAll(ctx context.Context) ([]models.VehicleType, error)
+	InsertOrUpdate(ctx context.Context, vehicleType models.VehicleType) error
 }

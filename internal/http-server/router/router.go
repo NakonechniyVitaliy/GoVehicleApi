@@ -35,7 +35,7 @@ func SetupRouter(
 	router.Use(middleware.Recoverer) // Востановление после критикал ошибки
 	router.Use(middleware.URLFormat) // Удобное получение параметров из сслыки
 
-	SetupVehicleTypeRoutes(router, log, vehicleTypeRepo)
+	SetupVehicleTypeRoutes(router, log, vehicleTypeRepo, cfg)
 	SetupBrandRoutes(router, log, brandRepo, cfg)
 	SetupVehicleCategoryRoutes(router, log, vehicleCategoryRepo, cfg)
 
@@ -46,6 +46,7 @@ func SetupVehicleTypeRoutes(
 	router chi.Router,
 	log *slog.Logger,
 	vehicleTypeRepo vehicleType.Repository,
+	cfg *config.Config,
 ) {
 	router.Route("/vehicle-type", func(r chi.Router) {
 		r.Post("/", saveVehicleTypeHandler.New(log, vehicleTypeRepo))
@@ -53,6 +54,7 @@ func SetupVehicleTypeRoutes(
 		r.Get("/{id}", getVehicleTypeHandler.Get(log, vehicleTypeRepo))
 		r.Get("/all", getVehicleTypeHandler.GetAll(log, vehicleTypeRepo))
 		r.Put("/", updateVehicleTypeHandler.Update(log, vehicleTypeRepo))
+		r.Put("/refresh", updateVehicleTypeHandler.Refresh(log, vehicleTypeRepo, cfg))
 	})
 }
 
