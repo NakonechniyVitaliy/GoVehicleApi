@@ -6,25 +6,35 @@ import (
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
+	mongoStorage "github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type MongoRepository struct {
+	db           *mongo.Database
 	vehicleTypes *mongo.Collection
 }
 
 func NewMongo(db *mongo.Database) *MongoRepository {
 	return &MongoRepository{
+		db:           db,
 		vehicleTypes: db.Collection("vehicle_types"),
 	}
 }
 
 func (mng *MongoRepository) Create(ctx context.Context, vehicleType models.VehicleType) error {
+	const op = "storage.vehicleType.Create"
 
-	_, err := mng.vehicleTypes.InsertOne(ctx, vehicleType)
+	id, err := mongoStorage.GetNextID(ctx, mng.db, "vehicle_types")
 	if err != nil {
-		return err
+		return fmt.Errorf("%s: %w", op, err)
+	}
+	vehicleType.ID = id
+
+	_, err = mng.vehicleTypes.InsertOne(ctx, vehicleType)
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err)
 	}
 	return nil
 }
@@ -60,6 +70,8 @@ func (mng *MongoRepository) Update(ctx context.Context, vehicleType models.Vehic
 }
 
 func (mng *MongoRepository) GetByID(ctx context.Context, vehicleTypeID int) (*models.VehicleType, error) {
+	const op = "storage.vehicleType.GetByID"
+
 	filter := bson.D{{"id", vehicleTypeID}}
 
 	var vehicleType models.VehicleType
@@ -72,7 +84,7 @@ func (mng *MongoRepository) GetByID(ctx context.Context, vehicleTypeID int) (*mo
 		return nil, storage.ErrVehicleTypeNotFound
 
 	default:
-		return nil, err
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 }
 
@@ -94,11 +106,13 @@ func (mng *MongoRepository) GetAll(ctx context.Context) ([]models.VehicleType, e
 }
 
 func (mng *MongoRepository) Delete(ctx context.Context, vehicleTypeID int) error {
+	const op = "storage.vehicleType.Delete"
+
 	filter := bson.D{{"id", vehicleTypeID}}
 
 	res, err := mng.vehicleTypes.DeleteOne(ctx, filter)
 	if err != nil {
-		return err
+		return fmt.Errorf("%s: %w", op, err)
 	}
 
 	if res.DeletedCount == 0 {
