@@ -133,7 +133,7 @@ func (mng *MongoRepository) InsertOrUpdate(ctx context.Context, brand models.Bra
 	}
 	brand.ID = id
 
-	filter := bson.M{"id": brand.ID}
+	filter := bson.D{{"marka_id", brand.MarkaID}}
 	update := bson.M{
 		"$set": brand,
 	}
