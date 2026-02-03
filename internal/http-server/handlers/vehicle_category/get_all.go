@@ -1,4 +1,4 @@
-package get
+package vehicle_category
 
 import (
 	"log/slog"
@@ -11,7 +11,7 @@ import (
 	"github.com/go-chi/render"
 )
 
-type Response struct {
+type GetAllResponse struct {
 	Response          resp.Response
 	VehicleCategories []models.VehicleCategory
 }
@@ -34,7 +34,7 @@ func GetAll(log *slog.Logger, repository vehicleCategory.Repository) http.Handle
 			return
 		}
 
-		render.JSON(w, r, Response{
+		render.JSON(w, r, GetAllResponse{
 			Response:          resp.OK(),
 			VehicleCategories: vehicleCategories,
 		})

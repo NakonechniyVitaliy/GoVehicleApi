@@ -1,4 +1,4 @@
-package get
+package vehicle_type
 
 import (
 	"log/slog"
@@ -13,18 +13,9 @@ import (
 	"github.com/go-chi/render"
 )
 
-type Request struct {
-	VehicleTypeID int
-}
-
-type ResponseGet struct {
+type GetResponse struct {
 	Response    resp.Response
 	VehicleType *models.VehicleType
-}
-
-type ResponseGetAll struct {
-	Response     resp.Response
-	VehicleTypes []models.VehicleType
 }
 
 func Get(log *slog.Logger, repository vehicleType.Repository) http.HandlerFunc {
@@ -53,34 +44,9 @@ func Get(log *slog.Logger, repository vehicleType.Repository) http.HandlerFunc {
 			return
 		}
 
-		render.JSON(w, r, ResponseGet{
+		render.JSON(w, r, GetResponse{
 			Response:    resp.OK(),
 			VehicleType: VehicleType,
-		})
-	}
-}
-
-func GetAll(log *slog.Logger, repository vehicleType.Repository) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.VehicleType.get.Get"
-
-		log = log.With(
-			slog.String("op", op),
-			slog.String("request_id", middleware.GetReqID(r.Context())),
-		)
-
-		log.Info("getting VehicleTypes")
-
-		VehicleTypes, err := repository.GetAll(r.Context())
-		if err != nil {
-			log.Error("failed to get vehicle type", slog.String("error", err.Error()))
-			render.JSON(w, r, resp.Error("Failed to get vehicle type"))
-			return
-		}
-
-		render.JSON(w, r, ResponseGetAll{
-			Response:     resp.OK(),
-			VehicleTypes: VehicleTypes,
 		})
 	}
 }

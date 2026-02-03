@@ -1,4 +1,4 @@
-package save
+package vehicle_type
 
 import (
 	"log/slog"
@@ -11,10 +11,6 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 )
-
-type Response struct {
-	resp.Response
-}
 
 func Delete(log *slog.Logger, repository vehicleType.Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -44,8 +40,6 @@ func Delete(log *slog.Logger, repository vehicleType.Repository) http.HandlerFun
 
 		log.Info("vehicle type deleted", slog.Int("vehicle type ID", vehicleTypeID))
 
-		render.JSON(w, r, Response{
-			Response: resp.OK(),
-		})
+		render.JSON(w, r, resp.OK())
 	}
 }

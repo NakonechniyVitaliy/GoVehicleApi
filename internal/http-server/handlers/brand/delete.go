@@ -1,4 +1,4 @@
-package save
+package brand
 
 import (
 	"log/slog"
@@ -11,10 +11,6 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 )
-
-type Response struct {
-	resp.Response
-}
 
 func Delete(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -44,8 +40,6 @@ func Delete(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
 
 		log.Info("brand deleted", slog.Int("brandID", brandID))
 
-		render.JSON(w, r, Response{
-			Response: resp.OK(),
-		})
+		render.JSON(w, r, resp.OK())
 	}
 }

@@ -1,4 +1,4 @@
-package get
+package brand
 
 import (
 	"log/slog"
@@ -13,11 +13,7 @@ import (
 	"github.com/go-chi/render"
 )
 
-type Request struct {
-	brandID int
-}
-
-type ResponseGet struct {
+type GetResponse struct {
 	Response resp.Response
 	Brand    *models.Brand
 }
@@ -48,7 +44,7 @@ func Get(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
 			return
 		}
 
-		render.JSON(w, r, ResponseGet{
+		render.JSON(w, r, GetResponse{
 			Response: resp.OK(),
 			Brand:    requestedBrand,
 		})

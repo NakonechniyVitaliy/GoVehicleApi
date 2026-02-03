@@ -1,4 +1,4 @@
-package update
+package brand
 
 import (
 	"log/slog"
@@ -28,8 +28,6 @@ func Refresh(log *slog.Logger, repository brand.Repository, cfg *config.Config) 
 			return
 		}
 
-		render.JSON(w, r, Response{
-			Response: resp.OK(),
-		})
+		render.JSON(w, r, resp.OK())
 	}
 }

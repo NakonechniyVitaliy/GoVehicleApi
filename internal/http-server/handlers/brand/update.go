@@ -1,4 +1,4 @@
-package update
+package brand
 
 import (
 	"log/slog"
@@ -14,10 +14,6 @@ import (
 
 type Request struct {
 	Brand models.Brand
-}
-
-type Response struct {
-	resp.Response
 }
 
 func Update(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
@@ -63,9 +59,7 @@ func Update(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
 			return
 		}
 
-		render.JSON(w, r, Response{
-			Response: resp.OK(),
-		})
+		render.JSON(w, r, resp.OK())
 
 	}
 }

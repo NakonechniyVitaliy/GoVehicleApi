@@ -1,4 +1,4 @@
-package update
+package vehicle_type
 
 import (
 	"log/slog"
@@ -12,12 +12,8 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type Request struct {
+type UpdateRequest struct {
 	VehicleType models.VehicleType
-}
-
-type Response struct {
-	resp.Response
 }
 
 func Update(log *slog.Logger, repository vehicleType.Repository) http.HandlerFunc {
@@ -29,7 +25,7 @@ func Update(log *slog.Logger, repository vehicleType.Repository) http.HandlerFun
 			slog.String("request_id", middleware.GetReqID(r.Context())),
 		)
 
-		var req Request
+		var req UpdateRequest
 		err := render.DecodeJSON(r.Body, &req)
 		if err != nil {
 			log.Error("failed to decode request body", slog.String("error", err.Error()))
@@ -61,9 +57,7 @@ func Update(log *slog.Logger, repository vehicleType.Repository) http.HandlerFun
 			return
 		}
 
-		render.JSON(w, r, Response{
-			Response: resp.OK(),
-		})
+		render.JSON(w, r, resp.OK())
 
 	}
 }

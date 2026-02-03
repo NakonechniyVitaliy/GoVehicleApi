@@ -1,4 +1,4 @@
-package save
+package vehicle_type
 
 import (
 	"errors"
@@ -14,12 +14,8 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type Request struct {
+type SaveRequest struct {
 	VehicleType models.VehicleType
-}
-
-type Response struct {
-	resp.Response
 }
 
 func New(log *slog.Logger, repository vehicleType.Repository) http.HandlerFunc {
@@ -31,7 +27,7 @@ func New(log *slog.Logger, repository vehicleType.Repository) http.HandlerFunc {
 			slog.String("request_id", middleware.GetReqID(r.Context())),
 		)
 
-		var req Request
+		var req SaveRequest
 
 		err := render.DecodeJSON(r.Body, &req)
 		if err != nil {
@@ -73,8 +69,6 @@ func New(log *slog.Logger, repository vehicleType.Repository) http.HandlerFunc {
 
 		log.Info("vehicleType saved", slog.String("vehicle type", req.VehicleType.Name))
 
-		render.JSON(w, r, Response{
-			Response: resp.OK(),
-		})
+		render.JSON(w, r, resp.OK())
 	}
 }

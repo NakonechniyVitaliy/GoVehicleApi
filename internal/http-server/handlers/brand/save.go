@@ -1,4 +1,4 @@
-package save
+package brand
 
 import (
 	"errors"
@@ -13,14 +13,6 @@ import (
 	"github.com/go-chi/render"
 	"github.com/go-playground/validator/v10"
 )
-
-type Request struct {
-	Brand models.Brand
-}
-
-type Response struct {
-	resp.Response
-}
 
 func New(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -75,8 +67,6 @@ func New(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
 
 		log.Info("brand saved", slog.String("brand", req.Brand.Name))
 
-		render.JSON(w, r, Response{
-			Response: resp.OK(),
-		})
+		render.JSON(w, r, resp.OK())
 	}
 }

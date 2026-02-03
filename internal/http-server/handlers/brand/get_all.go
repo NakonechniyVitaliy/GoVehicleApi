@@ -1,4 +1,4 @@
-package get
+package brand
 
 import (
 	"log/slog"
@@ -11,7 +11,7 @@ import (
 	"github.com/go-chi/render"
 )
 
-type ResponseGetAll struct {
+type GetAllResponse struct {
 	Response resp.Response
 	Brands   []models.Brand
 }
@@ -34,7 +34,7 @@ func GetAll(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
 			return
 		}
 
-		render.JSON(w, r, ResponseGetAll{
+		render.JSON(w, r, GetAllResponse{
 			Response: resp.OK(),
 			Brands:   brands,
 		})
