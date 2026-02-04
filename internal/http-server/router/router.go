@@ -6,10 +6,12 @@ import (
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/config"
 	brandHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/brand"
 	driverTypeHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/driver_type"
+	gearboxHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/gearbox"
 	vehicleCategoryHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/vehicle_category"
 	vehicleTypeHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/vehicle_type"
 	brandRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/brand"
 	driverTypeRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/driver_type"
+	gearboxRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/gearbox"
 	vehicleCategoryRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/vehicle_category"
 	vehicleTypeRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/vehicle_type"
 
@@ -24,6 +26,7 @@ func SetupRouter(
 	vehicleTypeRepo vehicleType.Repository,
 	vehicleCategoryRepo vehicleCategoryRepo.Repository,
 	driverTypeRepo driverTypeRepo.Repository,
+	gearboxRepo gearboxRepo.Repository,
 	cfg *config.Config,
 ) chi.Router {
 
@@ -38,7 +41,7 @@ func SetupRouter(
 	SetupDriverTypeRoutes(router, log, driverTypeRepo, cfg)
 	SetupBrandRoutes(router, log, brandRepo, cfg)
 	SetupVehicleCategoryRoutes(router, log, vehicleCategoryRepo, cfg)
-
+	SetupGearboxRoutes(router, log, gearboxRepo, cfg)
 	return router
 }
 
@@ -95,5 +98,17 @@ func SetupDriverTypeRoutes(
 	router.Route("/driver-type", func(r chi.Router) {
 		r.Get("/all", driverTypeHandler.GetAll(log, driverTypeRepo))
 		r.Put("/refresh", driverTypeHandler.Refresh(log, driverTypeRepo, cfg))
+	})
+}
+
+func SetupGearboxRoutes(
+	router chi.Router,
+	log *slog.Logger,
+	gearboxRepo gearboxRepo.Repository,
+	cfg *config.Config,
+) {
+	router.Route("/gearbox", func(r chi.Router) {
+		r.Get("/all", gearboxHandler.GetAll(log, gearboxRepo))
+		r.Put("/refresh", gearboxHandler.Refresh(log, gearboxRepo, cfg))
 	})
 }

@@ -10,9 +10,11 @@ import (
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/config"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/router"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/brand"
-	vehicleCategory "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/vehicle_category"
-	vehicleType "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/vehicle_type"
+	brandRep "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/brand"
+	driverTypeRep "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/driver_type"
+	gearboxRep "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/gearbox"
+	vehicleCategoryRep "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/vehicle_category"
+	vehicleTypeRep "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/vehicle_type"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/mongo"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/sqlite"
@@ -40,15 +42,21 @@ func main() {
 	}
 	log.Info("Database successfully enabled", slog.String("database", cfg.DataBase))
 
-	brandRepo, vehicleTypeRepo, vehicleCategoryRepo, err := setupRepositories(Storage)
+	brandRepo,
+		vehicleTypeRepo,
+		vehicleCategoryRepo,
+		driverTypeRepo,
+		gearboxRepo,
+		err := setupRepositories(Storage)
+
 	if err != nil {
 		log.Error("failed to setup repositories", slog.Any("err", err))
 	}
 	log.Info("repositories successfully setup", slog.String("database", cfg.DataBase))
 
-	appRouter := router.SetupRouter(log, brandRepo, vehicleTypeRepo, vehicleCategoryRepo, cfg)
+	appRouter := router.SetupRouter(log, brandRepo, vehicleTypeRepo, vehicleCategoryRepo, driverTypeRepo, gearboxRepo, cfg)
 
-	log.Info("starting server on", slog.String("adreess", cfg.Address))
+	log.Info("starting server on", slog.String("address", cfg.Address))
 	server := &http.Server{
 		Addr:         cfg.Address,
 		Handler:      appRouter,
@@ -85,28 +93,39 @@ func setupLogger(env string) *slog.Logger {
 	return log
 }
 
-func setupRepositories(Storage storage.Storage) (brand.Repository, vehicleType.Repository, vehicleCategory.Repository, error) {
-
+func setupRepositories(Storage storage.Storage) (
+	brandRep.Repository,
+	vehicleTypeRep.Repository,
+	vehicleCategoryRep.Repository,
+	driverTypeRep.Repository,
+	gearboxRep.Repository,
+	error,
+) {
 	switch Storage.GetName() {
 
 	case mongoDB:
 		// type assertion - get object from interface
 		mongoStorage := Storage.(*mongo.MongoStorage)
-		brandRepo := brand.NewMongo(mongoStorage.DB)
-		vehicleTypeRepo := vehicleType.NewMongo(mongoStorage.DB)
-		vehicleCategoryRepo := vehicleCategory.NewMongo(mongoStorage.DB)
+		brandRepo := brandRep.NewMongo(mongoStorage.DB)
+		vehicleTypeRepo := vehicleTypeRep.NewMongo(mongoStorage.DB)
+		vehicleCategoryRepo := vehicleCategoryRep.NewMongo(mongoStorage.DB)
+		driverTypeRepo := driverTypeRep.NewMongo(mongoStorage.DB)
+		gearboxRepo := gearboxRep.NewMongo(mongoStorage.DB)
 
-		return brandRepo, vehicleTypeRepo, vehicleCategoryRepo, nil
+		return brandRepo, vehicleTypeRepo, vehicleCategoryRepo, driverTypeRepo, gearboxRepo, nil
 
 	case Sqlite:
 		sqliteStorage := Storage.(*sqlite.SqliteStorage)
-		brandRepo := brand.NewSqlite(sqliteStorage.DB)
-		vehicleTypeRepo := vehicleType.NewSqlite(sqliteStorage.DB)
-		vehicleCategoryRepo := vehicleCategory.NewSqlite(sqliteStorage.DB)
-		return brandRepo, vehicleTypeRepo, vehicleCategoryRepo, nil
+		brandRepo := brandRep.NewSqlite(sqliteStorage.DB)
+		vehicleTypeRepo := vehicleTypeRep.NewSqlite(sqliteStorage.DB)
+		vehicleCategoryRepo := vehicleCategoryRep.NewSqlite(sqliteStorage.DB)
+		driverTypeRepo := driverTypeRep.NewSqlite(sqliteStorage.DB)
+		gearboxRepo := gearboxRep.NewSqlite(sqliteStorage.DB)
+
+		return brandRepo, vehicleTypeRepo, vehicleCategoryRepo, driverTypeRepo, gearboxRepo, nil
 
 	default:
-		return nil, nil, nil, nil
+		return nil, nil, nil, nil, nil, nil
 	}
 
 }
