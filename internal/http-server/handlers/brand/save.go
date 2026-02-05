@@ -14,6 +14,10 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+type SaveRequest struct {
+	Brand models.Brand
+}
+
 func New(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.brand.save.New"
@@ -23,7 +27,7 @@ func New(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
 			slog.String("request_id", middleware.GetReqID(r.Context())),
 		)
 
-		var req Request
+		var req SaveRequest
 
 		err := render.DecodeJSON(r.Body, &req)
 		if err != nil {
@@ -40,14 +44,14 @@ func New(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
 		}
 
 		newBrand := models.Brand{
-			Category: req.Brand.Category,
-			Count:    req.Brand.Count,
-			Country:  req.Brand.Country,
-			EngName:  req.Brand.EngName,
-			MarkaID:  req.Brand.MarkaID,
-			Name:     req.Brand.Name,
-			Slang:    req.Brand.Slang,
-			Value:    req.Brand.Value,
+			CategoryID: req.Brand.CategoryID,
+			Count:      req.Brand.Count,
+			CountryID:  req.Brand.CountryID,
+			EngName:    req.Brand.EngName,
+			MarkaID:    req.Brand.MarkaID,
+			Name:       req.Brand.Name,
+			Slang:      req.Brand.Slang,
+			Value:      req.Brand.Value,
 		}
 
 		log.Info("saving brand", slog.Any("brand", newBrand))

@@ -8,10 +8,10 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func GetNextID(ctx context.Context, db *mongo.Database, name string) (int, error) {
+func GetNextID(ctx context.Context, db *mongo.Database, name string) (uint16, error) {
 	type Counter struct {
 		ID  string `bson:"_id"`
-		Seq int    `bson:"seq"`
+		Seq uint16 `bson:"seq"`
 	}
 
 	filter := bson.M{"_id": name}

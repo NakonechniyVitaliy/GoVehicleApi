@@ -21,14 +21,14 @@ func NewSqlite(db *sql.DB) *SqliteRepository {
 	}
 }
 
-func (s *SqliteRepository) GetByID(ctx context.Context, brandID int) (*models.Brand, error) {
+func (s *SqliteRepository) GetByID(ctx context.Context, brandID uint16) (*models.Brand, error) {
 	const op = "storage.brands.GetByID"
 
 	const query = `SELECT marka_id, category_id, cnt, country_id, eng, name, slang, value FROM brands WHERE marka_id = ?`
 
 	var brand models.Brand
 	err := s.db.QueryRowContext(ctx, query, brandID).Scan(
-		&brand.MarkaID, &brand.Category, &brand.Count, &brand.Country, &brand.EngName, &brand.Name, &brand.Slang, &brand.Value,
+		&brand.MarkaID, &brand.CategoryID, &brand.Count, &brand.CountryID, &brand.EngName, &brand.Name, &brand.Slang, &brand.Value,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("%s: Error to return brand %w", op, err)
@@ -52,7 +52,7 @@ func (s *SqliteRepository) GetAll(ctx context.Context) ([]models.Brand, error) {
 	for rows.Next() {
 		var b models.Brand
 		if err := rows.Scan(
-			&b.Category, &b.Count, &b.Country, &b.EngName, &b.MarkaID, &b.Name, &b.Slang, &b.Value); err != nil {
+			&b.CategoryID, &b.Count, &b.CountryID, &b.EngName, &b.MarkaID, &b.Name, &b.Slang, &b.Value); err != nil {
 			return nil, fmt.Errorf("%s: scan: %w", op, err)
 		}
 		brands = append(brands, b)
@@ -79,9 +79,9 @@ func (s *SqliteRepository) Update(ctx context.Context, brand models.Brand) error
 	res, err := s.db.ExecContext(
 		ctx,
 		query,
-		brand.Category,
+		brand.CategoryID,
 		brand.Count,
-		brand.Country,
+		brand.CountryID,
 		brand.EngName,
 		brand.Name,
 		brand.Slang,
@@ -103,7 +103,7 @@ func (s *SqliteRepository) Update(ctx context.Context, brand models.Brand) error
 	return nil
 }
 
-func (s *SqliteRepository) Delete(ctx context.Context, brandID int) error {
+func (s *SqliteRepository) Delete(ctx context.Context, brandID uint16) error {
 	const op = "storage.brand.DeleteBrand"
 
 	res, err := s.db.ExecContext(
@@ -147,9 +147,9 @@ func (s *SqliteRepository) Create(ctx context.Context, brand models.Brand) error
 		ctx,
 		query,
 		brand.MarkaID,
-		brand.Category,
+		brand.CategoryID,
 		brand.Count,
-		brand.Country,
+		brand.CountryID,
 		brand.EngName,
 		brand.Name,
 		brand.Slang,
@@ -201,9 +201,9 @@ func (s *SqliteRepository) InsertOrUpdate(ctx context.Context, brand models.Bran
 		ctx,
 		query,
 		brand.MarkaID,
-		brand.Category,
+		brand.CategoryID,
 		brand.Count,
-		brand.Country,
+		brand.CountryID,
 		brand.EngName,
 		brand.Name,
 		brand.Slang,

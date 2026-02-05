@@ -70,7 +70,7 @@ func (mng *MongoRepository) Update(ctx context.Context, vehicleType models.Vehic
 	return nil
 }
 
-func (mng *MongoRepository) GetByID(ctx context.Context, vehicleTypeID int) (*models.VehicleType, error) {
+func (mng *MongoRepository) GetByID(ctx context.Context, vehicleTypeID uint16) (*models.VehicleType, error) {
 	const op = "storage.vehicleType.GetByID"
 
 	filter := bson.D{{"id", vehicleTypeID}}
@@ -106,7 +106,7 @@ func (mng *MongoRepository) GetAll(ctx context.Context) ([]models.VehicleType, e
 
 }
 
-func (mng *MongoRepository) Delete(ctx context.Context, vehicleTypeID int) error {
+func (mng *MongoRepository) Delete(ctx context.Context, vehicleTypeID uint16) error {
 	const op = "storage.vehicleType.Delete"
 
 	filter := bson.D{{"id", vehicleTypeID}}

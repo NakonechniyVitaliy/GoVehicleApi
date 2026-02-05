@@ -21,16 +21,16 @@ func Delete(log *slog.Logger, repository vehicleType.Repository) http.HandlerFun
 			slog.String("request_id", middleware.GetReqID(r.Context())),
 		)
 
-		vehicleTypeID, err := strconv.Atoi(chi.URLParam(r, "id"))
+		id64, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 16)
 		if err != nil {
 			log.Error("failed to get vehicle type ID", slog.String("error", err.Error()))
 			render.JSON(w, r, resp.Error("Failed to get vehicle type ID"))
 			return
 		}
-
+		vehicleTypeID := uint16(id64)
 		log.Info("ID retrieved successfully", slog.Any("vehicle type ID", vehicleTypeID))
-		log.Info("deleting vehicle type")
 
+		log.Info("deleting vehicle type")
 		err = repository.Delete(r.Context(), vehicleTypeID)
 		if err != nil {
 			log.Error("failed to delete vehicle type", slog.String("error", err.Error()))
@@ -38,7 +38,7 @@ func Delete(log *slog.Logger, repository vehicleType.Repository) http.HandlerFun
 			return
 		}
 
-		log.Info("vehicle type deleted", slog.Int("vehicle type ID", vehicleTypeID))
+		log.Info("vehicle type deleted", slog.Any("vehicle type ID", vehicleTypeID))
 
 		render.JSON(w, r, resp.OK())
 	}

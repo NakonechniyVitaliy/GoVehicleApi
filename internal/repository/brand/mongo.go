@@ -49,9 +49,9 @@ func (mng *MongoRepository) Update(ctx context.Context, brand models.Brand) erro
 
 	update := bson.M{
 		"$set": bson.M{
-			"category_id": brand.Category,
+			"category_id": brand.CategoryID,
 			"cnt":         brand.Count,
-			"country_id":  brand.Country,
+			"country_id":  brand.CountryID,
 			"eng":         brand.EngName,
 			"name":        brand.Name,
 			"slang":       brand.Slang,
@@ -71,7 +71,7 @@ func (mng *MongoRepository) Update(ctx context.Context, brand models.Brand) erro
 	return nil
 }
 
-func (mng *MongoRepository) GetByID(ctx context.Context, brandID int) (*models.Brand, error) {
+func (mng *MongoRepository) GetByID(ctx context.Context, brandID uint16) (*models.Brand, error) {
 	const op = "storage.brand.Delete"
 
 	filter := bson.D{{"id", brandID}}
@@ -107,7 +107,7 @@ func (mng *MongoRepository) GetAll(ctx context.Context) ([]models.Brand, error) 
 
 }
 
-func (mng *MongoRepository) Delete(ctx context.Context, brandID int) error {
+func (mng *MongoRepository) Delete(ctx context.Context, brandID uint16) error {
 	const op = "storage.brand.Delete"
 
 	filter := bson.D{{"id", brandID}}

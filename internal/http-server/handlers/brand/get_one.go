@@ -27,16 +27,16 @@ func Get(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
 			slog.String("request_id", middleware.GetReqID(r.Context())),
 		)
 
-		brandID, err := strconv.Atoi(chi.URLParam(r, "id"))
+		id64, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 16)
 		if err != nil {
 			log.Error("failed to get brand ID", slog.String("error", err.Error()))
 			render.JSON(w, r, resp.Error("Failed to get brand ID"))
 			return
 		}
-
+		brandID := uint16(id64)
 		log.Info("ID retrieved successfully", slog.Any("brandID", brandID))
-		log.Info("getting brand")
 
+		log.Info("getting brand")
 		requestedBrand, err := repository.GetByID(r.Context(), brandID)
 		if err != nil {
 			log.Error("failed to get brand", slog.String("error", err.Error()))

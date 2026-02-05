@@ -22,7 +22,7 @@ func NewSqlite(db *sql.DB) *SqliteRepository {
 	}
 }
 
-func (s *SqliteRepository) GetByID(ctx context.Context, vehicleTypeID int) (*models.VehicleType, error) {
+func (s *SqliteRepository) GetByID(ctx context.Context, vehicleTypeID uint16) (*models.VehicleType, error) {
 	const op = "storage.vehicle_types.GetVehicleType"
 
 	const query = `SELECT ablative, category_id, name, plural, rewrite, singular FROM vehicle_types WHERE id = ?`
@@ -104,7 +104,7 @@ func (s *SqliteRepository) Update(ctx context.Context, vehicleType models.Vehicl
 	return nil
 }
 
-func (s *SqliteRepository) Delete(ctx context.Context, vehicleTypeID int) error {
+func (s *SqliteRepository) Delete(ctx context.Context, vehicleTypeID uint16) error {
 	const op = "storage.vehicleType.DeleteVehicleType"
 
 	res, err := s.db.ExecContext(
