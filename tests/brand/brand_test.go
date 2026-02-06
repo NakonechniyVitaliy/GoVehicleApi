@@ -15,7 +15,6 @@ import (
 
 type testCase struct {
 	CaseName   string
-	ID         uint16
 	CategoryID uint16
 	Count      uint16
 	CountryID  uint16
@@ -34,7 +33,6 @@ func TestBrand(t *testing.T) {
 	testCases := []testCase{
 		{
 			CaseName:   "Valid brand",
-			ID:         gofakeit.Uint16(),
 			CategoryID: gofakeit.Uint16(),
 			Count:      gofakeit.Uint16(),
 			CountryID:  gofakeit.Uint16(),
@@ -66,7 +64,6 @@ func doTestSave(e *httpexpect.Expect, tc testCase) {
 	resp := e.POST("/brand/").
 		WithJSON(handler.SaveRequest{
 			Brand: models.Brand{
-				ID:         tc.ID,
 				CategoryID: tc.CategoryID,
 				Count:      tc.Count,
 				CountryID:  tc.CountryID,

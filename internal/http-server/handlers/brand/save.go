@@ -14,6 +14,10 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+type SaveResponse struct {
+	Response resp.Response
+	Brand    *models.Brand
+}
 type SaveRequest struct {
 	Brand models.Brand
 }
@@ -56,9 +60,9 @@ func New(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
 
 		log.Info("saving brand", slog.Any("brand", newBrand))
 
-		err = repository.Create(r.Context(), newBrand)
+		createdBrand, err := repository.Create(r.Context(), newBrand)
 		if errors.Is(err, storage.ErrBrandExists) {
-			log.Info("brand already exists", slog.String("brand", req.Brand.Name))
+			log.Info("brand already exists", slog.String("brand", createdBrand.Name))
 			render.JSON(w, r, resp.Error("Brand already exists"))
 			return
 		}
@@ -69,8 +73,11 @@ func New(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
 			return
 		}
 
-		log.Info("brand saved", slog.String("brand", req.Brand.Name))
+		log.Info("brand saved", slog.String("brand", createdBrand.Name))
 
-		render.JSON(w, r, resp.OK())
+		render.JSON(w, r, SaveResponse{
+			Response: resp.OK(),
+			Brand:    createdBrand,
+		})
 	}
 }

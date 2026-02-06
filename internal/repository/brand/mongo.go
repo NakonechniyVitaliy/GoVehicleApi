@@ -24,20 +24,27 @@ func NewMongo(db *mongo.Database) *MongoRepository {
 	}
 }
 
-func (mng *MongoRepository) Create(ctx context.Context, brand models.Brand) error {
+func (mng *MongoRepository) Create(ctx context.Context, brand models.Brand) (*models.Brand, error) {
 	const op = "storage.brand.CreateBrand"
 
 	id, err := mongoStorage.GetNextID(ctx, mng.db, "brands")
 	if err != nil {
-		return fmt.Errorf("%s: %w", op, err)
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	brand.ID = id
 
-	_, err = mng.brands.InsertOne(ctx, brand)
+	res, err := mng.brands.InsertOne(ctx, brand)
 	if err != nil {
-		return fmt.Errorf("%s: %w", op, err)
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
-	return nil
+
+	filter := bson.M{
+		"_id": res.InsertedID,
+	}
+	var createdBrand models.Brand
+	err = mng.brands.FindOne(ctx, filter).Decode(&createdBrand)
+
+	return &createdBrand, nil
 }
 
 func (mng *MongoRepository) Update(ctx context.Context, brand models.Brand) error {

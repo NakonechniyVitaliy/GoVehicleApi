@@ -24,11 +24,11 @@ func NewSqlite(db *sql.DB) *SqliteRepository {
 func (s *SqliteRepository) GetByID(ctx context.Context, brandID uint16) (*models.Brand, error) {
 	const op = "storage.brands.GetByID"
 
-	const query = `SELECT marka_id, category_id, cnt, country_id, eng, name, slang, value FROM brands WHERE marka_id = ?`
+	const query = `SELECT id, marka_id, category_id, cnt, country_id, eng, name, slang, value FROM brands WHERE id = ?`
 
 	var brand models.Brand
 	err := s.db.QueryRowContext(ctx, query, brandID).Scan(
-		&brand.MarkaID, &brand.CategoryID, &brand.Count, &brand.CountryID, &brand.EngName, &brand.Name, &brand.Slang, &brand.Value,
+		&brand.ID, &brand.MarkaID, &brand.CategoryID, &brand.Count, &brand.CountryID, &brand.EngName, &brand.Name, &brand.Slang, &brand.Value,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("%s: Error to return brand %w", op, err)
@@ -127,7 +127,7 @@ func (s *SqliteRepository) Delete(ctx context.Context, brandID uint16) error {
 	return nil
 }
 
-func (s *SqliteRepository) Create(ctx context.Context, brand models.Brand) error {
+func (s *SqliteRepository) Create(ctx context.Context, brand models.Brand) (*models.Brand, error) {
 	const op = "storage.brand.NewBrand"
 
 	const query = `
@@ -157,21 +157,29 @@ func (s *SqliteRepository) Create(ctx context.Context, brand models.Brand) error
 	)
 	if err != nil {
 		if strings.Contains(err.Error(), "UNIQUE") {
-			return storage.ErrBrandExists
+			return nil, storage.ErrBrandExists
 		}
-		return fmt.Errorf("%s: %w", op, err)
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
-
 	affected, err := res.RowsAffected()
 	if err != nil {
-		return fmt.Errorf("%s: %w", op, err)
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
-
 	if affected == 0 {
-		return storage.ErrBrandExists
+		return nil, storage.ErrBrandExists
 	}
 
-	return nil
+	createdBrandID, err := res.LastInsertId()
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+
+	createdBrand, err := s.GetByID(ctx, uint16(createdBrandID))
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+
+	return createdBrand, nil
 }
 
 func (s *SqliteRepository) InsertOrUpdate(ctx context.Context, brand models.Brand) error {
