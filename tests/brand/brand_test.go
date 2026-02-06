@@ -1,7 +1,6 @@
 package brand
 
 import (
-	"fmt"
 	"net/http"
 	"net/url"
 	"testing"
@@ -76,6 +75,10 @@ func doTestSave(e *httpexpect.Expect, tc testCase) {
 		}).Expect().Status(http.StatusOK).
 		JSON().Object()
 
-	fmt.Println(resp)
+	brand := resp.Value("Brand").Object()
+
+	brand.Value("name").String().IsEqual(tc.BrandName)
+	brand.Value("eng").String().IsEqual(tc.EngName)
+	brand.Value("marka_id").Number().IsEqual(float64(tc.MarkaID))
 
 }
