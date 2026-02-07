@@ -72,7 +72,7 @@ func SetupBrandRoutes(
 		r.Delete("/{id}", brandHandler.Delete(log, brandRepo))
 		r.Get("/{id}", brandHandler.Get(log, brandRepo))
 		r.Get("/all", brandHandler.GetAll(log, brandRepo))
-		r.Put("/", brandHandler.Update(log, brandRepo))
+		r.Put("/{id}", brandHandler.Update(log, brandRepo))
 		r.Put("/refresh", brandHandler.Refresh(log, brandRepo, cfg))
 	})
 }

@@ -1,6 +1,7 @@
 package brand
 
 import (
+	"errors"
 	"log/slog"
 	"net/http"
 	"strconv"
@@ -8,6 +9,7 @@ import (
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/brand"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
@@ -40,6 +42,14 @@ func Get(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
 		requestedBrand, err := repository.GetByID(r.Context(), brandID)
 		if err != nil {
 			log.Error("failed to get brand", slog.String("error", err.Error()))
+
+			if errors.Is(err, storage.ErrBrandNotFound) {
+				render.Status(r, http.StatusNotFound)
+				render.JSON(w, r, resp.Error("brand not found"))
+				return
+			}
+
+			render.Status(r, http.StatusInternalServerError)
 			render.JSON(w, r, resp.Error("Failed to get brand"))
 			return
 		}

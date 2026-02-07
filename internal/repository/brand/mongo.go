@@ -47,11 +47,11 @@ func (mng *MongoRepository) Create(ctx context.Context, brand models.Brand) (*mo
 	return &createdBrand, nil
 }
 
-func (mng *MongoRepository) Update(ctx context.Context, brand models.Brand) error {
+func (mng *MongoRepository) Update(ctx context.Context, brand models.Brand, brandID uint16) (*models.Brand, error) {
 	const op = "storage.brand.UpdateBrand"
 
 	filter := bson.M{
-		"id": brand.ID,
+		"id": brandID,
 	}
 
 	update := bson.M{
@@ -63,23 +63,29 @@ func (mng *MongoRepository) Update(ctx context.Context, brand models.Brand) erro
 			"name":        brand.Name,
 			"slang":       brand.Slang,
 			"value":       brand.Value,
+			"marka_id":    brand.MarkaID,
 		},
 	}
 
 	res, err := mng.brands.UpdateOne(ctx, filter, update)
 	if err != nil {
-		return fmt.Errorf("%s: %w", op, err)
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
-
 	if res.MatchedCount == 0 {
-		return storage.ErrBrandNotFound
+		return nil, storage.ErrBrandNotFound
 	}
 
-	return nil
+	filter = bson.M{
+		"id": brandID,
+	}
+	var updatedBrand models.Brand
+	err = mng.brands.FindOne(ctx, filter).Decode(&updatedBrand)
+
+	return &updatedBrand, nil
 }
 
 func (mng *MongoRepository) GetByID(ctx context.Context, brandID uint16) (*models.Brand, error) {
-	const op = "storage.brand.Delete"
+	const op = "storage.brand.GetByID"
 
 	filter := bson.D{{"id", brandID}}
 

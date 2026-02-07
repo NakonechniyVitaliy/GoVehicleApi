@@ -3,6 +3,7 @@ package brand
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -31,6 +32,9 @@ func (s *SqliteRepository) GetByID(ctx context.Context, brandID uint16) (*models
 		&brand.ID, &brand.MarkaID, &brand.CategoryID, &brand.Count, &brand.CountryID, &brand.EngName, &brand.Name, &brand.Slang, &brand.Value,
 	)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, storage.ErrBrandNotFound
+		}
 		return nil, fmt.Errorf("%s: Error to return brand %w", op, err)
 	}
 
@@ -61,7 +65,7 @@ func (s *SqliteRepository) GetAll(ctx context.Context) ([]models.Brand, error) {
 	return brands, nil
 }
 
-func (s *SqliteRepository) Update(ctx context.Context, brand models.Brand) error {
+func (s *SqliteRepository) Update(ctx context.Context, brand models.Brand, brandID uint16) (*models.Brand, error) {
 	const op = "storage.brand.Update"
 
 	const query = `
@@ -72,9 +76,9 @@ func (s *SqliteRepository) Update(ctx context.Context, brand models.Brand) error
 			country_id = ?,
 			eng = ?,
 			name = ?,
-			slang = ?
-		WHERE marka_id = ?
-	`
+			slang = ?,
+			marka_id = ?
+		WHERE id = ?`
 
 	res, err := s.db.ExecContext(
 		ctx,
@@ -86,21 +90,25 @@ func (s *SqliteRepository) Update(ctx context.Context, brand models.Brand) error
 		brand.Name,
 		brand.Slang,
 		brand.MarkaID,
+		brandID,
 	)
 	if err != nil {
-		return fmt.Errorf("%s: %w", op, err)
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
-
 	affected, err := res.RowsAffected()
 	if err != nil {
-		return fmt.Errorf("%s: %w", op, err)
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
-
 	if affected == 0 {
-		return storage.ErrBrandNotFound
+		return nil, storage.ErrBrandNotFound
 	}
 
-	return nil
+	updatedBrand, err := s.GetByID(ctx, brandID)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+
+	return updatedBrand, nil
 }
 
 func (s *SqliteRepository) Delete(ctx context.Context, brandID uint16) error {
@@ -108,7 +116,7 @@ func (s *SqliteRepository) Delete(ctx context.Context, brandID uint16) error {
 
 	res, err := s.db.ExecContext(
 		ctx,
-		"DELETE FROM brands WHERE marka_id = ?",
+		"DELETE FROM brands WHERE id = ?",
 		brandID,
 	)
 	if err != nil {
