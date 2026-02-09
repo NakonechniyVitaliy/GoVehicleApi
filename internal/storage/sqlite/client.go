@@ -38,7 +38,7 @@ func migrate(db *sql.DB) error {
 	queryBrands := `
 	CREATE TABLE IF NOT EXISTS brands (
 	    id INTEGER PRIMARY KEY AUTOINCREMENT,
-	    marka_id INTEGER,
+	    marka_id INTEGER UNIQUE,
 	    category_id INTEGER,
 	    cnt INTEGER,
 	    country_id INTEGER,

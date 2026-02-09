@@ -56,7 +56,7 @@ func (s *SqliteRepository) GetAll(ctx context.Context) ([]models.Brand, error) {
 	for rows.Next() {
 		var b models.Brand
 		if err := rows.Scan(
-			&b.CategoryID, &b.Count, &b.CountryID, &b.EngName, &b.MarkaID, &b.Name, &b.Slang, &b.Value); err != nil {
+			&b.CategoryID, &b.Count, &b.CountryID, &b.MarkaID, &b.EngName, &b.Name, &b.Slang, &b.Value); err != nil {
 			return nil, fmt.Errorf("%s: scan: %w", op, err)
 		}
 		brands = append(brands, b)

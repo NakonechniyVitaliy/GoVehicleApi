@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/requests"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/requests/autoria"
 	"github.com/go-chi/render"
 )
@@ -16,7 +17,7 @@ func GetBrands(key string) ([]models.Brand, error) {
 
 	resp, err := http.Get(url)
 	if err != nil {
-		return nil, fmt.Errorf("fetching Error %s", slog.String("error", err.Error()))
+		return nil, fmt.Errorf("%w: %v", requests.ErrAutoRiaBrands, err)
 	}
 	defer resp.Body.Close()
 

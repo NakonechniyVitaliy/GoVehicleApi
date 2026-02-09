@@ -79,6 +79,8 @@ func TestBrand(t *testing.T) {
 			doTestUpdate(e, updatedBrandData, brandID)
 			doTestGet(e, updatedBrandData, brandID)
 			doTestDelete(e, brandID)
+			doTestRefresh(e)
+			doTestGetAll(e)
 		})
 	}
 
@@ -143,4 +145,13 @@ func doTestDelete(e *httpexpect.Expect, brandID uint16) {
 	e.GET(fmt.Sprintf("/brand/%d", brandID)).Expect().
 		Status(http.StatusNotFound)
 
+}
+
+func doTestRefresh(e *httpexpect.Expect) {
+	e.PUT("/brand/refresh").Expect().Status(http.StatusOK)
+}
+
+func doTestGetAll(e *httpexpect.Expect) {
+	obj := e.GET("/brand/all").Expect().Status(http.StatusOK).JSON().Object()
+	obj.Value("Brands").Array().NotEmpty()
 }
