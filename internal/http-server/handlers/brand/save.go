@@ -36,6 +36,7 @@ func New(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
 		err := render.DecodeJSON(r.Body, &req)
 		if err != nil {
 			log.Error("failed to decode request body", slog.String("error", err.Error()))
+			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, resp.Error("Failed to decode request"))
 			return
 		}
@@ -43,6 +44,7 @@ func New(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
 
 		if err := validator.New().Struct(req); err != nil {
 			log.Error("invalid request", slog.String("error", err.Error()))
+			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, resp.Error("Invalid request"))
 			return
 		}

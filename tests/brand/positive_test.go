@@ -3,45 +3,18 @@ package brand
 import (
 	"fmt"
 	"net/http"
-	"net/url"
 	"testing"
 
 	handler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/brand"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/tests"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/tests/helper"
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/gavv/httpexpect/v2"
 )
 
-type testCase struct {
-	CaseName   string
-	CategoryID uint16
-	Count      uint16
-	CountryID  uint16
-	EngName    string
-	MarkaID    uint16
-	BrandName  string
-	Slang      string
-	Value      uint16
-}
+func TestPositiveTests(t *testing.T) {
 
-func TestBrand(t *testing.T) {
-
-	testCases := []testCase{
-		{
-			CaseName:   "Valid brand",
-			CategoryID: gofakeit.Uint16(),
-			Count:      gofakeit.Uint16(),
-			CountryID:  gofakeit.Uint16(),
-			EngName:    gofakeit.CarModel(),
-			MarkaID:    gofakeit.Uint16(),
-			BrandName:  gofakeit.CarModel(),
-			Slang:      gofakeit.CarModel(),
-			Value:      gofakeit.Uint16(),
-		},
-	}
-
-	for _, tc := range testCases {
+	for _, tc := range PositiveCases {
 		tc := tc
 
 		original := models.Brand{
@@ -66,27 +39,21 @@ func TestBrand(t *testing.T) {
 			Value:      gofakeit.Uint16(),
 		}
 
-		tcUrl := url.URL{
-			Scheme: "http",
-			Host:   tests.LOCAL_HOST,
-		}
-
 		t.Run(tc.CaseName, func(t *testing.T) {
-			e := httpexpect.Default(t, tcUrl.String())
+			e := httpexpect.Default(t, helper.TcUrl.String())
 
 			brandID := doTestSave(e, tc)
-			doTestGet(e, original, brandID)
-			doTestUpdate(e, updatedBrandData, brandID)
-			doTestGet(e, updatedBrandData, brandID)
-			doTestDelete(e, brandID)
-			doTestRefresh(e)
-			doTestGetAll(e)
+			doTestGetPositive(e, original, brandID)
+			doTestUpdatePositive(e, updatedBrandData, brandID)
+			doTestGetPositive(e, updatedBrandData, brandID)
+			doTestDeletePositive(e, brandID)
+			doTestRefreshPositive(e)
+			doTestGetAllPositive(e)
 		})
 	}
-
 }
 
-func doTestSave(e *httpexpect.Expect, tc testCase) uint16 {
+func doTestSave(e *httpexpect.Expect, tc PositiveTestCase) uint16 {
 	resp := e.POST("/brand/").
 		WithJSON(handler.SaveRequest{
 			Brand: models.Brand{
@@ -111,7 +78,7 @@ func doTestSave(e *httpexpect.Expect, tc testCase) uint16 {
 	return uint16(brand.Value("id").Number().Raw())
 }
 
-func doTestGet(e *httpexpect.Expect, expected models.Brand, brandID uint16) {
+func doTestGetPositive(e *httpexpect.Expect, expected models.Brand, brandID uint16) {
 	resp := e.GET(fmt.Sprintf("/brand/%d", brandID)).Expect().
 		Status(http.StatusOK).JSON().Object()
 
@@ -123,7 +90,7 @@ func doTestGet(e *httpexpect.Expect, expected models.Brand, brandID uint16) {
 
 }
 
-func doTestUpdate(e *httpexpect.Expect, updatedBrandData models.Brand, brandID uint16) {
+func doTestUpdatePositive(e *httpexpect.Expect, updatedBrandData models.Brand, brandID uint16) {
 
 	resp := e.PUT(fmt.Sprintf("/brand/%d", brandID)).
 		WithJSON(handler.UpdateRequest{
@@ -139,7 +106,7 @@ func doTestUpdate(e *httpexpect.Expect, updatedBrandData models.Brand, brandID u
 
 }
 
-func doTestDelete(e *httpexpect.Expect, brandID uint16) {
+func doTestDeletePositive(e *httpexpect.Expect, brandID uint16) {
 	e.DELETE(fmt.Sprintf("/brand/%d", brandID)).Expect().Status(http.StatusOK)
 
 	e.GET(fmt.Sprintf("/brand/%d", brandID)).Expect().
@@ -147,11 +114,11 @@ func doTestDelete(e *httpexpect.Expect, brandID uint16) {
 
 }
 
-func doTestRefresh(e *httpexpect.Expect) {
+func doTestRefreshPositive(e *httpexpect.Expect) {
 	e.PUT("/brand/refresh").Expect().Status(http.StatusOK)
 }
 
-func doTestGetAll(e *httpexpect.Expect) {
+func doTestGetAllPositive(e *httpexpect.Expect) {
 	obj := e.GET("/brand/all").Expect().Status(http.StatusOK).JSON().Object()
 	obj.Value("Brands").Array().NotEmpty()
 }
