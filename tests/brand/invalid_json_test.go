@@ -9,13 +9,12 @@ import (
 )
 
 func TestInvalidJsonTest(t *testing.T) {
+	e := httpexpect.Default(t, helper.TcUrl.String())
 
 	for _, tc := range InvalidJsonCases {
 		tc := tc
 
 		t.Run(tc.CaseName, func(t *testing.T) {
-			e := httpexpect.Default(t, helper.TcUrl.String())
-
 			doTestSaveInvalidJSON(e, tc)
 
 		})
@@ -23,8 +22,11 @@ func TestInvalidJsonTest(t *testing.T) {
 }
 
 func doTestSaveInvalidJSON(e *httpexpect.Expect, tc InvalidJsonTestCase) {
-	resp := e.POST("/brand/").
-		WithJSON(tc.Brand).Expect().Status(http.StatusBadRequest).JSON().Object()
+	req := e.POST("/brand/").
+		WithJSON(tc.Brand).Expect()
+
+	req.Status(http.StatusBadRequest)
+	resp := req.JSON().Object()
 
 	resp.Value("error").String().IsEqual(tc.Error)
 }

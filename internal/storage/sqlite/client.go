@@ -38,32 +38,32 @@ func migrate(db *sql.DB) error {
 	queryBrands := `
 	CREATE TABLE IF NOT EXISTS brands (
 	    id INTEGER PRIMARY KEY AUTOINCREMENT,
-	    marka_id INTEGER UNIQUE,
-	    category_id INTEGER,
-	    cnt INTEGER,
-	    country_id INTEGER,
-	    eng TEXT,
-	    name TEXT,
-	    slang TEXT,
-	    value INTEGER 
+	    marka_id INTEGER UNIQUE NOT NULL,
+	    category_id INTEGER NOT NULL,
+	    cnt INTEGER NOT NULL,
+	    country_id INTEGER NOT NULL,
+	    eng TEXT NOT NULL,
+	    name TEXT NOT NULL,
+	    slang TEXT NOT NULL,
+	    value INTEGER NOT NULL
 	);`
 
 	queryVehicleTypes := `
 	CREATE TABLE IF NOT EXISTS vehicle_types (
 	    id INTEGER PRIMARY KEY AUTOINCREMENT,
-	    ablative TEXT,
-	    category_id INTEGER,
-	    name TEXT UNIQUE,
-	    plural TEXT,
-	    rewrite TEXT,
-		singular TEXT
+	    ablative TEXT NOT NULL, 
+	    category_id INTEGER NOT NULL,
+	    name TEXT UNIQUE NOT NULL,
+	    plural TEXT NOT NULL,
+	    rewrite TEXT NOT NULL,
+		singular TEXT NOT NULL
 	);`
 
 	queryVehicleCategories := `
 	CREATE TABLE IF NOT EXISTS vehicle_categories (
 	    id INTEGER PRIMARY KEY AUTOINCREMENT,
-		name TEXT,
-		value INTEGER UNIQUE 
+		name TEXT NOT NULL,
+		value INTEGER UNIQUE NOT NULL
 	);`
 
 	_, err := db.Exec(queryBrands)

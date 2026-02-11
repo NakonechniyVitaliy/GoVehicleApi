@@ -35,13 +35,13 @@ var PositiveCases = []PositiveTestCase{
 
 var InvalidJsonCases = []InvalidJsonTestCase{
 	{
-		CaseName: "Invalid categoryID",
+		CaseName: "Invalid CategoryID",
 		Brand: map[string]any{
 			"brand": map[string]any{
 				"category_id": "invalid",
-				"count":       gofakeit.Uint16(),
+				"cnt":         gofakeit.Uint16(),
 				"country_id":  gofakeit.Uint16(),
-				"eng_name":    gofakeit.CarModel(),
+				"eng":         gofakeit.CarModel(),
 				"marka_id":    gofakeit.Uint16(),
 				"name":        gofakeit.CarModel(),
 				"slang":       gofakeit.CarModel(),
@@ -51,18 +51,121 @@ var InvalidJsonCases = []InvalidJsonTestCase{
 		Error: "Failed to decode request",
 	},
 	{
-		CaseName: "Invalid slang",
+		CaseName: "Invalid Count",
 		Brand: map[string]any{
 			"brand": map[string]any{
-				"category_id": "invalid",
-				"count":       gofakeit.Uint16(),
+				"category_id": gofakeit.Uint16(),
+				"cnt":         "invalid",
 				"country_id":  gofakeit.Uint16(),
-				"eng_name":    gofakeit.CarModel(),
+				"eng":         gofakeit.CarModel(),
+				"marka_id":    gofakeit.Uint16(),
+				"name":        gofakeit.CarModel(),
+				"slang":       gofakeit.CarModel(),
+				"value":       gofakeit.Uint16(),
+			},
+		},
+		Error: "Failed to decode request",
+	},
+	{
+		CaseName: "Invalid CountryID",
+		Brand: map[string]any{
+			"brand": map[string]any{
+				"category_id": gofakeit.Uint16(),
+				"cnt":         gofakeit.Uint16(),
+				"country_id":  "invalid",
+				"eng":         gofakeit.CarModel(),
+				"marka_id":    gofakeit.Uint16(),
+				"name":        gofakeit.CarModel(),
+				"slang":       gofakeit.CarModel(),
+				"value":       gofakeit.Uint16(),
+			},
+		},
+		Error: "Failed to decode request",
+	},
+	{
+		CaseName: "Invalid EngName",
+		Brand: map[string]any{
+			"brand": map[string]any{
+				"category_id": gofakeit.Uint16(),
+				"cnt":         gofakeit.Uint16(),
+				"country_id":  gofakeit.Uint16(),
+				"eng":         123,
+				"marka_id":    gofakeit.Uint16(),
+				"name":        gofakeit.CarModel(),
+				"slang":       gofakeit.CarModel(),
+				"value":       gofakeit.Uint16(),
+			},
+		},
+		Error: "Failed to decode request",
+	},
+	{
+		CaseName: "Invalid MarkaID",
+		Brand: map[string]any{
+			"brand": map[string]any{
+				"category_id": gofakeit.Uint16(),
+				"cnt":         gofakeit.Uint16(),
+				"country_id":  gofakeit.Uint16(),
+				"eng":         gofakeit.CarModel(),
+				"marka_id":    "invalid",
+				"name":        gofakeit.CarModel(),
+				"slang":       gofakeit.CarModel(),
+				"value":       gofakeit.Uint16(),
+			},
+		},
+		Error: "Failed to decode request",
+	},
+	{
+		CaseName: "Invalid Name",
+		Brand: map[string]any{
+			"brand": map[string]any{
+				"category_id": gofakeit.Uint16(),
+				"cnt":         gofakeit.Uint16(),
+				"country_id":  gofakeit.Uint16(),
+				"eng":         gofakeit.CarModel(),
+				"marka_id":    gofakeit.Uint16(),
+				"name":        123,
+				"slang":       gofakeit.CarModel(),
+				"value":       gofakeit.Uint16(),
+			},
+		},
+		Error: "Failed to decode request",
+	},
+	{
+		CaseName: "Invalid Slang",
+		Brand: map[string]any{
+			"brand": map[string]any{
+				"category_id": gofakeit.Uint16(),
+				"cnt":         gofakeit.Uint16(),
+				"country_id":  gofakeit.Uint16(),
+				"eng":         gofakeit.CarModel(),
 				"marka_id":    gofakeit.Uint16(),
 				"name":        gofakeit.CarModel(),
 				"slang":       123,
 				"value":       gofakeit.Uint16(),
 			},
+		},
+		Error: "Failed to decode request",
+	},
+	{
+		CaseName: "Invalid Value",
+		Brand: map[string]any{
+			"brand": map[string]any{
+				"category_id": gofakeit.Uint16(),
+				"cnt":         gofakeit.Uint16(),
+				"country_id":  gofakeit.Uint16(),
+				"eng":         gofakeit.CarModel(),
+				"marka_id":    gofakeit.Uint16(),
+				"name":        gofakeit.CarModel(),
+				"slang":       gofakeit.CarModel(),
+				"value":       "invalid",
+			},
+		},
+		Error: "Failed to decode request",
+	},
+	{
+		CaseName: "Empty body",
+		Brand: map[string]any{
+			"brand": map[string]any{},
 		},
 		Error: "Failed to decode request",
 	},
