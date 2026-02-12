@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"net/http"
 
+	dto "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/brand"
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/brand"
@@ -18,9 +19,6 @@ type SaveResponse struct {
 	Response resp.Response
 	Brand    *models.Brand
 }
-type SaveRequest struct {
-	Brand models.Brand
-}
 
 func New(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -31,8 +29,7 @@ func New(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
 			slog.String("request_id", middleware.GetReqID(r.Context())),
 		)
 
-		var req SaveRequest
-
+		var req dto.SaveRequest
 		err := render.DecodeJSON(r.Body, &req)
 		if err != nil {
 			log.Error("failed to decode request body", slog.String("error", err.Error()))
@@ -42,12 +39,15 @@ func New(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
 		}
 		log.Info("request body decoded", slog.Any("request", req))
 
-		if err := validator.New().Struct(req); err != nil {
-			log.Error("invalid request", slog.String("error", err.Error()))
+		err = req.Validate()
+		if err != nil {
+			log.Error("validation error", slog.String("error", err.Error()))
 			render.Status(r, http.StatusBadRequest)
-			render.JSON(w, r, resp.Error("Invalid request"))
+			render.JSON(w, r, resp.Error("validation error"))
 			return
 		}
+
+		brand, err := req.Brand.ToModel
 
 		newBrand := models.Brand{
 			CategoryID: req.Brand.CategoryID,
