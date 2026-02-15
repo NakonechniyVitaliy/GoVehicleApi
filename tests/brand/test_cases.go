@@ -36,126 +36,65 @@ var PositiveCases = []PositiveTestCase{
 	},
 }
 
+func returnBrandMapWithoutOneField(field string) map[string]any {
+	brand := map[string]any{
+		"brand": map[string]any{
+			"category_id": gofakeit.Uint16(),
+			"cnt":         gofakeit.Uint16(),
+			"country_id":  gofakeit.Uint16(),
+			"eng":         gofakeit.CarModel(),
+			"marka_id":    gofakeit.Uint16(),
+			"name":        gofakeit.CarModel(),
+			"slang":       gofakeit.CarModel(),
+			"value":       gofakeit.Uint16(),
+		},
+	}
+	inner := brand["brand"].(map[string]any)
+	delete(inner, field)
+
+	return brand
+}
+
 var InvalidJsonCases = []InvalidJsonTestCase{
 	{
 		CaseName: "No CategoryID field",
-		Brand: map[string]any{
-			"brand": map[string]any{
-				"cnt":        gofakeit.Uint16(),
-				"country_id": gofakeit.Uint16(),
-				"eng":        gofakeit.CarModel(),
-				"marka_id":   gofakeit.Uint16(),
-				"name":       gofakeit.CarModel(),
-				"slang":      gofakeit.CarModel(),
-				"value":      gofakeit.Uint16(),
-			},
-		},
-		Error: "all fields are required",
+		Brand:    returnBrandMapWithoutOneField("category_id"),
+		Error:    "all fields are required",
 	},
 	{
 		CaseName: "No Count field",
-		Brand: map[string]any{
-			"brand": map[string]any{
-				"category_id": gofakeit.Uint16(),
-				"country_id":  gofakeit.Uint16(),
-				"eng":         gofakeit.CarModel(),
-				"marka_id":    gofakeit.Uint16(),
-				"name":        gofakeit.CarModel(),
-				"slang":       gofakeit.CarModel(),
-				"value":       gofakeit.Uint16(),
-			},
-		},
-		Error: "all fields are required",
+		Brand:    returnBrandMapWithoutOneField("cnt"),
+		Error:    "all fields are required",
 	},
 	{
 		CaseName: "No CountryID field",
-		Brand: map[string]any{
-			"brand": map[string]any{
-				"category_id": gofakeit.Uint16(),
-				"cnt":         gofakeit.Uint16(),
-				"eng":         gofakeit.CarModel(),
-				"marka_id":    gofakeit.Uint16(),
-				"name":        gofakeit.CarModel(),
-				"slang":       gofakeit.CarModel(),
-				"value":       gofakeit.Uint16(),
-			},
-		},
-		Error: "all fields are required",
+		Brand:    returnBrandMapWithoutOneField("country_id"),
+		Error:    "all fields are required",
 	},
 	{
 		CaseName: "No EnglishName field",
-		Brand: map[string]any{
-			"brand": map[string]any{
-				"category_id": gofakeit.Uint16(),
-				"cnt":         gofakeit.Uint16(),
-				"country_id":  gofakeit.Uint16(),
-				"marka_id":    gofakeit.Uint16(),
-				"name":        gofakeit.CarModel(),
-				"slang":       gofakeit.CarModel(),
-				"value":       gofakeit.Uint16(),
-			},
-		},
-		Error: "all fields are required",
+		Brand:    returnBrandMapWithoutOneField("eng"),
+		Error:    "all fields are required",
 	},
 	{
 		CaseName: "No MarkaID field",
-		Brand: map[string]any{
-			"brand": map[string]any{
-				"category_id": gofakeit.Uint16(),
-				"cnt":         gofakeit.Uint16(),
-				"country_id":  gofakeit.Uint16(),
-				"eng":         gofakeit.CarModel(),
-				"name":        gofakeit.CarModel(),
-				"slang":       gofakeit.CarModel(),
-				"value":       gofakeit.Uint16(),
-			},
-		},
-		Error: "all fields are required",
+		Brand:    returnBrandMapWithoutOneField("marka_id"),
+		Error:    "all fields are required",
 	},
 	{
 		CaseName: "No Name field",
-		Brand: map[string]any{
-			"brand": map[string]any{
-				"category_id": gofakeit.Uint16(),
-				"cnt":         gofakeit.Uint16(),
-				"country_id":  gofakeit.Uint16(),
-				"eng":         gofakeit.CarModel(),
-				"marka_id":    gofakeit.Uint16(),
-				"slang":       gofakeit.CarModel(),
-				"value":       gofakeit.Uint16(),
-			},
-		},
-		Error: "all fields are required",
+		Brand:    returnBrandMapWithoutOneField("name"),
+		Error:    "all fields are required",
 	},
 	{
 		CaseName: "No Slang field",
-		Brand: map[string]any{
-			"brand": map[string]any{
-				"category_id": gofakeit.Uint16(),
-				"cnt":         gofakeit.Uint16(),
-				"country_id":  gofakeit.Uint16(),
-				"eng":         gofakeit.CarModel(),
-				"marka_id":    gofakeit.Uint16(),
-				"name":        gofakeit.CarModel(),
-				"value":       gofakeit.Uint16(),
-			},
-		},
-		Error: "all fields are required",
+		Brand:    returnBrandMapWithoutOneField("slang"),
+		Error:    "all fields are required",
 	},
 	{
 		CaseName: "No Value field",
-		Brand: map[string]any{
-			"brand": map[string]any{
-				"category_id": gofakeit.Uint16(),
-				"cnt":         gofakeit.Uint16(),
-				"country_id":  gofakeit.Uint16(),
-				"eng":         gofakeit.CarModel(),
-				"marka_id":    gofakeit.Uint16(),
-				"name":        gofakeit.CarModel(),
-				"slang":       gofakeit.CarModel(),
-			},
-		},
-		Error: "all fields are required",
+		Brand:    returnBrandMapWithoutOneField("value"),
+		Error:    "all fields are required",
 	},
 	{
 		CaseName: "Empty body",
