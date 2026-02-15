@@ -1,17 +1,20 @@
 package brand
 
-import "github.com/brianvoe/gofakeit/v6"
+import (
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/service/helper"
+	"github.com/brianvoe/gofakeit/v6"
+)
 
 type PositiveTestCase struct {
 	CaseName   string
-	CategoryID uint16
-	Count      uint16
-	CountryID  uint16
-	EngName    string
-	MarkaID    uint16
-	BrandName  string
-	Slang      string
-	Value      uint16
+	CategoryID *uint16
+	Count      *uint16
+	CountryID  *uint16
+	EngName    *string
+	MarkaID    *uint16
+	BrandName  *string
+	Slang      *string
+	Value      *uint16
 }
 type InvalidJsonTestCase struct {
 	CaseName string
@@ -22,18 +25,145 @@ type InvalidJsonTestCase struct {
 var PositiveCases = []PositiveTestCase{
 	{
 		CaseName:   "Valid brand",
-		CategoryID: gofakeit.Uint16(),
-		Count:      gofakeit.Uint16(),
-		CountryID:  gofakeit.Uint16(),
-		EngName:    gofakeit.CarModel(),
-		MarkaID:    gofakeit.Uint16(),
-		BrandName:  gofakeit.CarModel(),
-		Slang:      gofakeit.CarModel(),
-		Value:      gofakeit.Uint16(),
+		CategoryID: helper.PtrUint16(gofakeit.Uint16()),
+		Count:      helper.PtrUint16(gofakeit.Uint16()),
+		CountryID:  helper.PtrUint16(gofakeit.Uint16()),
+		EngName:    helper.PtrString(gofakeit.CarModel()),
+		MarkaID:    helper.PtrUint16(gofakeit.Uint16()),
+		BrandName:  helper.PtrString(gofakeit.CarModel()),
+		Slang:      helper.PtrString(gofakeit.CarModel()),
+		Value:      helper.PtrUint16(gofakeit.Uint16()),
 	},
 }
 
 var InvalidJsonCases = []InvalidJsonTestCase{
+	{
+		CaseName: "No CategoryID field",
+		Brand: map[string]any{
+			"brand": map[string]any{
+				"cnt":        gofakeit.Uint16(),
+				"country_id": gofakeit.Uint16(),
+				"eng":        gofakeit.CarModel(),
+				"marka_id":   gofakeit.Uint16(),
+				"name":       gofakeit.CarModel(),
+				"slang":      gofakeit.CarModel(),
+				"value":      gofakeit.Uint16(),
+			},
+		},
+		Error: "all fields are required",
+	},
+	{
+		CaseName: "No Count field",
+		Brand: map[string]any{
+			"brand": map[string]any{
+				"category_id": gofakeit.Uint16(),
+				"country_id":  gofakeit.Uint16(),
+				"eng":         gofakeit.CarModel(),
+				"marka_id":    gofakeit.Uint16(),
+				"name":        gofakeit.CarModel(),
+				"slang":       gofakeit.CarModel(),
+				"value":       gofakeit.Uint16(),
+			},
+		},
+		Error: "all fields are required",
+	},
+	{
+		CaseName: "No CountryID field",
+		Brand: map[string]any{
+			"brand": map[string]any{
+				"category_id": gofakeit.Uint16(),
+				"cnt":         gofakeit.Uint16(),
+				"eng":         gofakeit.CarModel(),
+				"marka_id":    gofakeit.Uint16(),
+				"name":        gofakeit.CarModel(),
+				"slang":       gofakeit.CarModel(),
+				"value":       gofakeit.Uint16(),
+			},
+		},
+		Error: "all fields are required",
+	},
+	{
+		CaseName: "No EnglishName field",
+		Brand: map[string]any{
+			"brand": map[string]any{
+				"category_id": gofakeit.Uint16(),
+				"cnt":         gofakeit.Uint16(),
+				"country_id":  gofakeit.Uint16(),
+				"marka_id":    gofakeit.Uint16(),
+				"name":        gofakeit.CarModel(),
+				"slang":       gofakeit.CarModel(),
+				"value":       gofakeit.Uint16(),
+			},
+		},
+		Error: "all fields are required",
+	},
+	{
+		CaseName: "No MarkaID field",
+		Brand: map[string]any{
+			"brand": map[string]any{
+				"category_id": gofakeit.Uint16(),
+				"cnt":         gofakeit.Uint16(),
+				"country_id":  gofakeit.Uint16(),
+				"eng":         gofakeit.CarModel(),
+				"name":        gofakeit.CarModel(),
+				"slang":       gofakeit.CarModel(),
+				"value":       gofakeit.Uint16(),
+			},
+		},
+		Error: "all fields are required",
+	},
+	{
+		CaseName: "No Name field",
+		Brand: map[string]any{
+			"brand": map[string]any{
+				"category_id": gofakeit.Uint16(),
+				"cnt":         gofakeit.Uint16(),
+				"country_id":  gofakeit.Uint16(),
+				"eng":         gofakeit.CarModel(),
+				"marka_id":    gofakeit.Uint16(),
+				"slang":       gofakeit.CarModel(),
+				"value":       gofakeit.Uint16(),
+			},
+		},
+		Error: "all fields are required",
+	},
+	{
+		CaseName: "No Slang field",
+		Brand: map[string]any{
+			"brand": map[string]any{
+				"category_id": gofakeit.Uint16(),
+				"cnt":         gofakeit.Uint16(),
+				"country_id":  gofakeit.Uint16(),
+				"eng":         gofakeit.CarModel(),
+				"marka_id":    gofakeit.Uint16(),
+				"name":        gofakeit.CarModel(),
+				"value":       gofakeit.Uint16(),
+			},
+		},
+		Error: "all fields are required",
+	},
+	{
+		CaseName: "No Value field",
+		Brand: map[string]any{
+			"brand": map[string]any{
+				"category_id": gofakeit.Uint16(),
+				"cnt":         gofakeit.Uint16(),
+				"country_id":  gofakeit.Uint16(),
+				"eng":         gofakeit.CarModel(),
+				"marka_id":    gofakeit.Uint16(),
+				"name":        gofakeit.CarModel(),
+				"slang":       gofakeit.CarModel(),
+			},
+		},
+		Error: "all fields are required",
+	},
+	{
+		CaseName: "Empty body",
+		Brand: map[string]any{
+			"brand": map[string]any{},
+		},
+		Error: "all fields are required",
+	},
 	{
 		CaseName: "Invalid CategoryID",
 		Brand: map[string]any{
@@ -48,7 +178,7 @@ var InvalidJsonCases = []InvalidJsonTestCase{
 				"value":       gofakeit.Uint16(),
 			},
 		},
-		Error: "Failed to decode request",
+		Error: "invalid JSON or wrong field types",
 	},
 	{
 		CaseName: "Invalid Count",
@@ -64,7 +194,7 @@ var InvalidJsonCases = []InvalidJsonTestCase{
 				"value":       gofakeit.Uint16(),
 			},
 		},
-		Error: "Failed to decode request",
+		Error: "invalid JSON or wrong field types",
 	},
 	{
 		CaseName: "Invalid CountryID",
@@ -80,7 +210,7 @@ var InvalidJsonCases = []InvalidJsonTestCase{
 				"value":       gofakeit.Uint16(),
 			},
 		},
-		Error: "Failed to decode request",
+		Error: "invalid JSON or wrong field types",
 	},
 	{
 		CaseName: "Invalid EngName",
@@ -96,7 +226,7 @@ var InvalidJsonCases = []InvalidJsonTestCase{
 				"value":       gofakeit.Uint16(),
 			},
 		},
-		Error: "Failed to decode request",
+		Error: "invalid JSON or wrong field types",
 	},
 	{
 		CaseName: "Invalid MarkaID",
@@ -112,7 +242,7 @@ var InvalidJsonCases = []InvalidJsonTestCase{
 				"value":       gofakeit.Uint16(),
 			},
 		},
-		Error: "Failed to decode request",
+		Error: "invalid JSON or wrong field types",
 	},
 	{
 		CaseName: "Invalid Name",
@@ -128,7 +258,7 @@ var InvalidJsonCases = []InvalidJsonTestCase{
 				"value":       gofakeit.Uint16(),
 			},
 		},
-		Error: "Failed to decode request",
+		Error: "invalid JSON or wrong field types",
 	},
 	{
 		CaseName: "Invalid Slang",
@@ -144,7 +274,7 @@ var InvalidJsonCases = []InvalidJsonTestCase{
 				"value":       gofakeit.Uint16(),
 			},
 		},
-		Error: "Failed to decode request",
+		Error: "invalid JSON or wrong field types",
 	},
 	{
 		CaseName: "Invalid Value",
@@ -160,13 +290,6 @@ var InvalidJsonCases = []InvalidJsonTestCase{
 				"value":       "invalid",
 			},
 		},
-		Error: "Failed to decode request",
-	},
-	{
-		CaseName: "Empty body",
-		Brand: map[string]any{
-			"brand": map[string]any{},
-		},
-		Error: "Failed to decode request",
+		Error: "invalid JSON or wrong field types",
 	},
 }

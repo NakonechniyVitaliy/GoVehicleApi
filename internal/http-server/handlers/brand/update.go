@@ -5,21 +5,18 @@ import (
 	"net/http"
 	"strconv"
 
+	dto "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/brand"
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/brand"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
-	"github.com/go-playground/validator/v10"
 )
 
 type UpdateResponse struct {
 	Response resp.Response
 	Brand    *models.Brand
-}
-type UpdateRequest struct {
-	Brand models.Brand
 }
 
 func Update(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
@@ -40,7 +37,7 @@ func Update(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
 		brandID := uint16(id64)
 		log.Info("ID retrieved successfully", slog.Any("brandID", brandID))
 
-		var req UpdateRequest
+		var req dto.UpdateRequest
 		err = render.DecodeJSON(r.Body, &req)
 		if err != nil {
 			log.Error("failed to decode request body", slog.String("error", err.Error()))
@@ -49,13 +46,17 @@ func Update(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
 		}
 		log.Info("request body decoded", slog.Any("request", req))
 
-		if err := validator.New().Struct(req); err != nil {
-			log.Error("invalid request", slog.String("error", err.Error()))
-			render.JSON(w, r, resp.Error("Invalid request"))
+		err = req.Validate()
+		if err != nil {
+			log.Error("validation error", slog.String("error", err.Error()))
+			render.Status(r, http.StatusBadRequest)
+			render.JSON(w, r, resp.Error(err.Error()))
 			return
 		}
 
-		updatedBrand, err := repository.Update(r.Context(), req.Brand, brandID)
+		brandFromRequest := req.Brand.ToModel()
+
+		updatedBrand, err := repository.Update(r.Context(), brandFromRequest, brandID)
 		if err != nil {
 			log.Error("failed to update brand", slog.String("error", err.Error()))
 			render.JSON(w, r, resp.Error("Failed to update brand"))

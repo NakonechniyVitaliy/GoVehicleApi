@@ -12,7 +12,6 @@ import (
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
-	"github.com/go-playground/validator/v10"
 )
 
 type SaveResponse struct {
@@ -32,9 +31,9 @@ func New(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
 		var req dto.SaveRequest
 		err := render.DecodeJSON(r.Body, &req)
 		if err != nil {
-			log.Error("failed to decode request body", slog.String("error", err.Error()))
+			log.Error("invalid JSON or wrong field types", slog.String("error", err.Error()))
 			render.Status(r, http.StatusBadRequest)
-			render.JSON(w, r, resp.Error("Failed to decode request"))
+			render.JSON(w, r, resp.Error("invalid JSON or wrong field types"))
 			return
 		}
 		log.Info("request body decoded", slog.Any("request", req))
@@ -43,23 +42,11 @@ func New(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
 		if err != nil {
 			log.Error("validation error", slog.String("error", err.Error()))
 			render.Status(r, http.StatusBadRequest)
-			render.JSON(w, r, resp.Error("validation error"))
+			render.JSON(w, r, resp.Error(err.Error()))
 			return
 		}
 
-		brand, err := req.Brand.ToModel
-
-		newBrand := models.Brand{
-			CategoryID: req.Brand.CategoryID,
-			Count:      req.Brand.Count,
-			CountryID:  req.Brand.CountryID,
-			EngName:    req.Brand.EngName,
-			MarkaID:    req.Brand.MarkaID,
-			Name:       req.Brand.Name,
-			Slang:      req.Brand.Slang,
-			Value:      req.Brand.Value,
-		}
-
+		newBrand := req.Brand.ToModel()
 		log.Info("saving brand", slog.Any("brand", newBrand))
 
 		createdBrand, err := repository.Create(r.Context(), newBrand)
