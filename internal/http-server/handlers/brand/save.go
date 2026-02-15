@@ -10,7 +10,6 @@ import (
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/brand"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
-	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 )
 
@@ -25,7 +24,7 @@ func New(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
 
 		log = log.With(
 			slog.String("op", op),
-			slog.String("request_id", middleware.GetReqID(r.Context())),
+			//slog.String("request_id", middleware.GetReqID(r.Context())),
 		)
 
 		var req dto.SaveRequest

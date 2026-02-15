@@ -55,54 +55,7 @@ func returnBrandMapWithoutOneField(field string) map[string]any {
 	return brand
 }
 
-var InvalidJsonCases = []InvalidJsonTestCase{
-	{
-		CaseName: "No CategoryID field",
-		Brand:    returnBrandMapWithoutOneField("category_id"),
-		Error:    "all fields are required",
-	},
-	{
-		CaseName: "No Count field",
-		Brand:    returnBrandMapWithoutOneField("cnt"),
-		Error:    "all fields are required",
-	},
-	{
-		CaseName: "No CountryID field",
-		Brand:    returnBrandMapWithoutOneField("country_id"),
-		Error:    "all fields are required",
-	},
-	{
-		CaseName: "No EnglishName field",
-		Brand:    returnBrandMapWithoutOneField("eng"),
-		Error:    "all fields are required",
-	},
-	{
-		CaseName: "No MarkaID field",
-		Brand:    returnBrandMapWithoutOneField("marka_id"),
-		Error:    "all fields are required",
-	},
-	{
-		CaseName: "No Name field",
-		Brand:    returnBrandMapWithoutOneField("name"),
-		Error:    "all fields are required",
-	},
-	{
-		CaseName: "No Slang field",
-		Brand:    returnBrandMapWithoutOneField("slang"),
-		Error:    "all fields are required",
-	},
-	{
-		CaseName: "No Value field",
-		Brand:    returnBrandMapWithoutOneField("value"),
-		Error:    "all fields are required",
-	},
-	{
-		CaseName: "Empty body",
-		Brand: map[string]any{
-			"brand": map[string]any{},
-		},
-		Error: "all fields are required",
-	},
+var InvalidJSONCases = []InvalidJsonTestCase{
 	{
 		CaseName: "Invalid CategoryID",
 		Brand: map[string]any{
@@ -230,5 +183,55 @@ var InvalidJsonCases = []InvalidJsonTestCase{
 			},
 		},
 		Error: "invalid JSON or wrong field types",
+	},
+}
+
+var NoFieldsCases = []InvalidJsonTestCase{
+	{
+		CaseName: "No CategoryID field",
+		Brand:    returnBrandMapWithoutOneField("category_id"),
+		Error:    "all fields are required",
+	},
+	{
+		CaseName: "No Count field",
+		Brand:    returnBrandMapWithoutOneField("cnt"),
+		Error:    "all fields are required",
+	},
+	{
+		CaseName: "No CountryID field",
+		Brand:    returnBrandMapWithoutOneField("country_id"),
+		Error:    "all fields are required",
+	},
+	{
+		CaseName: "No EnglishName field",
+		Brand:    returnBrandMapWithoutOneField("eng"),
+		Error:    "all fields are required",
+	},
+	{
+		CaseName: "No MarkaID field",
+		Brand:    returnBrandMapWithoutOneField("marka_id"),
+		Error:    "all fields are required",
+	},
+	{
+		CaseName: "No Name field",
+		Brand:    returnBrandMapWithoutOneField("name"),
+		Error:    "all fields are required",
+	},
+	{
+		CaseName: "No Slang field",
+		Brand:    returnBrandMapWithoutOneField("slang"),
+		Error:    "all fields are required",
+	},
+	{
+		CaseName: "No Value field",
+		Brand:    returnBrandMapWithoutOneField("value"),
+		Error:    "all fields are required",
+	},
+	{
+		CaseName: "Empty body",
+		Brand: map[string]any{
+			"brand": map[string]any{},
+		},
+		Error: "all fields are required",
 	},
 }

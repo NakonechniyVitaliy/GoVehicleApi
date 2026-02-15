@@ -40,8 +40,9 @@ func Update(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
 		var req dto.UpdateRequest
 		err = render.DecodeJSON(r.Body, &req)
 		if err != nil {
-			log.Error("failed to decode request body", slog.String("error", err.Error()))
-			render.JSON(w, r, resp.Error("Failed to decode request"))
+			log.Error("invalid JSON or wrong field types", slog.String("error", err.Error()))
+			render.Status(r, http.StatusBadRequest)
+			render.JSON(w, r, resp.Error("invalid JSON or wrong field types"))
 			return
 		}
 		log.Info("request body decoded", slog.Any("request", req))
