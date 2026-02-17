@@ -6,7 +6,7 @@ import (
 
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	driverType "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/driver_type"
+	driverTypeRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/driver_type"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 )
@@ -16,7 +16,7 @@ type GetAllResponse struct {
 	DriverTypes []models.DriverType
 }
 
-func GetAll(log *slog.Logger, repository driverType.Repository) http.HandlerFunc {
+func GetAll(log *slog.Logger, repo driverTypeRepo.Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.driverType.get.GetAll"
 
@@ -27,7 +27,7 @@ func GetAll(log *slog.Logger, repository driverType.Repository) http.HandlerFunc
 
 		log.Info("getting vehicle driver types")
 
-		driverTypes, err := repository.GetAll(r.Context())
+		driverTypes, err := repo.GetAll(r.Context())
 		if err != nil {
 			log.Error("failed to get vehicle driver types", slog.String("error", err.Error()))
 			render.JSON(w, r, resp.Error("Failed to get vehicle driver types"))
