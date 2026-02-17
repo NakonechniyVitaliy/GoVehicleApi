@@ -10,9 +10,9 @@ import (
 	"github.com/go-chi/render"
 )
 
-func GetVehicleTypes(key string) ([]models.VehicleType, error) {
+func GetBodyStyles(key string) ([]models.BodyStyle, error) {
 
-	url := autoria.GET_VEHICLE_TYPES + key
+	url := autoria.GET_BODY_STYLES + key
 
 	resp, err := http.Get(url)
 	if err != nil {
@@ -20,12 +20,12 @@ func GetVehicleTypes(key string) ([]models.VehicleType, error) {
 	}
 	defer resp.Body.Close()
 
-	var vehicleTypes []models.VehicleType
-	err = render.DecodeJSON(resp.Body, &vehicleTypes)
+	var bodyStyles []models.BodyStyle
+	err = render.DecodeJSON(resp.Body, &bodyStyles)
 	if err != nil {
 		return nil, fmt.Errorf("failed to decode Autoria response body %s", slog.String("error", err.Error()))
 	}
 
-	return vehicleTypes, nil
+	return bodyStyles, nil
 
 }

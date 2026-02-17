@@ -1,4 +1,4 @@
-package vehicle_type
+package body_style
 
 import (
 	"errors"
@@ -7,7 +7,7 @@ import (
 
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	vehicleType "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/vehicle_type"
+	bodyStyle "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/body_style"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
@@ -15,12 +15,12 @@ import (
 )
 
 type SaveRequest struct {
-	VehicleType models.VehicleType
+	BodyStyle models.BodyStyle
 }
 
-func New(log *slog.Logger, repository vehicleType.Repository) http.HandlerFunc {
+func New(log *slog.Logger, repository bodyStyle.Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.vehicleType.save.New"
+		const op = "handlers.bodyStyle.new"
 
 		log = log.With(
 			slog.String("op", op),
@@ -43,31 +43,27 @@ func New(log *slog.Logger, repository vehicleType.Repository) http.HandlerFunc {
 			return
 		}
 
-		newVehicleType := models.VehicleType{
-			Ablative:   req.VehicleType.Ablative,
-			CategoryID: req.VehicleType.CategoryID,
-			Name:       req.VehicleType.Name,
-			Plural:     req.VehicleType.Plural,
-			Rewrite:    req.VehicleType.Rewrite,
-			Singular:   req.VehicleType.Singular,
+		newBodyStyle := models.BodyStyle{
+			Name:  req.BodyStyle.Name,
+			Value: req.BodyStyle.Value,
 		}
 
-		log.Info("saving vehicle type", slog.Any("vehicle type", newVehicleType))
+		log.Info("saving body style", slog.Any("body style", newBodyStyle))
 
-		err = repository.Create(r.Context(), newVehicleType)
-		if errors.Is(err, storage.ErrVehicleTypeExists) {
-			log.Info("vehicleType already exists", slog.String("vehicle type", req.VehicleType.Name))
-			render.JSON(w, r, resp.Error("vehicle type already exists"))
+		err = repository.Create(r.Context(), newBodyStyle)
+		if errors.Is(err, storage.ErrBodyStyleExists) {
+			log.Info("bodyStyle already exists", slog.String("body style", req.BodyStyle.Name))
+			render.JSON(w, r, resp.Error("body style already exists"))
 			return
 		}
 
 		if err != nil {
-			log.Error("failed to save vehicle type", slog.String("error", err.Error()))
-			render.JSON(w, r, resp.Error("Failed to save vehicle type"))
+			log.Error("failed to save body style", slog.String("error", err.Error()))
+			render.JSON(w, r, resp.Error("Failed to save body style"))
 			return
 		}
 
-		log.Info("vehicleType saved", slog.String("vehicle type", req.VehicleType.Name))
+		log.Info("bodyStyle saved", slog.String("body style", req.BodyStyle.Name))
 
 		render.JSON(w, r, resp.OK())
 	}

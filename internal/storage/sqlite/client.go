@@ -49,14 +49,10 @@ func migrate(db *sql.DB) error {
 	);`
 
 	queryVehicleTypes := `
-	CREATE TABLE IF NOT EXISTS vehicle_types (
+	CREATE TABLE IF NOT EXISTS body_styles (
 	    id INTEGER PRIMARY KEY AUTOINCREMENT,
-	    ablative TEXT NOT NULL, 
-	    category_id INTEGER NOT NULL,
 	    name TEXT UNIQUE NOT NULL,
-	    plural TEXT NOT NULL,
-	    rewrite TEXT NOT NULL,
-		singular TEXT NOT NULL
+		value INTEGER UNIQUE NOT NULL
 	);`
 
 	queryVehicleCategories := `

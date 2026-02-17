@@ -1,4 +1,4 @@
-package vehicle_type
+package body_style
 
 import (
 	"log/slog"
@@ -6,19 +6,19 @@ import (
 
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	vehicleType "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/vehicle_type"
+	bodyStyle "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/body_style"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 	"github.com/go-playground/validator/v10"
 )
 
 type UpdateRequest struct {
-	VehicleType models.VehicleType
+	BodyStyle models.BodyStyle
 }
 
-func Update(log *slog.Logger, repository vehicleType.Repository) http.HandlerFunc {
+func Update(log *slog.Logger, repository bodyStyle.Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.vehicleType.update.Update"
+		const op = "handlers.bodyStyle.update.Update"
 
 		log = log.With(
 			slog.String("op", op),
@@ -40,20 +40,16 @@ func Update(log *slog.Logger, repository vehicleType.Repository) http.HandlerFun
 			return
 		}
 
-		updatedVehicleType := models.VehicleType{
-			ID:         req.VehicleType.ID,
-			Ablative:   req.VehicleType.Ablative,
-			CategoryID: req.VehicleType.CategoryID,
-			Name:       req.VehicleType.Name,
-			Plural:     req.VehicleType.Plural,
-			Rewrite:    req.VehicleType.Rewrite,
-			Singular:   req.VehicleType.Singular,
+		updatedBodyStyle := models.BodyStyle{
+			ID:    req.BodyStyle.ID,
+			Name:  req.BodyStyle.Name,
+			Value: req.BodyStyle.Value,
 		}
 
-		err = repository.Update(r.Context(), updatedVehicleType)
+		err = repository.Update(r.Context(), updatedBodyStyle)
 		if err != nil {
-			log.Error("failed to update vehicleType", slog.String("error", err.Error()))
-			render.JSON(w, r, resp.Error("Failed to update vehicleType"))
+			log.Error("failed to update body style", slog.String("error", err.Error()))
+			render.JSON(w, r, resp.Error("Failed to update body style"))
 			return
 		}
 

@@ -67,7 +67,7 @@ func migrate(ctx context.Context, database *mongo.Database) error {
 		return fmt.Errorf("create brands collection: %w", err)
 	}
 
-	vehicleTypes := database.Collection("vehicle_types")
+	vehicleTypes := database.Collection("body_styles")
 	_, err = vehicleTypes.Indexes().CreateOne(ctx, mongo.IndexModel{
 		Keys:    bson.M{"id": 1},
 		Options: options.Index(),

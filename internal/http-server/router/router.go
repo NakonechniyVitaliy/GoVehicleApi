@@ -4,18 +4,17 @@ import (
 	"log/slog"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/config"
+	bodyStyleHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/body_style"
 	brandHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/brand"
 	driverTypeHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/driver_type"
 	gearboxHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/gearbox"
 	vehicleCategoryHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/vehicle_category"
-	vehicleTypeHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/vehicle_type"
+	bodyStyleRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/body_style"
 	brandRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/brand"
 	driverTypeRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/driver_type"
 	gearboxRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/gearbox"
 	vehicleCategoryRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/vehicle_category"
-	vehicleTypeRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/vehicle_type"
 
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/vehicle_type"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
@@ -23,7 +22,7 @@ import (
 func SetupRouter(
 	log *slog.Logger,
 	brandRepo brandRepo.Repository,
-	vehicleTypeRepo vehicleType.Repository,
+	bodyStyleRepo bodyStyleRepo.Repository,
 	vehicleCategoryRepo vehicleCategoryRepo.Repository,
 	driverTypeRepo driverTypeRepo.Repository,
 	gearboxRepo gearboxRepo.Repository,
@@ -37,7 +36,7 @@ func SetupRouter(
 	router.Use(middleware.Recoverer) // Востановление после критикал ошибки
 	router.Use(middleware.URLFormat) // Удобное получение параметров из сслыки
 
-	SetupVehicleTypeRoutes(router, log, vehicleTypeRepo, cfg)
+	SetupVehicleTypeRoutes(router, log, bodyStyleRepo, cfg)
 	SetupDriverTypeRoutes(router, log, driverTypeRepo, cfg)
 	SetupBrandRoutes(router, log, brandRepo, cfg)
 	SetupVehicleCategoryRoutes(router, log, vehicleCategoryRepo, cfg)
@@ -48,16 +47,16 @@ func SetupRouter(
 func SetupVehicleTypeRoutes(
 	router chi.Router,
 	log *slog.Logger,
-	vehicleTypeRepo vehicleTypeRepo.Repository,
+	bodyStyleRepo bodyStyleRepo.Repository,
 	cfg *config.Config,
 ) {
-	router.Route("/vehicle-type", func(r chi.Router) {
-		r.Post("/", vehicleTypeHandler.New(log, vehicleTypeRepo))
-		r.Delete("/{id}", vehicleTypeHandler.Delete(log, vehicleTypeRepo))
-		r.Get("/{id}", vehicleTypeHandler.Get(log, vehicleTypeRepo))
-		r.Get("/all", vehicleTypeHandler.GetAll(log, vehicleTypeRepo))
-		r.Put("/", vehicleTypeHandler.Update(log, vehicleTypeRepo))
-		r.Put("/refresh", vehicleTypeHandler.Refresh(log, vehicleTypeRepo, cfg))
+	router.Route("/body-style", func(r chi.Router) {
+		r.Post("/", bodyStyleHandler.New(log, bodyStyleRepo))
+		r.Delete("/{id}", bodyStyleHandler.Delete(log, bodyStyleRepo))
+		r.Get("/{id}", bodyStyleHandler.Get(log, bodyStyleRepo))
+		r.Get("/all", bodyStyleHandler.GetAll(log, bodyStyleRepo))
+		r.Put("/", bodyStyleHandler.Update(log, bodyStyleRepo))
+		r.Put("/refresh", bodyStyleHandler.Refresh(log, bodyStyleRepo, cfg))
 	})
 }
 
