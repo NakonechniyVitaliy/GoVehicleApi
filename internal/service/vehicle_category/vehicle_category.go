@@ -8,7 +8,7 @@ import (
 	vehicleCategoryRequests "github.com/NakonechniyVitaliy/GoVehicleApi/internal/requests/autoria/vehicle_categories"
 )
 
-func RefreshVehicleCategories(ctx context.Context, cfg *config.Config, repository vehicleCategoryRepo.Repository) error {
+func RefreshVehicleCategories(ctx context.Context, cfg *config.Config, repository vehicleCategoryRepo.RepositoryInterface) error {
 
 	vehicleCategories, err := vehicleCategoryRequests.GetVehicleCategories(cfg.AutoriaKey)
 	if err != nil {

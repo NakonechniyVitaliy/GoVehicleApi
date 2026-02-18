@@ -16,7 +16,7 @@ type Response struct {
 	resp.Response
 }
 
-func Refresh(log *slog.Logger, repository driverTypeRepo.Repository, cfg *config.Config) http.HandlerFunc {
+func Refresh(log *slog.Logger, repository driverTypeRepo.RepositoryInterface, cfg *config.Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.driverType.update.Refresh"
 

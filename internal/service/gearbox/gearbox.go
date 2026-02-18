@@ -8,7 +8,7 @@ import (
 	gearboxRequets "github.com/NakonechniyVitaliy/GoVehicleApi/internal/requests/autoria/gearboxes"
 )
 
-func RefreshGearboxes(ctx context.Context, cfg *config.Config, repository gearboxRepo.Repository) error {
+func RefreshGearboxes(ctx context.Context, cfg *config.Config, repository gearboxRepo.RepositoryInterface) error {
 
 	gearboxes, err := gearboxRequets.GetGearboxes(cfg.AutoriaKey)
 	if err != nil {

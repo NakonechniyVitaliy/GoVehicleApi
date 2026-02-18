@@ -16,7 +16,7 @@ type GetAllResponse struct {
 	Gearboxes []models.Gearbox
 }
 
-func GetAll(log *slog.Logger, repository Gearbox.Repository) http.HandlerFunc {
+func GetAll(log *slog.Logger, repository Gearbox.RepositoryInterface) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.Gearbox.GetAll"
 

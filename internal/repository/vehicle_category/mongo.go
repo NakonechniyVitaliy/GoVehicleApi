@@ -16,7 +16,7 @@ type MongoRepository struct {
 	vehicleCategories *mongo.Collection
 }
 
-func NewMongo(db *mongo.Database) *MongoRepository {
+func NewMongoVehicleCategoryRepo(db *mongo.Database) *MongoRepository {
 	return &MongoRepository{
 		db:                db,
 		vehicleCategories: db.Collection("vehicle_categories"),

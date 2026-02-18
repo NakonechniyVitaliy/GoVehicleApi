@@ -16,7 +16,7 @@ type GetAllResponse struct {
 	VehicleCategories []models.VehicleCategory
 }
 
-func GetAll(log *slog.Logger, repository vehicleCategory.Repository) http.HandlerFunc {
+func GetAll(log *slog.Logger, repository vehicleCategory.RepositoryInterface) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.vehicleCategory.get.GetAll"
 

@@ -8,7 +8,7 @@ import (
 	brandRequests "github.com/NakonechniyVitaliy/GoVehicleApi/internal/requests/autoria/brands"
 )
 
-func RefreshBrands(ctx context.Context, cfg *config.Config, repository brand.Repository) error {
+func RefreshBrands(ctx context.Context, cfg *config.Config, repository brand.RepositoryInterface) error {
 
 	brands, err := brandRequests.GetBrands(cfg.AutoriaKey)
 	if err != nil {

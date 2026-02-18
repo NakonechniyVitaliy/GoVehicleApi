@@ -1,14 +1,14 @@
-package brand
+package vehicle
 
 import (
 	"log/slog"
 	"net/http"
 	"strconv"
 
-	dto "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/brand"
+	dto "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/vehicle"
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/brand"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/vehicle"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
@@ -16,12 +16,12 @@ import (
 
 type UpdateResponse struct {
 	Response resp.Response
-	Brand    *models.Brand
+	Vehicle  *models.Vehicle
 }
 
-func Update(log *slog.Logger, repository brand.RepositoryInterface) http.HandlerFunc {
+func Update(log *slog.Logger, repository vehicle.RepositoryInterface) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.brand.update.Update"
+		const op = "handlers.vehicle.update"
 
 		log = log.With(
 			slog.String("op", op),
@@ -30,12 +30,12 @@ func Update(log *slog.Logger, repository brand.RepositoryInterface) http.Handler
 
 		id64, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 16)
 		if err != nil {
-			log.Error("failed to get brand ID", slog.String("error", err.Error()))
-			render.JSON(w, r, resp.Error("Failed to get brand ID"))
+			log.Error("failed to get vehicle ID", slog.String("error", err.Error()))
+			render.JSON(w, r, resp.Error("Failed to get vehicle ID"))
 			return
 		}
-		brandID := uint16(id64)
-		log.Info("ID retrieved successfully", slog.Any("brandID", brandID))
+		vehicleID := uint16(id64)
+		log.Info("ID retrieved successfully", slog.Any("vehicleID", vehicleID))
 
 		var req dto.UpdateRequest
 		err = render.DecodeJSON(r.Body, &req)
@@ -55,18 +55,18 @@ func Update(log *slog.Logger, repository brand.RepositoryInterface) http.Handler
 			return
 		}
 
-		brandFromRequest := req.Brand.ToModel()
+		vehicleFromRequest := req.Vehicle.ToModel()
 
-		updatedBrand, err := repository.Update(r.Context(), brandFromRequest, brandID)
+		updatedVehicle, err := repository.Update(r.Context(), vehicleFromRequest, vehicleID)
 		if err != nil {
-			log.Error("failed to update brand", slog.String("error", err.Error()))
-			render.JSON(w, r, resp.Error("Failed to update brand"))
+			log.Error("failed to update vehicle", slog.String("error", err.Error()))
+			render.JSON(w, r, resp.Error("Failed to update vehicle"))
 			return
 		}
 
 		render.JSON(w, r, UpdateResponse{
 			Response: resp.OK(),
-			Brand:    updatedBrand,
+			Vehicle:  updatedVehicle,
 		})
 
 	}

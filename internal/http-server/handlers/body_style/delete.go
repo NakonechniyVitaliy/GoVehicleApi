@@ -12,7 +12,7 @@ import (
 	"github.com/go-chi/render"
 )
 
-func Delete(log *slog.Logger, repository bodyStyle.Repository) http.HandlerFunc {
+func Delete(log *slog.Logger, repository bodyStyle.RepositoryInterface) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.bodyStyle.delete"
 

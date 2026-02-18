@@ -13,7 +13,7 @@ type SqliteRepository struct {
 	table string
 }
 
-func NewSqlite(db *sql.DB) *SqliteRepository {
+func NewSqliteGearboxRepo(db *sql.DB) *SqliteRepository {
 	return &SqliteRepository{
 		db: db,
 	}

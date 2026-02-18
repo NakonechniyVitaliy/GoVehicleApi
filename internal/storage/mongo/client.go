@@ -53,10 +53,10 @@ func migrate(ctx context.Context, database *mongo.Database) error {
 				"category_id": bson.M{"bsonType": "int"},
 				"cnt":         bson.M{"bsonType": "int"},
 				"country_id":  bson.M{"bsonType": "int"},
-				"eng":         bson.M{"bsonType": "string", "minLength": 1},
+				"eng":         bson.M{"bsonType": "string"},
 				"marka_id":    bson.M{"bsonType": "int"},
-				"name":        bson.M{"bsonType": "string", "minLength": 1},
-				"slang":       bson.M{"bsonType": "string", "minLength": 1},
+				"name":        bson.M{"bsonType": "string"},
+				"slang":       bson.M{"bsonType": "string"},
 				"value":       bson.M{"bsonType": "int"},
 			},
 		},
@@ -65,6 +65,29 @@ func migrate(ctx context.Context, database *mongo.Database) error {
 	err := database.CreateCollection(ctx, "brands", options.CreateCollection().SetValidator(brandValidator))
 	if err != nil && !strings.Contains(err.Error(), "already exists") {
 		return fmt.Errorf("create brands collection: %w", err)
+	}
+
+	vehicleValidator := bson.M{
+		"$jsonSchema": bson.M{
+			"bsonType": "object",
+			"required": []string{"id", "brand", "driver_type", "gearbox", "body_style", "category", "mileage", "model", "price"},
+			"properties": bson.M{
+				"id":          bson.M{"bsonType": "int"},
+				"brand":       bson.M{"bsonType": "int"},
+				"driver_type": bson.M{"bsonType": "int"},
+				"gearbox":     bson.M{"bsonType": "int"},
+				"body_style":  bson.M{"bsonType": "string"},
+				"category":    bson.M{"bsonType": "int"},
+				"mileage":     bson.M{"bsonType": "int"},
+				"model":       bson.M{"bsonType": "string"},
+				"price":       bson.M{"bsonType": "int"},
+			},
+		},
+	}
+
+	err = database.CreateCollection(ctx, "vehicles", options.CreateCollection().SetValidator(vehicleValidator))
+	if err != nil && !strings.Contains(err.Error(), "already exists") {
+		return fmt.Errorf("create vehicles collection: %w", err)
 	}
 
 	vehicleTypes := database.Collection("body_styles")

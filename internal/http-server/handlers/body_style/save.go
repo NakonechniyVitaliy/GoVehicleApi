@@ -18,7 +18,7 @@ type SaveRequest struct {
 	BodyStyle models.BodyStyle
 }
 
-func New(log *slog.Logger, repository bodyStyle.Repository) http.HandlerFunc {
+func New(log *slog.Logger, repository bodyStyle.RepositoryInterface) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.bodyStyle.new"
 

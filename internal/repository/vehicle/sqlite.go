@@ -16,7 +16,7 @@ type SqliteRepository struct {
 	table string
 }
 
-func NewSqlite(db *sql.DB) *SqliteRepository {
+func NewSqliteVehicleRepo(db *sql.DB) *SqliteRepository {
 	return &SqliteRepository{
 		db: db,
 	}

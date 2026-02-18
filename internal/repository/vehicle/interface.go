@@ -6,7 +6,7 @@ import (
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
 )
 
-type Repository interface {
+type RepositoryInterface interface {
 	Create(ctx context.Context, vehicle models.Vehicle) (*models.Vehicle, error)
 	Delete(ctx context.Context, vehicleID uint16) error
 	GetByID(ctx context.Context, vehicleID uint16) (*models.Vehicle, error)

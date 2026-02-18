@@ -14,7 +14,7 @@ import (
 	"github.com/go-chi/render"
 )
 
-func Refresh(log *slog.Logger, repository brand.Repository, cfg *config.Config) http.HandlerFunc {
+func Refresh(log *slog.Logger, repository brand.RepositoryInterface, cfg *config.Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.brand.update.Refresh"
 

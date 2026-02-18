@@ -17,7 +17,7 @@ type MongoRepository struct {
 	bodyStyles *mongo.Collection
 }
 
-func NewMongo(db *mongo.Database) *MongoRepository {
+func NewMongoBodyStyleRepo(db *mongo.Database) *MongoRepository {
 	return &MongoRepository{
 		db:         db,
 		bodyStyles: db.Collection("body_styles"),

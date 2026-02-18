@@ -16,7 +16,7 @@ type MongoRepository struct {
 	gearboxes *mongo.Collection
 }
 
-func NewMongo(db *mongo.Database) *MongoRepository {
+func NewMongoGearboxRepo(db *mongo.Database) *MongoRepository {
 	return &MongoRepository{
 		db:        db,
 		gearboxes: db.Collection("gearboxes"),

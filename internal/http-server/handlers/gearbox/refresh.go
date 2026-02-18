@@ -16,7 +16,7 @@ type Response struct {
 	resp.Response
 }
 
-func Refresh(log *slog.Logger, repository gearboxRepo.Repository, cfg *config.Config) http.HandlerFunc {
+func Refresh(log *slog.Logger, repository gearboxRepo.RepositoryInterface, cfg *config.Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.gearbox.Refresh"
 

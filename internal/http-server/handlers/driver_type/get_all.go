@@ -16,7 +16,7 @@ type GetAllResponse struct {
 	DriverTypes []models.DriverType
 }
 
-func GetAll(log *slog.Logger, repo driverTypeRepo.Repository) http.HandlerFunc {
+func GetAll(log *slog.Logger, repo driverTypeRepo.RepositoryInterface) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.driverType.get.GetAll"
 

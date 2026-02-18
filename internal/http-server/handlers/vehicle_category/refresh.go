@@ -12,7 +12,7 @@ import (
 	"github.com/go-chi/render"
 )
 
-func Refresh(log *slog.Logger, repository vehicleCategoryRepo.Repository, cfg *config.Config) http.HandlerFunc {
+func Refresh(log *slog.Logger, repository vehicleCategoryRepo.RepositoryInterface, cfg *config.Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.vehicleCategory.update.Refresh"
 

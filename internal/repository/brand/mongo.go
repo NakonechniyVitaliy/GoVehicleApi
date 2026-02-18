@@ -17,7 +17,7 @@ type MongoRepository struct {
 	brands *mongo.Collection
 }
 
-func NewMongo(db *mongo.Database) *MongoRepository {
+func NewMongoBrandRepo(db *mongo.Database) *MongoRepository {
 	return &MongoRepository{
 		db:     db,
 		brands: db.Collection("brands"),

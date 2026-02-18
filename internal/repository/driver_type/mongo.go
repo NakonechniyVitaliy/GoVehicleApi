@@ -16,7 +16,7 @@ type MongoRepository struct {
 	driverTypes *mongo.Collection
 }
 
-func NewMongo(db *mongo.Database) *MongoRepository {
+func NewMongoDriverTypeRepo(db *mongo.Database) *MongoRepository {
 	return &MongoRepository{
 		db:          db,
 		driverTypes: db.Collection("driver_types"),

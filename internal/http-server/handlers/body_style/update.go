@@ -16,7 +16,7 @@ type UpdateRequest struct {
 	BodyStyle models.BodyStyle
 }
 
-func Update(log *slog.Logger, repository bodyStyle.Repository) http.HandlerFunc {
+func Update(log *slog.Logger, repository bodyStyle.RepositoryInterface) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.bodyStyle.update.Update"
 

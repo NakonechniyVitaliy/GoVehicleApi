@@ -16,7 +16,7 @@ type GetAllResponse struct {
 	BodyStyles []models.BodyStyle
 }
 
-func GetAll(log *slog.Logger, repository bodyStyle.Repository) http.HandlerFunc {
+func GetAll(log *slog.Logger, repository bodyStyle.RepositoryInterface) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.BodyStyle.getAll"
 

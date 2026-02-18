@@ -8,7 +8,7 @@ import (
 	driverTypeRequests "github.com/NakonechniyVitaliy/GoVehicleApi/internal/requests/autoria/driver_types"
 )
 
-func RefreshDriverTypes(ctx context.Context, cfg *config.Config, repository driverTypeRepo.Repository) error {
+func RefreshDriverTypes(ctx context.Context, cfg *config.Config, repository driverTypeRepo.RepositoryInterface) error {
 
 	vehicleCategories, err := driverTypeRequests.GetDriverTypes(cfg.AutoriaKey)
 	if err != nil {

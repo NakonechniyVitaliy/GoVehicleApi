@@ -8,11 +8,13 @@ import (
 	brandHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/brand"
 	driverTypeHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/driver_type"
 	gearboxHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/gearbox"
+	vehicleHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/vehicle"
 	vehicleCategoryHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/vehicle_category"
 	bodyStyleRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/body_style"
 	brandRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/brand"
 	driverTypeRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/driver_type"
 	gearboxRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/gearbox"
+	vehicleRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/vehicle"
 	vehicleCategoryRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/vehicle_category"
 
 	"github.com/go-chi/chi/v5"
@@ -21,11 +23,12 @@ import (
 
 func SetupRouter(
 	log *slog.Logger,
-	brandRepo brandRepo.Repository,
-	bodyStyleRepo bodyStyleRepo.Repository,
-	vehicleCategoryRepo vehicleCategoryRepo.Repository,
-	driverTypeRepo driverTypeRepo.Repository,
-	gearboxRepo gearboxRepo.Repository,
+	brandRepo brandRepo.RepositoryInterface,
+	bodyStyleRepo bodyStyleRepo.RepositoryInterface,
+	vehicleCategoryRepo vehicleCategoryRepo.RepositoryInterface,
+	driverTypeRepo driverTypeRepo.RepositoryInterface,
+	gearboxRepo gearboxRepo.RepositoryInterface,
+	vehicleRepo vehicleRepo.RepositoryInterface,
 	cfg *config.Config,
 ) chi.Router {
 
@@ -36,18 +39,19 @@ func SetupRouter(
 	router.Use(middleware.Recoverer) // Востановление после критикал ошибки
 	router.Use(middleware.URLFormat) // Удобное получение параметров из сслыки
 
-	SetupVehicleTypeRoutes(router, log, bodyStyleRepo, cfg)
+	SetupBodyStyleRoutes(router, log, bodyStyleRepo, cfg)
 	SetupDriverTypeRoutes(router, log, driverTypeRepo, cfg)
 	SetupBrandRoutes(router, log, brandRepo, cfg)
 	SetupVehicleCategoryRoutes(router, log, vehicleCategoryRepo, cfg)
 	SetupGearboxRoutes(router, log, gearboxRepo, cfg)
+	SetupVehiclesRoutes(router, log, vehicleRepo)
 	return router
 }
 
-func SetupVehicleTypeRoutes(
+func SetupBodyStyleRoutes(
 	router chi.Router,
 	log *slog.Logger,
-	bodyStyleRepo bodyStyleRepo.Repository,
+	bodyStyleRepo bodyStyleRepo.RepositoryInterface,
 	cfg *config.Config,
 ) {
 	router.Route("/body-style", func(r chi.Router) {
@@ -63,7 +67,7 @@ func SetupVehicleTypeRoutes(
 func SetupBrandRoutes(
 	router chi.Router,
 	log *slog.Logger,
-	brandRepo brandRepo.Repository,
+	brandRepo brandRepo.RepositoryInterface,
 	cfg *config.Config,
 ) {
 	router.Route("/brand", func(r chi.Router) {
@@ -79,7 +83,7 @@ func SetupBrandRoutes(
 func SetupVehicleCategoryRoutes(
 	router chi.Router,
 	log *slog.Logger,
-	vehicleCategoryRepo vehicleCategoryRepo.Repository,
+	vehicleCategoryRepo vehicleCategoryRepo.RepositoryInterface,
 	cfg *config.Config,
 ) {
 	router.Route("/vehicle-category", func(r chi.Router) {
@@ -91,7 +95,7 @@ func SetupVehicleCategoryRoutes(
 func SetupDriverTypeRoutes(
 	router chi.Router,
 	log *slog.Logger,
-	driverTypeRepo driverTypeRepo.Repository,
+	driverTypeRepo driverTypeRepo.RepositoryInterface,
 	cfg *config.Config,
 ) {
 	router.Route("/driver-type", func(r chi.Router) {
@@ -103,11 +107,25 @@ func SetupDriverTypeRoutes(
 func SetupGearboxRoutes(
 	router chi.Router,
 	log *slog.Logger,
-	gearboxRepo gearboxRepo.Repository,
+	gearboxRepo gearboxRepo.RepositoryInterface,
 	cfg *config.Config,
 ) {
 	router.Route("/gearbox", func(r chi.Router) {
 		r.Get("/all", gearboxHandler.GetAll(log, gearboxRepo))
 		r.Put("/refresh", gearboxHandler.Refresh(log, gearboxRepo, cfg))
+	})
+}
+
+func SetupVehiclesRoutes(
+	router chi.Router,
+	log *slog.Logger,
+	vehicleRepo vehicleRepo.RepositoryInterface,
+) {
+	router.Route("/vehicle", func(r chi.Router) {
+		r.Post("/", vehicleHandler.New(log, vehicleRepo))
+		r.Delete("/{id}", vehicleHandler.Delete(log, vehicleRepo))
+		r.Get("/{id}", vehicleHandler.Get(log, vehicleRepo))
+		r.Put("/{id}", vehicleHandler.Update(log, vehicleRepo))
+		r.Get("/all", vehicleHandler.GetAll(log, vehicleRepo))
 	})
 }

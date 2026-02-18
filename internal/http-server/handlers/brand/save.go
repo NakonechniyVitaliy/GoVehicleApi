@@ -18,7 +18,7 @@ type SaveResponse struct {
 	Brand    *models.Brand
 }
 
-func New(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
+func New(log *slog.Logger, repository brand.RepositoryInterface) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.brand.save.New"
 

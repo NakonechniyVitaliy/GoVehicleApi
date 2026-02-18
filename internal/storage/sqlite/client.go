@@ -62,6 +62,19 @@ func migrate(db *sql.DB) error {
 		value INTEGER UNIQUE NOT NULL
 	);`
 
+	queryVehicles := `
+	CREATE TABLE IF NOT EXISTS vehicles (
+	    id INTEGER PRIMARY KEY AUTOINCREMENT,
+	    brand INTEGER NOT NULL,
+	    driver_type INTEGER NOT NULL,
+		gearbox INTEGER NOT NULL,
+		body_style INTEGER NOT NULL,
+		category INTEGER NOT NULL,
+		mileage INTEGER,
+		model TEXT,
+		price INTEGER NOT NULL
+	);`
+
 	_, err := db.Exec(queryBrands)
 	if err != nil {
 		return err
@@ -71,6 +84,10 @@ func migrate(db *sql.DB) error {
 		return err
 	}
 	_, err = db.Exec(queryVehicleCategories)
+	if err != nil {
+		return err
+	}
+	_, err = db.Exec(queryVehicles)
 	if err != nil {
 		return err
 	}

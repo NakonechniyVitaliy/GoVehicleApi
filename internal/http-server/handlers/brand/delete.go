@@ -14,7 +14,7 @@ import (
 	"github.com/go-chi/render"
 )
 
-func Delete(log *slog.Logger, repository brand.Repository) http.HandlerFunc {
+func Delete(log *slog.Logger, repository brand.RepositoryInterface) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.brand.delete.Delete"
 
