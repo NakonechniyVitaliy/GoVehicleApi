@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/config"
+	consts "github.com/NakonechniyVitaliy/GoVehicleApi/internal/constants"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/router"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/mongo"
@@ -19,11 +20,6 @@ import (
 	gearboxRep "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/gearbox"
 	vehicleRep "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/vehicle"
 	vehicleCategoryRep "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/vehicle_category"
-)
-
-const (
-	mongoDB = "mongo"
-	sqLite  = "sqlite"
 )
 
 type App struct {
@@ -66,11 +62,11 @@ func setupStorage(cfg *config.Config) (storage.Storage, error) {
 	defer cancel()
 
 	switch cfg.DataBase {
-	case mongoDB:
+	case consts.MongoDB:
 		return mongo.New(ctx)
 
-	case sqLite:
-		return sqlite.New(cfg.StoragePath)
+	case consts.SqLite:
+		return sqlite.New(cfg)
 
 	default:
 		return nil, fmt.Errorf("unknown database type: %s", cfg.DataBase)
@@ -89,7 +85,7 @@ type Repositories struct {
 func setupRepositories(Storage storage.Storage) (*Repositories, error) {
 
 	switch Storage.GetName() {
-	case mongoDB:
+	case consts.MongoDB:
 		// type assertion - get object from interface
 		mongoStorage := Storage.(*mongo.MongoStorage)
 		return &Repositories{
@@ -101,7 +97,7 @@ func setupRepositories(Storage storage.Storage) (*Repositories, error) {
 			vehicleRep.NewMongoVehicleRepo(mongoStorage.DB),
 		}, nil
 
-	case sqLite:
+	case consts.SqLite:
 		// type assertion - get object from interface
 		sqliteStorage := Storage.(*sqlite.SqliteStorage)
 		return &Repositories{

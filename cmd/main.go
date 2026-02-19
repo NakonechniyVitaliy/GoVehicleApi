@@ -7,6 +7,7 @@ import (
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/app"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/config"
+	consts "github.com/NakonechniyVitaliy/GoVehicleApi/internal/constants"
 )
 
 func main() {
@@ -37,25 +38,19 @@ func main() {
 	log.Error("server stoped")
 }
 
-const (
-	envLocal = "local"
-	envProd  = "prod"
-	envDev   = "dev"
-)
-
 func setupLogger(env string) *slog.Logger {
 	var log *slog.Logger
 
 	switch env {
-	case envLocal:
+	case consts.EnvLocal:
 		log = slog.New(
 			slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}),
 		)
-	case envDev:
+	case consts.EnvDev:
 		log = slog.New(
 			slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}),
 		)
-	case envProd:
+	case consts.EnvProd:
 		log = slog.New(
 			slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}),
 		)

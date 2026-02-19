@@ -4,6 +4,7 @@
     <inspection_tool class="GoDfaErrorMayBeNotNil" enabled="true" level="WARNING" enabled_by_default="true">
       <functions>
         <function importPath="go.mongodb.org/mongo-driver/mongo" name="Connect" />
+        <function importPath="database/sql" name="Open" />
       </functions>
       <methods>
         <method importPath="database/sql" receiver="*DB" name="ExecContext" />
