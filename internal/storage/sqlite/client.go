@@ -7,6 +7,8 @@ import (
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/config"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/migrator"
 	_ "github.com/mattn/go-sqlite3"
+	// Driver for getting migrations from files
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
 type SqliteStorage struct {
@@ -26,7 +28,7 @@ func New(cfg *config.Config) (*SqliteStorage, error) {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	if err := migrator.Migrate(cfg); err != nil {
+	if err := migrator.Run(cfg); err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 

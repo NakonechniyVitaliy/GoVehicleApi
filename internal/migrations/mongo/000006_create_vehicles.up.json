@@ -1,0 +1,30 @@
+[{
+  "create": "vehicles",
+  "validator": {
+    "$jsonSchema": {
+      "bsonType": "object",
+      "required": [
+        "id",
+        "brand",
+        "driver_type",
+        "gearbox",
+        "body_style",
+        "category",
+        "mileage",
+        "model",
+        "price"
+      ],
+      "properties": {
+        "id": { "bsonType": "int" },
+        "brand": { "bsonType": "int" },
+        "driver_type": { "bsonType": "int" },
+        "gearbox": { "bsonType": "int" },
+        "body_style": { "bsonType": "int" },
+        "category": { "bsonType": "int" },
+        "mileage": { "bsonType": "int" },
+        "model": { "bsonType": "string" },
+        "price": { "bsonType": "int" }
+      }
+    }
+  }
+}]

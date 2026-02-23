@@ -1,0 +1,14 @@
+[{
+  "create": "body_styles",
+  "validator": {
+    "$jsonSchema": {
+      "bsonType": "object",
+      "required": ["id", "name", "value"],
+      "properties": {
+        "id": { "bsonType": "int" },
+        "name": { "bsonType": "string" },
+        "value": { "bsonType": "int" }
+      }
+    }
+  }
+}]

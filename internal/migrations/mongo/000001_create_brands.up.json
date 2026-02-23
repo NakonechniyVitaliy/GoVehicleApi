@@ -1,0 +1,30 @@
+[{
+  "create": "brands",
+  "validator": {
+    "$jsonSchema": {
+      "bsonType": "object",
+      "required": [
+        "id",
+        "category_id",
+        "cnt",
+        "country_id",
+        "eng",
+        "marka_id",
+        "name",
+        "slang",
+        "value"
+      ],
+      "properties": {
+        "id": { "bsonType": "int" },
+        "category_id": { "bsonType": "int" },
+        "cnt": { "bsonType": "int" },
+        "country_id": { "bsonType": "int" },
+        "eng": { "bsonType": "string" },
+        "marka_id": { "bsonType": "int" },
+        "name": { "bsonType": "string" },
+        "slang": { "bsonType": "string" },
+        "value": { "bsonType": "int" }
+      }
+    }
+  }
+}]

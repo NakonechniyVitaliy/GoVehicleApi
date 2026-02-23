@@ -63,7 +63,7 @@ func setupStorage(cfg *config.Config) (storage.Storage, error) {
 
 	switch cfg.DataBase {
 	case consts.MongoDB:
-		return mongo.New(ctx)
+		return mongo.New(ctx, cfg)
 
 	case consts.SqLite:
 		return sqlite.New(cfg)

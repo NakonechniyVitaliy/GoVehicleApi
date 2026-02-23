@@ -11,6 +11,7 @@ import (
 type Config struct {
 	Env         string `yaml:"env" env:"ENV" env-default:"local"`
 	StoragePath string `yaml:"storage_path" env-required:"true"`
+	MongoURI    string `yaml:"mongo_uri" env-required:"true"`
 	DataBase    string `yaml:"database" env-default:"sqlite"`
 	AutoriaKey  string `yaml:"autoria_key" env-required:"true"`
 	HTTPServer  `yaml:"http_server"`
