@@ -86,7 +86,7 @@ func SetupCategoryRoutes(
 	categoryRepo categoryRepo.RepositoryInterface,
 	cfg *config.Config,
 ) {
-	router.Route("/vehicle-category", func(r chi.Router) {
+	router.Route("/category", func(r chi.Router) {
 		r.Get("/all", categoryHandler.GetAll(log, categoryRepo))
 		r.Put("/refresh", categoryHandler.Refresh(log, categoryRepo, cfg))
 	})
