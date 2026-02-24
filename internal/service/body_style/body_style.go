@@ -1,4 +1,4 @@
-package vehicle_category
+package category
 
 import (
 	"context"
@@ -10,12 +10,12 @@ import (
 
 func RefreshBodyStyles(ctx context.Context, cfg *config.Config, repository bodyStyleRepo.RepositoryInterface) error {
 
-	vehicleCategories, err := bodyStyleRequests.GetBodyStyles(cfg.AutoriaKey)
+	bodyStyles, err := bodyStyleRequests.GetBodyStyles(cfg.AutoriaKey)
 	if err != nil {
 		return err
 	}
 
-	for _, oneCategory := range vehicleCategories {
+	for _, oneCategory := range bodyStyles {
 		err = repository.InsertOrUpdate(ctx, oneCategory)
 		if err != nil {
 			return err

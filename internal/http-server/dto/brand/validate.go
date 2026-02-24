@@ -2,6 +2,8 @@ package brand
 
 import (
 	"fmt"
+
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/_errors"
 )
 
 type SaveRequest struct {
@@ -19,7 +21,7 @@ func (r SaveRequest) Validate() error {
 		b.Name == nil ||
 		b.Slang == nil ||
 		b.Value == nil {
-		return fmt.Errorf("all fields are required")
+		return fmt.Errorf(_errors.AllFieldsAreRequired)
 	}
 	return nil
 }
@@ -39,7 +41,7 @@ func (r UpdateRequest) Validate() error {
 		b.Name == nil ||
 		b.Slang == nil ||
 		b.Value == nil {
-		return fmt.Errorf("all fields are required")
+		return fmt.Errorf(_errors.AllFieldsAreRequired)
 	}
 	return nil
 }

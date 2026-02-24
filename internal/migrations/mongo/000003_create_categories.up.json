@@ -1,5 +1,5 @@
 [{
-  "create": "vehicle_categories",
+  "create": "categories",
   "validator": {
     "$jsonSchema": {
       "bsonType": "object",

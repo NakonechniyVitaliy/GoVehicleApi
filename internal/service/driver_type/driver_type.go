@@ -10,13 +10,13 @@ import (
 
 func RefreshDriverTypes(ctx context.Context, cfg *config.Config, repository driverTypeRepo.RepositoryInterface) error {
 
-	vehicleCategories, err := driverTypeRequests.GetDriverTypes(cfg.AutoriaKey)
+	driverTypes, err := driverTypeRequests.GetDriverTypes(cfg.AutoriaKey)
 	if err != nil {
 		return err
 	}
 
-	for _, oneCategory := range vehicleCategories {
-		err = repository.InsertOrUpdate(ctx, oneCategory)
+	for _, oneDriverType := range driverTypes {
+		err = repository.InsertOrUpdate(ctx, oneDriverType)
 		if err != nil {
 			return err
 		}

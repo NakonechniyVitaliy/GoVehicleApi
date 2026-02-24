@@ -1,4 +1,4 @@
-package vehicle_category
+package category
 
 import (
 	"context"
@@ -13,16 +13,16 @@ type SqliteRepository struct {
 	table string
 }
 
-func NewSqliteVehicleCategoryRepo(db *sql.DB) *SqliteRepository {
+func NewSqliteCategoryRepo(db *sql.DB) *SqliteRepository {
 	return &SqliteRepository{
 		db: db,
 	}
 }
 
-func (s *SqliteRepository) GetAll(ctx context.Context) ([]models.VehicleCategory, error) {
-	const op = "storage.vehicleCategories.GetAll"
+func (s *SqliteRepository) GetAll(ctx context.Context) ([]models.Category, error) {
+	const op = "storage.categories.GetAll"
 
-	const query = `SELECT id, name, value FROM vehicle_categories`
+	const query = `SELECT id, name, value FROM categories`
 
 	rows, err := s.db.QueryContext(ctx, query)
 	if err != nil {
@@ -30,24 +30,24 @@ func (s *SqliteRepository) GetAll(ctx context.Context) ([]models.VehicleCategory
 	}
 	defer rows.Close()
 
-	var vehicleCategories []models.VehicleCategory
+	var categories []models.Category
 	for rows.Next() {
-		var vc models.VehicleCategory
+		var vc models.Category
 		if err := rows.Scan(
 			&vc.ID, &vc.Name, &vc.Value); err != nil {
 			return nil, fmt.Errorf("%s: scan: %w", op, err)
 		}
-		vehicleCategories = append(vehicleCategories, vc)
+		categories = append(categories, vc)
 	}
 
-	return vehicleCategories, nil
+	return categories, nil
 }
 
-func (s *SqliteRepository) InsertOrUpdate(ctx context.Context, vehicleCategory models.VehicleCategory) error {
-	const op = "storage.vehicleCategory.InsertOrUpdate"
+func (s *SqliteRepository) InsertOrUpdate(ctx context.Context, category models.Category) error {
+	const op = "storage.category.InsertOrUpdate"
 
 	const query = `
-		INSERT INTO vehicle_categories (
+		INSERT INTO categories (
 		name, value
 		) VALUES (?, ?)
 		ON CONFLICT(value) DO UPDATE SET 
@@ -56,8 +56,8 @@ func (s *SqliteRepository) InsertOrUpdate(ctx context.Context, vehicleCategory m
 	_, err := s.db.ExecContext(
 		ctx,
 		query,
-		vehicleCategory.Name,
-		vehicleCategory.Value,
+		category.Name,
+		category.Value,
 	)
 
 	if err != nil {

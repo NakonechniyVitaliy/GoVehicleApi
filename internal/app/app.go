@@ -16,10 +16,10 @@ import (
 
 	bodyStyleRep "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/body_style"
 	brandRep "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/brand"
+	categoryRep "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/category"
 	driverTypeRep "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/driver_type"
 	gearboxRep "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/gearbox"
 	vehicleRep "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/vehicle"
-	vehicleCategoryRep "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/vehicle_category"
 )
 
 type App struct {
@@ -43,7 +43,7 @@ func New(log *slog.Logger, cfg *config.Config) (*App, error) {
 		log,
 		repos.Brand,
 		repos.BodyStyle,
-		repos.VehicleCategory,
+		repos.Category,
 		repos.DriverType,
 		repos.Gearbox,
 		repos.Vehicle,
@@ -74,12 +74,12 @@ func setupStorage(cfg *config.Config) (storage.Storage, error) {
 }
 
 type Repositories struct {
-	Brand           brandRep.RepositoryInterface
-	BodyStyle       bodyStyleRep.RepositoryInterface
-	VehicleCategory vehicleCategoryRep.RepositoryInterface
-	DriverType      driverTypeRep.RepositoryInterface
-	Gearbox         gearboxRep.RepositoryInterface
-	Vehicle         vehicleRep.RepositoryInterface
+	Brand      brandRep.RepositoryInterface
+	BodyStyle  bodyStyleRep.RepositoryInterface
+	Category   categoryRep.RepositoryInterface
+	DriverType driverTypeRep.RepositoryInterface
+	Gearbox    gearboxRep.RepositoryInterface
+	Vehicle    vehicleRep.RepositoryInterface
 }
 
 func setupRepositories(Storage storage.Storage) (*Repositories, error) {
@@ -91,7 +91,7 @@ func setupRepositories(Storage storage.Storage) (*Repositories, error) {
 		return &Repositories{
 			brandRep.NewMongoBrandRepo(mongoStorage.DB),
 			bodyStyleRep.NewMongoBodyStyleRepo(mongoStorage.DB),
-			vehicleCategoryRep.NewMongoVehicleCategoryRepo(mongoStorage.DB),
+			categoryRep.NewMongoCategoryRepo(mongoStorage.DB),
 			driverTypeRep.NewMongoDriverTypeRepo(mongoStorage.DB),
 			gearboxRep.NewMongoGearboxRepo(mongoStorage.DB),
 			vehicleRep.NewMongoVehicleRepo(mongoStorage.DB),
@@ -103,7 +103,7 @@ func setupRepositories(Storage storage.Storage) (*Repositories, error) {
 		return &Repositories{
 			brandRep.NewSqliteBrandRepo(sqliteStorage.DB),
 			bodyStyleRep.NewSqliteBodyStyleRepo(sqliteStorage.DB),
-			vehicleCategoryRep.NewSqliteVehicleCategoryRepo(sqliteStorage.DB),
+			categoryRep.NewSqliteCategoryRepo(sqliteStorage.DB),
 			driverTypeRep.NewSqliteDriverTypeRepo(sqliteStorage.DB),
 			gearboxRep.NewSqliteGearboxRepo(sqliteStorage.DB),
 			vehicleRep.NewSqliteVehicleRepo(sqliteStorage.DB),

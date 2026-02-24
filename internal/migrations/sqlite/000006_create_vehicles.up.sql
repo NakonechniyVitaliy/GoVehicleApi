@@ -26,6 +26,6 @@ CREATE TABLE vehicles (
                               ON DELETE RESTRICT,
 
                           FOREIGN KEY (category)
-                              REFERENCES vehicle_categories(id)
+                              REFERENCES categories(id)
                               ON DELETE RESTRICT
 );

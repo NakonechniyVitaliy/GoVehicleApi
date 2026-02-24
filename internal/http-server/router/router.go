@@ -6,16 +6,16 @@ import (
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/config"
 	bodyStyleHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/body_style"
 	brandHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/brand"
+	categoryHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/category"
 	driverTypeHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/driver_type"
 	gearboxHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/gearbox"
 	vehicleHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/vehicle"
-	vehicleCategoryHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/vehicle_category"
 	bodyStyleRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/body_style"
 	brandRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/brand"
+	categoryRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/category"
 	driverTypeRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/driver_type"
 	gearboxRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/gearbox"
 	vehicleRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/vehicle"
-	vehicleCategoryRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/vehicle_category"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -25,7 +25,7 @@ func SetupRouter(
 	log *slog.Logger,
 	brandRepo brandRepo.RepositoryInterface,
 	bodyStyleRepo bodyStyleRepo.RepositoryInterface,
-	vehicleCategoryRepo vehicleCategoryRepo.RepositoryInterface,
+	categoryRepo categoryRepo.RepositoryInterface,
 	driverTypeRepo driverTypeRepo.RepositoryInterface,
 	gearboxRepo gearboxRepo.RepositoryInterface,
 	vehicleRepo vehicleRepo.RepositoryInterface,
@@ -42,7 +42,7 @@ func SetupRouter(
 	SetupBodyStyleRoutes(router, log, bodyStyleRepo, cfg)
 	SetupDriverTypeRoutes(router, log, driverTypeRepo, cfg)
 	SetupBrandRoutes(router, log, brandRepo, cfg)
-	SetupVehicleCategoryRoutes(router, log, vehicleCategoryRepo, cfg)
+	SetupCategoryRoutes(router, log, categoryRepo, cfg)
 	SetupGearboxRoutes(router, log, gearboxRepo, cfg)
 	SetupVehiclesRoutes(router, log, vehicleRepo)
 	return router
@@ -80,15 +80,15 @@ func SetupBrandRoutes(
 	})
 }
 
-func SetupVehicleCategoryRoutes(
+func SetupCategoryRoutes(
 	router chi.Router,
 	log *slog.Logger,
-	vehicleCategoryRepo vehicleCategoryRepo.RepositoryInterface,
+	categoryRepo categoryRepo.RepositoryInterface,
 	cfg *config.Config,
 ) {
 	router.Route("/vehicle-category", func(r chi.Router) {
-		r.Get("/all", vehicleCategoryHandler.GetAll(log, vehicleCategoryRepo))
-		r.Put("/refresh", vehicleCategoryHandler.Refresh(log, vehicleCategoryRepo, cfg))
+		r.Get("/all", categoryHandler.GetAll(log, categoryRepo))
+		r.Put("/refresh", categoryHandler.Refresh(log, categoryRepo, cfg))
 	})
 }
 
