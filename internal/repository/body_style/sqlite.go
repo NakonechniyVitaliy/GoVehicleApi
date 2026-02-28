@@ -62,7 +62,11 @@ func (s *SqliteRepository) GetAll(ctx context.Context) ([]models.BodyStyle, erro
 	return body_styles, nil
 }
 
-func (s *SqliteRepository) Update(ctx context.Context, bodyStyle models.BodyStyle) error {
+func (s *SqliteRepository) Update(
+	ctx context.Context,
+	bodyStyle models.BodyStyle,
+	bodyStyleID uint16,
+) (*models.BodyStyle, error) {
 	const op = "storage.bodyStyle.UpdateBodyStyle"
 
 	const query = `
@@ -78,22 +82,31 @@ func (s *SqliteRepository) Update(ctx context.Context, bodyStyle models.BodyStyl
 		query,
 		bodyStyle.Name,
 		bodyStyle.Value,
-		bodyStyle.ID,
+		bodyStyleID,
 	)
 	if err != nil {
-		return fmt.Errorf("%s: %w", op, err)
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
 	affected, err := res.RowsAffected()
 	if err != nil {
-		return fmt.Errorf("%s: %w", op, err)
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
-
 	if affected == 0 {
-		return storage.ErrBodyStyleNotFound
+		return nil, storage.ErrBodyStyleNotFound
 	}
 
-	return nil
+	createdBodyStyleID, err := res.LastInsertId()
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+
+	createdBS, err := s.GetByID(ctx, uint16(createdBodyStyleID))
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+
+	return createdBS, nil
 }
 
 func (s *SqliteRepository) Delete(ctx context.Context, bodyStyleID uint16) error {
@@ -120,7 +133,7 @@ func (s *SqliteRepository) Delete(ctx context.Context, bodyStyleID uint16) error
 	return nil
 }
 
-func (s *SqliteRepository) Create(ctx context.Context, bodyStyle models.BodyStyle) error {
+func (s *SqliteRepository) Create(ctx context.Context, bodyStyle models.BodyStyle) (*models.BodyStyle, error) {
 	const op = "storage.bodyStyle.NewBodyStyle"
 
 	const query = `
@@ -138,21 +151,30 @@ func (s *SqliteRepository) Create(ctx context.Context, bodyStyle models.BodyStyl
 	)
 	if err != nil {
 		if strings.Contains(err.Error(), "UNIQUE") {
-			return storage.ErrBodyStyleExists
+			return nil, storage.ErrBodyStyleExists
 		}
-		return fmt.Errorf("%s: %w", op, err)
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
 	affected, err := res.RowsAffected()
 	if err != nil {
-		return fmt.Errorf("%s: %w", op, err)
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
-
 	if affected == 0 {
-		return storage.ErrBodyStyleExists
+		return nil, storage.ErrBodyStyleExists
 	}
 
-	return nil
+	bodyStyleID, err := res.LastInsertId()
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+
+	createdBS, err := s.GetByID(ctx, uint16(bodyStyleID))
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+
+	return createdBS, nil
 }
 
 func (s *SqliteRepository) InsertOrUpdate(ctx context.Context, bodyStyle models.BodyStyle) error {

@@ -44,14 +44,15 @@ func TestPositiveTests(t *testing.T) {
 func doTestSave(e *httpexpect.Expect, tc PositiveTestCase) uint16 {
 	resp := e.POST("/body-style/").
 		WithJSON(dto.SaveRequest{
-			BodyStyleDTO: dto.BodyStyleDTO{
-				Name:       tc.Name,
-				Value:      tc.Value,
+			BodyStyle: dto.BodyStyleDTO{
+				Name:  tc.Name,
+				Value: tc.Value,
 			},
 		}).Expect().Status(http.StatusOK).
 		JSON().Object()
 
 	bodyStyle := resp.Value("BodyStyle").Object()
+	fmt.Println(bodyStyle)
 
 	bodyStyle.Value("name").String().IsEqual(helper.DerefString(tc.Name))
 	bodyStyle.Value("value").Number().IsEqual(helper.DerefUint16(tc.Value))
@@ -74,7 +75,7 @@ func doTestUpdatePositive(e *httpexpect.Expect, updatedBSData dto.BodyStyleDTO, 
 
 	resp := e.PUT(fmt.Sprintf("/body-style/%d", bodyStyleID)).
 		WithJSON(dto.UpdateRequest{
-			BodyStyleDTO: updatedBSData,
+			BodyStyle: updatedBSData,
 		}).Expect().Status(http.StatusOK).
 		JSON().Object()
 
@@ -90,7 +91,6 @@ func doTestDeletePositive(e *httpexpect.Expect, bodyStyleID uint16) {
 
 	e.GET(fmt.Sprintf("/body-style/%d", bodyStyleID)).Expect().
 		Status(http.StatusNotFound)
-
 }
 
 func doTestRefreshPositive(e *httpexpect.Expect) {

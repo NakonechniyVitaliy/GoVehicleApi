@@ -6,35 +6,22 @@ import (
 )
 
 type PositiveTestCase struct {
-	CaseName   string
-	Name  *string
-	Value      *uint16
+	CaseName string
+	Name     *string
+	Value    *uint16
 }
 type InvalidJsonTestCase struct {
-	CaseName string
-	Error    string
-	BodyStyle    map[string]any
+	CaseName  string
+	Error     string
+	BodyStyle map[string]any
 }
 
 var PositiveCases = []PositiveTestCase{
 	{
-		CaseName:   "Valid body style",
-		Name:  helper.PtrString(gofakeit.CarType()),
-		Value:      helper.PtrUint16(gofakeit.Uint16()),
+		CaseName: "Valid body style",
+		Name:     helper.PtrString(gofakeit.CarType()),
+		Value:    helper.PtrUint16(gofakeit.Uint16()),
 	},
-}
-
-func returnBodyStyleMapWithoutOneField(field string) map[string]any {
-	body_style := map[string]any{
-		"body_style": map[string]any{
-			"name":        gofakeit.CarModel(),
-			"value":       gofakeit.Uint16(),
-		},
-	}
-	inner := body_style["body_style"].(map[string]any)
-	delete(inner, field)
-
-	return body_style
 }
 
 var InvalidJSONCases = []InvalidJsonTestCase{
@@ -42,8 +29,8 @@ var InvalidJSONCases = []InvalidJsonTestCase{
 		CaseName: "Invalid Name",
 		BodyStyle: map[string]any{
 			"body_style": map[string]any{
-				"name":        123,
-				"value":       gofakeit.Uint16(),
+				"name":  123,
+				"value": gofakeit.Uint16(),
 			},
 		},
 		Error: "invalid JSON or wrong field types",
@@ -52,8 +39,8 @@ var InvalidJSONCases = []InvalidJsonTestCase{
 		CaseName: "Invalid Value",
 		BodyStyle: map[string]any{
 			"body_style": map[string]any{
-				"name":        gofakeit.CarType(),
-				"value":       "invalid",
+				"name":  gofakeit.CarType(),
+				"value": "invalid",
 			},
 		},
 		Error: "invalid JSON or wrong field types",
@@ -63,7 +50,7 @@ var InvalidJSONCases = []InvalidJsonTestCase{
 var NoFieldsCases = []InvalidJsonTestCase{
 	{
 		CaseName: "No Name field",
-		BodyStyle:    map[string]any{
+		BodyStyle: map[string]any{
 			"body_style": map[string]any{
 				"value": "invalid",
 			},
@@ -72,9 +59,9 @@ var NoFieldsCases = []InvalidJsonTestCase{
 	},
 	{
 		CaseName: "No Value field",
-		BodyStyle:    map[string]any{
+		BodyStyle: map[string]any{
 			"body_style": map[string]any{
-				"name":  gofakeit.CarType(),
+				"name": gofakeit.CarType(),
 			},
 		},
 		Error: "all fields are required",

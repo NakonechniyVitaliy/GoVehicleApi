@@ -24,27 +24,33 @@ func NewMongoBodyStyleRepo(db *mongo.Database) *MongoRepository {
 	}
 }
 
-func (mng *MongoRepository) Create(ctx context.Context, bodyStyle models.BodyStyle) error {
+func (mng *MongoRepository) Create(ctx context.Context, bodyStyle models.BodyStyle) (*models.BodyStyle, error) {
 	const op = "storage.bodyStyle.Create"
 
 	id, err := mongoStorage.GetNextID(ctx, mng.db, "body_styles")
 	if err != nil {
-		return fmt.Errorf("%s: %w", op, err)
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	bodyStyle.ID = id
 
 	_, err = mng.bodyStyles.InsertOne(ctx, bodyStyle)
 	if err != nil {
-		return fmt.Errorf("%s: %w", op, err)
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
-	return nil
+
+	createdBS, err := mng.GetByID(ctx, id)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+
+	return createdBS, nil
 }
 
-func (mng *MongoRepository) Update(ctx context.Context, bodyStyle models.BodyStyle) error {
+func (mng *MongoRepository) Update(ctx context.Context, bodyStyle models.BodyStyle, bodyStyleID uint16) (*models.BodyStyle, error) {
 	const op = "storage.bodyStyle.UpdateBodyStyle"
 
 	filter := bson.M{
-		"id": bodyStyle.ID,
+		"id": bodyStyleID,
 	}
 
 	update := bson.M{
@@ -56,14 +62,20 @@ func (mng *MongoRepository) Update(ctx context.Context, bodyStyle models.BodySty
 
 	res, err := mng.bodyStyles.UpdateOne(ctx, filter, update)
 	if err != nil {
-		return fmt.Errorf("%s: %w", op, err)
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
 	if res.MatchedCount == 0 {
-		return storage.ErrBodyStyleNotFound
+		return nil, storage.ErrBodyStyleNotFound
 	}
 
-	return nil
+	filter = bson.M{
+		"id": bodyStyleID,
+	}
+	var updatedBS models.BodyStyle
+	err = mng.bodyStyles.FindOne(ctx, filter).Decode(&updatedBS)
+
+	return &updatedBS, nil
 }
 
 func (mng *MongoRepository) GetByID(ctx context.Context, bodyStyleID uint16) (*models.BodyStyle, error) {

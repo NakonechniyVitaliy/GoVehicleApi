@@ -21,7 +21,7 @@ type UpdateResponse struct {
 
 func Update(log *slog.Logger, repository brand.RepositoryInterface) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.brand.update.Update"
+		const op = "handlers.brand.update"
 
 		log = log.With(
 			slog.String("op", op),

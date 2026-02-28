@@ -18,6 +18,11 @@ type SaveRequest struct {
 	BodyStyle models.BodyStyle
 }
 
+type SaveResponse struct {
+	Response  resp.Response
+	BodyStyle *models.BodyStyle
+}
+
 func New(log *slog.Logger, repository bodyStyle.RepositoryInterface) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.bodyStyle.new"
@@ -50,7 +55,7 @@ func New(log *slog.Logger, repository bodyStyle.RepositoryInterface) http.Handle
 
 		log.Info("saving body style", slog.Any("body style", newBodyStyle))
 
-		err = repository.Create(r.Context(), newBodyStyle)
+		createdBS, err := repository.Create(r.Context(), newBodyStyle)
 		if errors.Is(err, storage.ErrBodyStyleExists) {
 			log.Info("bodyStyle already exists", slog.String("body style", req.BodyStyle.Name))
 			render.JSON(w, r, resp.Error("body style already exists"))
@@ -65,6 +70,9 @@ func New(log *slog.Logger, repository bodyStyle.RepositoryInterface) http.Handle
 
 		log.Info("bodyStyle saved", slog.String("body style", req.BodyStyle.Name))
 
-		render.JSON(w, r, resp.OK())
+		render.JSON(w, r, SaveResponse{
+			Response:  resp.OK(),
+			BodyStyle: createdBS,
+		})
 	}
 }

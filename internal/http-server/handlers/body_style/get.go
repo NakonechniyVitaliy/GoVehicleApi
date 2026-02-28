@@ -1,6 +1,7 @@
 package body_style
 
 import (
+	"errors"
 	"log/slog"
 	"net/http"
 	"strconv"
@@ -8,6 +9,7 @@ import (
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
 	bodyStyle "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/body_style"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
@@ -41,6 +43,14 @@ func Get(log *slog.Logger, repository bodyStyle.RepositoryInterface) http.Handle
 		BodyStyle, err := repository.GetByID(r.Context(), BodyStyleID)
 		if err != nil {
 			log.Error("failed to get body style", slog.String("error", err.Error()))
+
+			if errors.Is(err, storage.ErrBodyStyleNotFound) {
+				render.Status(r, http.StatusNotFound)
+				render.JSON(w, r, resp.Error("body style not found"))
+				return
+			}
+
+			render.Status(r, http.StatusInternalServerError)
 			render.JSON(w, r, resp.Error("Failed to get body style"))
 			return
 		}

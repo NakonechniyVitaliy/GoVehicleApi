@@ -7,11 +7,11 @@ import (
 )
 
 type SaveRequest struct {
-	BodyStyleDTO
+	BodyStyle BodyStyleDTO
 }
 
 func (r SaveRequest) Validate() error {
-	bs := r.BodyStyleDTO
+	bs := r.BodyStyle
 
 	if bs.Name == nil || bs.Value == nil {
 		return fmt.Errorf(_errors.AllFieldsAreRequired)
@@ -20,11 +20,11 @@ func (r SaveRequest) Validate() error {
 }
 
 type UpdateRequest struct {
-	BodyStyleDTO
+	BodyStyle BodyStyleDTO
 }
 
 func (r UpdateRequest) Validate() error {
-	bs := r.BodyStyleDTO
+	bs := r.BodyStyle
 
 	if bs.Name == nil || bs.Value == nil {
 		return fmt.Errorf(_errors.AllFieldsAreRequired)

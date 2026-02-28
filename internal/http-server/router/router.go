@@ -59,7 +59,7 @@ func SetupBodyStyleRoutes(
 		r.Delete("/{id}", bodyStyleHandler.Delete(log, bodyStyleRepo))
 		r.Get("/{id}", bodyStyleHandler.Get(log, bodyStyleRepo))
 		r.Get("/all", bodyStyleHandler.GetAll(log, bodyStyleRepo))
-		r.Put("/", bodyStyleHandler.Update(log, bodyStyleRepo))
+		r.Put("/{id}", bodyStyleHandler.Update(log, bodyStyleRepo))
 		r.Put("/refresh", bodyStyleHandler.Refresh(log, bodyStyleRepo, cfg))
 	})
 }
