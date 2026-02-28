@@ -23,7 +23,7 @@ type GetResponse struct {
 func Get(log *slog.Logger, repository bodyStyle.RepositoryInterface) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		const op = "handlers.bodyStyle.get"
+		const op = "handlers.body_style.get"
 
 		log = log.With(
 			slog.String("op", op),

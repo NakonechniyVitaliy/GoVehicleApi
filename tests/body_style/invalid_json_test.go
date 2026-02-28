@@ -29,7 +29,6 @@ func TestInvalidJsonTest(t *testing.T) {
 			doTestUpdateInvalidJSON(e, tc)
 		})
 	}
-
 }
 
 func doTestSaveInvalidJSON(e *httpexpect.Expect, tc InvalidJsonTestCase) {
@@ -43,13 +42,13 @@ func doTestSaveInvalidJSON(e *httpexpect.Expect, tc InvalidJsonTestCase) {
 }
 
 func doTestUpdateInvalidJSON(e *httpexpect.Expect, tc InvalidJsonTestCase) {
-	bodyStyleMap := tc.BodyStyle["body_style"].(map[string]any)
+	bodyStyleMap := tc.BodyStyle["bodyStyle"].(map[string]any)
 
 	req := e.PUT(fmt.Sprintf("/body-style/1")).
 		WithJSON(map[string]any{
-			"brand": map[string]any{
-				"name":        bodyStyleMap["name"],
-				"value":       bodyStyleMap["value"],
+			"bodyStyle": map[string]any{
+				"name":  bodyStyleMap["name"],
+				"value": bodyStyleMap["value"],
 			},
 		}).Expect()
 

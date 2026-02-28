@@ -28,7 +28,7 @@ var InvalidJSONCases = []InvalidJsonTestCase{
 	{
 		CaseName: "Invalid Name",
 		BodyStyle: map[string]any{
-			"body_style": map[string]any{
+			"bodyStyle": map[string]any{
 				"name":  123,
 				"value": gofakeit.Uint16(),
 			},
@@ -38,7 +38,7 @@ var InvalidJSONCases = []InvalidJsonTestCase{
 	{
 		CaseName: "Invalid Value",
 		BodyStyle: map[string]any{
-			"body_style": map[string]any{
+			"bodyStyle": map[string]any{
 				"name":  gofakeit.CarType(),
 				"value": "invalid",
 			},
@@ -51,8 +51,8 @@ var NoFieldsCases = []InvalidJsonTestCase{
 	{
 		CaseName: "No Name field",
 		BodyStyle: map[string]any{
-			"body_style": map[string]any{
-				"value": "invalid",
+			"bodyStyle": map[string]any{
+				"value": gofakeit.Uint16(),
 			},
 		},
 		Error: "all fields are required",
@@ -60,7 +60,7 @@ var NoFieldsCases = []InvalidJsonTestCase{
 	{
 		CaseName: "No Value field",
 		BodyStyle: map[string]any{
-			"body_style": map[string]any{
+			"bodyStyle": map[string]any{
 				"name": gofakeit.CarType(),
 			},
 		},
@@ -69,7 +69,7 @@ var NoFieldsCases = []InvalidJsonTestCase{
 	{
 		CaseName: "Empty body",
 		BodyStyle: map[string]any{
-			"body_style": map[string]any{},
+			"bodyStyle": map[string]any{},
 		},
 		Error: "all fields are required",
 	},

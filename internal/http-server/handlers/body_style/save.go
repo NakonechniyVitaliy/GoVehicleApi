@@ -5,18 +5,14 @@ import (
 	"log/slog"
 	"net/http"
 
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/_errors"
+	dto "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/body_style"
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
 	bodyStyle "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/body_style"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
-	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
-	"github.com/go-playground/validator/v10"
 )
-
-type SaveRequest struct {
-	BodyStyle models.BodyStyle
-}
 
 type SaveResponse struct {
 	Response  resp.Response
@@ -25,39 +21,34 @@ type SaveResponse struct {
 
 func New(log *slog.Logger, repository bodyStyle.RepositoryInterface) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+
 		const op = "handlers.bodyStyle.new"
+		log = log.With(slog.String("op", op))
 
-		log = log.With(
-			slog.String("op", op),
-			slog.String("request_id", middleware.GetReqID(r.Context())),
-		)
-
-		var req SaveRequest
-
+		var req dto.SaveRequest
 		err := render.DecodeJSON(r.Body, &req)
 		if err != nil {
-			log.Error("failed to decode request body", slog.String("error", err.Error()))
-			render.JSON(w, r, resp.Error("Failed to decode request"))
+			log.Error(_errors.InvalidJSONorWrongFieldType, slog.String("error", err.Error()))
+			render.Status(r, http.StatusBadRequest)
+			render.JSON(w, r, resp.Error(_errors.InvalidJSONorWrongFieldType))
 			return
 		}
 		log.Info("request body decoded", slog.Any("request", req))
 
-		if err := validator.New().Struct(req); err != nil {
-			log.Error("invalid request", slog.String("error", err.Error()))
-			render.JSON(w, r, resp.Error("Invalid request"))
+		err = req.Validate()
+		if err != nil {
+			log.Error("validation error", slog.String("error", err.Error()))
+			render.Status(r, http.StatusBadRequest)
+			render.JSON(w, r, resp.Error(err.Error()))
 			return
 		}
 
-		newBodyStyle := models.BodyStyle{
-			Name:  req.BodyStyle.Name,
-			Value: req.BodyStyle.Value,
-		}
+		newBS := req.BodyStyle.ToModel()
+		log.Info("saving body style", slog.Any("body style", newBS))
 
-		log.Info("saving body style", slog.Any("body style", newBodyStyle))
-
-		createdBS, err := repository.Create(r.Context(), newBodyStyle)
+		createdBS, err := repository.Create(r.Context(), newBS)
 		if errors.Is(err, storage.ErrBodyStyleExists) {
-			log.Info("bodyStyle already exists", slog.String("body style", req.BodyStyle.Name))
+			log.Info("bodyStyle already exists", slog.String("body style", createdBS.Name))
 			render.JSON(w, r, resp.Error("body style already exists"))
 			return
 		}
@@ -67,8 +58,7 @@ func New(log *slog.Logger, repository bodyStyle.RepositoryInterface) http.Handle
 			render.JSON(w, r, resp.Error("Failed to save body style"))
 			return
 		}
-
-		log.Info("bodyStyle saved", slog.String("body style", req.BodyStyle.Name))
+		log.Info("bodyStyle saved", slog.String("body style", createdBS.Name))
 
 		render.JSON(w, r, SaveResponse{
 			Response:  resp.OK(),
