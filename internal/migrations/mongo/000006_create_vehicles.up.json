@@ -21,9 +21,9 @@
         "gearbox": { "bsonType": "int" },
         "body_style": { "bsonType": "int" },
         "category": { "bsonType": "int" },
-        "mileage": { "bsonType": "int" },
+        "mileage": { "bsonType": ["int", "long"] },
         "model": { "bsonType": "string" },
-        "price": { "bsonType": "int" }
+        "price": { "bsonType": ["int", "long"] }
       }
     }
   }

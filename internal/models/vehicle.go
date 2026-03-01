@@ -1,13 +1,13 @@
 package models
 
 type Vehicle struct {
-	ID         uint16 `bson:"id"`
-	Brand      uint16 `bson:"brand"`
-	DriverType uint16 `bson:"driverType"`
-	Gearbox    uint16 `bson:"gearbox"`
-	BodyStyle  uint16 `bson:"bodyStyle"`
-	Category   uint16 `bson:"category"`
-	Mileage    uint32 `bson:"mileage"`
-	Model      string `bson:"model"`
-	Price      uint16 `bson:"price"`
+	ID         uint16 `bson:"id" json:"id"`
+	Brand      uint16 `bson:"brand" json:"brand"`
+	DriverType uint16 `bson:"driver_type" json:"driver_type"`
+	Gearbox    uint16 `bson:"gearbox" json:"gearbox"`
+	BodyStyle  uint16 `bson:"body_style" json:"body_style"`
+	Category   uint16 `bson:"category" json:"category"`
+	Mileage    uint32 `bson:"mileage" json:"mileage"`
+	Model      string `bson:"model" json:"model"`
+	Price      uint16 `bson:"price" json:"price"`
 }
