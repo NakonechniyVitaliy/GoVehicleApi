@@ -81,37 +81,43 @@ func (s Service) Delete(ctx context.Context, id uint16) error {
 	return nil
 }
 
-func (s Service) GetExpanded(ctx context.Context, vehicle models.Vehicle) (*dto.ExpandedVehicleDTO, error) {
-	vBrand, err := s.brandRepo.GetByID(ctx, vehicle.Brand)
+func (s Service) GetExpanded(ctx context.Context, id uint16) (*dto.ExpandedVehicleDTO, error) {
+
+	rawVehicle, err := s.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-	vBodyStyle, err := s.bodyRepo.GetByID(ctx, vehicle.BodyStyle)
+
+	vBrand, err := s.brandRepo.GetByID(ctx, rawVehicle.Brand)
 	if err != nil {
 		return nil, err
 	}
-	vCategory, err := s.categoryRepo.GetByID(ctx, vehicle.Category)
+	vBodyStyle, err := s.bodyRepo.GetByID(ctx, rawVehicle.BodyStyle)
 	if err != nil {
 		return nil, err
 	}
-	vDriverType, err := s.driverRepo.GetByID(ctx, vehicle.DriverType)
+	vCategory, err := s.categoryRepo.GetByID(ctx, rawVehicle.Category)
 	if err != nil {
 		return nil, err
 	}
-	vGearbox, err := s.gearboxRepo.GetByID(ctx, vehicle.Gearbox)
+	vDriverType, err := s.driverRepo.GetByID(ctx, rawVehicle.DriverType)
+	if err != nil {
+		return nil, err
+	}
+	vGearbox, err := s.gearboxRepo.GetByID(ctx, rawVehicle.Gearbox)
 	if err != nil {
 		return nil, err
 	}
 
 	return &dto.ExpandedVehicleDTO{
-		ID:         vehicle.ID,
+		ID:         rawVehicle.ID,
 		Brand:      vBrand,
 		DriverType: vDriverType,
 		Gearbox:    vGearbox,
 		BodyStyle:  vBodyStyle,
 		Category:   vCategory,
-		Mileage:    vehicle.Mileage,
-		Model:      vehicle.Model,
-		Price:      vehicle.Price,
+		Mileage:    rawVehicle.Mileage,
+		Model:      rawVehicle.Model,
+		Price:      rawVehicle.Price,
 	}, nil
 }

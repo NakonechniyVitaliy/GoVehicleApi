@@ -20,9 +20,9 @@ func NewService(repository brandRepo.RepositoryInterface, key string) *Service {
 	}
 }
 
-func (s Service) Refresh(ctx context.Context, autoRiaKey string) error {
+func (s Service) Refresh(ctx context.Context) error {
 
-	brands, err := brandRequests.GetBrands(autoRiaKey)
+	brands, err := brandRequests.GetBrands(s.autoRiaKey)
 	if err != nil {
 		return err
 	}

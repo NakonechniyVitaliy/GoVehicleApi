@@ -20,9 +20,9 @@ func NewService(repository gearboxRepo.RepositoryInterface, key string) *Service
 	}
 }
 
-func (s Service) Refresh(ctx context.Context, autoRiaKey string) error {
+func (s Service) Refresh(ctx context.Context) error {
 
-	gearboxes, err := gearboxRequests.GetGearboxes(autoRiaKey)
+	gearboxes, err := gearboxRequests.GetGearboxes(s.autoRiaKey)
 	if err != nil {
 		return err
 	}

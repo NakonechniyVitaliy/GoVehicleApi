@@ -6,8 +6,7 @@ import (
 
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	Gearbox "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/gearbox"
-	"github.com/go-chi/chi/v5/middleware"
+	service "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/gearbox"
 	"github.com/go-chi/render"
 )
 
@@ -16,18 +15,15 @@ type GetAllResponse struct {
 	Gearboxes []models.Gearbox
 }
 
-func GetAll(log *slog.Logger, repository Gearbox.RepositoryInterface) http.HandlerFunc {
+func GetAll(log *slog.Logger, service *service.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.Gearbox.GetAll"
+		const op = "handlers.gearbox.get_all"
 
-		log = log.With(
-			slog.String("op", op),
-			slog.String("request_id", middleware.GetReqID(r.Context())),
-		)
+		log = log.With(slog.String("op", op))
 
 		log.Info("getting vehicle gearboxes")
 
-		gearboxes, err := repository.GetAll(r.Context())
+		gearboxes, err := service.GetAll(r.Context())
 		if err != nil {
 			log.Error("failed to get vehicle gearboxes", slog.String("error", err.Error()))
 			render.JSON(w, r, resp.Error("Failed to get vehicle gearboxes"))

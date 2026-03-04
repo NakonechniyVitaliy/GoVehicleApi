@@ -6,26 +6,12 @@ import (
 	"strconv"
 
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/body_style"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/brand"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/category"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/driver_type"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/gearbox"
-	vehicleService "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/vehicle"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/vehicle"
+	service "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/vehicle"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 )
 
-func GetExpanded(
-	log *slog.Logger,
-	vRepo vehicle.RepositoryInterface,
-	bRepo brand.RepositoryInterface,
-	bsRepo body_style.RepositoryInterface,
-	cRepo category.RepositoryInterface,
-	dRepo driver_type.RepositoryInterface,
-	gRepo gearbox.RepositoryInterface,
-	) http.HandlerFunc {
+func GetExpanded(log *slog.Logger, service *service.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.vehicle.get_expanded"
 
@@ -42,8 +28,7 @@ func GetExpanded(
 
 
 		log.Info("getting expanded vehicle")
-		expandedVehicle, err := vehicleService.GetExpanded(r.Context(), vehicleID, vRepo, bRepo,
-			bsRepo, cRepo, dRepo, gRepo)
+		expandedVehicle, err := service.GetExpanded(r.Context(), vehicleID)
 
 
 		//requestedVehicle, err := repository.GetByID(r.Context(), vehicleID)

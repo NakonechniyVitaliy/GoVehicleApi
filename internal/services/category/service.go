@@ -20,9 +20,9 @@ func NewService(repository categoryRepo.RepositoryInterface, key string) *Servic
 	}
 }
 
-func (s Service) Refresh(ctx context.Context, autoRiaKey string) error {
+func (s Service) Refresh(ctx context.Context) error {
 
-	categories, err := categoryRequests.GetCategories(autoRiaKey)
+	categories, err := categoryRequests.GetCategories(s.autoRiaKey)
 	if err != nil {
 		return err
 	}

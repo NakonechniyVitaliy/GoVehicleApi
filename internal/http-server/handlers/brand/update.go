@@ -8,9 +8,8 @@ import (
 	dto "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/brand"
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/brand"
+	service "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/brand"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 )
 
@@ -19,14 +18,11 @@ type UpdateResponse struct {
 	Brand    *models.Brand
 }
 
-func Update(log *slog.Logger, repository brand.RepositoryInterface) http.HandlerFunc {
+func Update(log *slog.Logger, service *service.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.brand.update"
 
-		log = log.With(
-			slog.String("op", op),
-			slog.String("request_id", middleware.GetReqID(r.Context())),
-		)
+		log = log.With(slog.String("op", op))
 
 		id64, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 16)
 		if err != nil {
@@ -57,7 +53,7 @@ func Update(log *slog.Logger, repository brand.RepositoryInterface) http.Handler
 
 		brandFromRequest := req.Brand.ToModel()
 
-		updatedBrand, err := repository.Update(r.Context(), brandFromRequest, brandID)
+		updatedBrand, err := service.Update(r.Context(), brandFromRequest, brandID)
 		if err != nil {
 			log.Error("failed to update brand", slog.String("error", err.Error()))
 			render.JSON(w, r, resp.Error("Failed to update brand"))

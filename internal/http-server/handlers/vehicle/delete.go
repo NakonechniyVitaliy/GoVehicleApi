@@ -7,21 +7,17 @@ import (
 	"strconv"
 
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/vehicle"
+	service "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/vehicle"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 )
 
-func Delete(log *slog.Logger, repository vehicle.RepositoryInterface) http.HandlerFunc {
+func Delete(log *slog.Logger, service *service.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.vehicle.delete"
 
-		log = log.With(
-			slog.String("op", op),
-			slog.String("request_id", middleware.GetReqID(r.Context())),
-		)
+		log = log.With(slog.String("op", op))
 
 		id64, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 16)
 		if err != nil {
@@ -33,7 +29,7 @@ func Delete(log *slog.Logger, repository vehicle.RepositoryInterface) http.Handl
 		log.Info("ID retrieved successfully", slog.Any("vehicleID", vehicleID))
 
 		log.Info("deleting vehicle")
-		err = repository.Delete(r.Context(), vehicleID)
+		err = service.Delete(r.Context(), vehicleID)
 		if err != nil {
 			log.Error("failed to delete vehicle", slog.String("error", err.Error()))
 

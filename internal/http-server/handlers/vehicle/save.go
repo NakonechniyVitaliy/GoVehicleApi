@@ -8,7 +8,7 @@ import (
 	dto "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/vehicle"
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/vehicle"
+	service "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/vehicle"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
 	"github.com/go-chi/render"
 )
@@ -18,7 +18,7 @@ type SaveResponse struct {
 	Vehicle  *models.Vehicle
 }
 
-func New(log *slog.Logger, repository vehicle.RepositoryInterface) http.HandlerFunc {
+func New(log *slog.Logger, service *service.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.vehicle.save"
 
@@ -45,7 +45,7 @@ func New(log *slog.Logger, repository vehicle.RepositoryInterface) http.HandlerF
 		newVehicle := req.Vehicle.ToModel()
 		log.Info("saving vehicle", slog.Any("vehicle", newVehicle))
 
-		createdVehicle, err := repository.Create(r.Context(), newVehicle)
+		createdVehicle, err := service.Save(r.Context(), newVehicle)
 		if errors.Is(err, storage.ErrVehicleExists) {
 			log.Info("vehicle already exists", slog.String("vehicle", createdVehicle.Model))
 			render.JSON(w, r, resp.Error("Vehicle already exists"))

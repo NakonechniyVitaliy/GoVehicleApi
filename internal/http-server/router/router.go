@@ -4,6 +4,11 @@ import (
 	"log/slog"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/router/body_style"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/router/brand"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/router/category"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/router/driver_type"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/router/gearbox"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/router/vehicle"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/services"
 
 	"github.com/go-chi/chi/v5"
@@ -23,11 +28,11 @@ func SetupRouter(
 	router.Use(middleware.URLFormat) // Удобное получение параметров из сслыки
 
 	body_style.SetupBodyStyleRoutes(router, log, services.BodyStyle)
-	//driver_type.SetupDriverTypeRoutes(router, log, services.DriverType)
-	//brand.SetupBrandRoutes(router, log, services.Brand)
-	//category.SetupCategoryRoutes(router, log, services.Category)
-	//gearbox.SetupGearboxRoutes(router, log, services.Gearbox)
-	//vehicle.SetupVehiclesRoutes(router, log, services.Vehicle)
+	driver_type.SetupDriverTypeRoutes(router, log, services.DriverType)
+	brand.SetupBrandRoutes(router, log, services.Brand)
+	category.SetupCategoryRoutes(router, log, services.Category)
+	gearbox.SetupGearboxRoutes(router, log, services.Gearbox)
+	vehicle.SetupVehiclesRoutes(router, log, services.Vehicle)
 
 	return router
 }

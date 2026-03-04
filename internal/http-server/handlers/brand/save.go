@@ -8,7 +8,7 @@ import (
 	dto "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/brand"
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/brand"
+	service "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/brand"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
 	"github.com/go-chi/render"
 )
@@ -18,14 +18,11 @@ type SaveResponse struct {
 	Brand    *models.Brand
 }
 
-func New(log *slog.Logger, repository brand.RepositoryInterface) http.HandlerFunc {
+func New(log *slog.Logger, service *service.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.brand.save.New"
 
-		log = log.With(
-			slog.String("op", op),
-			//slog.String("request_id", middleware.GetReqID(r.Context())),
-		)
+		log = log.With(slog.String("op", op))
 
 		var req dto.SaveRequest
 		err := render.DecodeJSON(r.Body, &req)
@@ -48,7 +45,7 @@ func New(log *slog.Logger, repository brand.RepositoryInterface) http.HandlerFun
 		newBrand := req.Brand.ToModel()
 		log.Info("saving brand", slog.Any("brand", newBrand))
 
-		createdBrand, err := repository.Create(r.Context(), newBrand)
+		createdBrand, err := service.Save(r.Context(), newBrand)
 		if errors.Is(err, storage.ErrBrandExists) {
 			log.Info("brand already exists", slog.String("brand", createdBrand.Name))
 			render.JSON(w, r, resp.Error("Brand already exists"))

@@ -8,10 +8,9 @@ import (
 
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/vehicle"
+	service "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/vehicle"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 )
 
@@ -20,14 +19,11 @@ type GetResponse struct {
 	Vehicle  *models.Vehicle
 }
 
-func Get(log *slog.Logger, repository vehicle.RepositoryInterface) http.HandlerFunc {
+func Get(log *slog.Logger, service *service.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.vehicle.get"
 
-		log = log.With(
-			slog.String("op", op),
-			slog.String("request_id", middleware.GetReqID(r.Context())),
-		)
+		log = log.With(slog.String("op", op))
 
 		id64, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 16)
 		if err != nil {
@@ -39,7 +35,7 @@ func Get(log *slog.Logger, repository vehicle.RepositoryInterface) http.HandlerF
 		log.Info("ID retrieved successfully", slog.Any("vehicleID", vehicleID))
 
 		log.Info("getting vehicle")
-		requestedVehicle, err := repository.GetByID(r.Context(), vehicleID)
+		requestedVehicle, err := service.GetByID(r.Context(), vehicleID)
 		if err != nil {
 			log.Error("failed to get vehicle", slog.String("error", err.Error()))
 

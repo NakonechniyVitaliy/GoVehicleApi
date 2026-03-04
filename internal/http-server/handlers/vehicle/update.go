@@ -8,9 +8,8 @@ import (
 	dto "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/vehicle"
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/vehicle"
+	service "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/vehicle"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 )
 
@@ -19,14 +18,11 @@ type UpdateResponse struct {
 	Vehicle  *models.Vehicle
 }
 
-func Update(log *slog.Logger, repository vehicle.RepositoryInterface) http.HandlerFunc {
+func Update(log *slog.Logger, service *service.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.vehicle.update"
 
-		log = log.With(
-			slog.String("op", op),
-			slog.String("request_id", middleware.GetReqID(r.Context())),
-		)
+		log = log.With(slog.String("op", op))
 
 		id64, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 16)
 		if err != nil {
@@ -57,7 +53,7 @@ func Update(log *slog.Logger, repository vehicle.RepositoryInterface) http.Handl
 
 		vehicleFromRequest := req.Vehicle.ToModel()
 
-		updatedVehicle, err := repository.Update(r.Context(), vehicleFromRequest, vehicleID)
+		updatedVehicle, err := service.Update(r.Context(), vehicleFromRequest, vehicleID)
 		if err != nil {
 			log.Error("failed to update vehicle", slog.String("error", err.Error()))
 			render.JSON(w, r, resp.Error("Failed to update vehicle"))

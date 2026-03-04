@@ -5,25 +5,19 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/config"
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/brand"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/requests"
-	brandService "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/brand"
-	"github.com/go-chi/chi/v5/middleware"
+	service "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/brand"
 	"github.com/go-chi/render"
 )
 
-func Refresh(log *slog.Logger, repository brand.RepositoryInterface, cfg *config.Config) http.HandlerFunc {
+func Refresh(log *slog.Logger, service *service.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.brand.update.Refresh"
+		const op = "handlers.brand.refresh"
 
-		log = log.With(
-			slog.String("op", op),
-			slog.String("request_id", middleware.GetReqID(r.Context())),
-		)
+		log = log.With(slog.String("op", op))
 
-		err := brandService.RefreshBrands(r.Context(), cfg, repository)
+		err := service.Refresh(r.Context())
 		if err != nil {
 			log.Error("failed to update brands", slog.String("error", err.Error()))
 
