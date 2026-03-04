@@ -2,7 +2,7 @@ package vehicle
 
 import (
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/service/helper"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/helper"
 )
 
 func (dto VehicleDTO) ToModel() models.Vehicle {

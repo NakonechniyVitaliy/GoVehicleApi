@@ -19,6 +19,22 @@ func NewSqliteCategoryRepo(db *sql.DB) *SqliteRepository {
 	}
 }
 
+func (s *SqliteRepository) GetByID(ctx context.Context, categoryID uint16) (*models.Category, error) {
+	const op = "storage.categories.getByID"
+
+	const query = `SELECT id, name, value FROM categories WHERE id = ?`
+
+	var category models.Category
+	err := s.db.QueryRowContext(ctx, query, categoryID).Scan(
+		&category.ID, &category.Name, &category.Value,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("%s: Error to return category %w", op, err)
+	}
+
+	return &category, nil
+}
+
 func (s *SqliteRepository) GetAll(ctx context.Context) ([]models.Category, error) {
 	const op = "storage.categories.GetAll"
 

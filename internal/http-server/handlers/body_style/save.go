@@ -9,7 +9,7 @@ import (
 	dto "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/body_style"
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	bodyStyle "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/body_style"
+	service "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/body_style"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
 	"github.com/go-chi/render"
 )
@@ -19,7 +19,7 @@ type SaveResponse struct {
 	BodyStyle *models.BodyStyle
 }
 
-func New(log *slog.Logger, repository bodyStyle.RepositoryInterface) http.HandlerFunc {
+func New(log *slog.Logger, service *service.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		const op = "handlers.bodyStyle.new"
@@ -43,10 +43,10 @@ func New(log *slog.Logger, repository bodyStyle.RepositoryInterface) http.Handle
 			return
 		}
 
-		newBS := req.BodyStyle.ToModel()
-		log.Info("saving body style", slog.Any("body style", newBS))
+		mappedBodyStyle := req.BodyStyle.ToModel()
+		log.Info("saving body style", slog.Any("body style", mappedBodyStyle))
 
-		createdBS, err := repository.Create(r.Context(), newBS)
+		createdBS, err := service.Save(r.Context(), mappedBodyStyle)
 		if errors.Is(err, storage.ErrBodyStyleExists) {
 			log.Info("bodyStyle already exists", slog.String("body style", createdBS.Name))
 			render.JSON(w, r, resp.Error("body style already exists"))

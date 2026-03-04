@@ -7,7 +7,7 @@ import (
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/config"
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	driverTypeRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/driver_type"
-	driverTypeService "github.com/NakonechniyVitaliy/GoVehicleApi/internal/service/driver_type"
+	driverTypeService "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/driver_type"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 )

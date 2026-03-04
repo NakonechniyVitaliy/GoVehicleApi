@@ -1,4 +1,4 @@
-package driver_type
+package gearbox
 
 import (
 	"context"
@@ -17,6 +17,22 @@ func NewSqliteGearboxRepo(db *sql.DB) *SqliteRepository {
 	return &SqliteRepository{
 		db: db,
 	}
+}
+
+func (s *SqliteRepository) GetByID(ctx context.Context, gearboxID uint16) (*models.Gearbox, error) {
+	const op = "storage.gearboxes.getByID"
+
+	const query = `SELECT id, name, value FROM gearboxes WHERE id = ?`
+
+	var gearbox models.Gearbox
+	err := s.db.QueryRowContext(ctx, query, gearboxID).Scan(
+		&gearbox.ID, &gearbox.Name, &gearbox.Value,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("%s: Error to return gearbox %w", op, err)
+	}
+
+	return &gearbox, nil
 }
 
 func (s *SqliteRepository) GetAll(ctx context.Context) ([]models.Gearbox, error) {

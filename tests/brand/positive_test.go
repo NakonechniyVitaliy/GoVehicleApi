@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	dto "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/brand"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/service/helper"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/helper"
 	testHelper "github.com/NakonechniyVitaliy/GoVehicleApi/tests/helper"
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/gavv/httpexpect/v2"

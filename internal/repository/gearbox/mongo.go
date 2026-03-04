@@ -1,10 +1,11 @@
-package driver_type
+package gearbox
 
 import (
 	"context"
 	"fmt"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
 	mongoStorage "github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -20,6 +21,25 @@ func NewMongoGearboxRepo(db *mongo.Database) *MongoRepository {
 	return &MongoRepository{
 		db:        db,
 		gearboxes: db.Collection("gearboxes"),
+	}
+}
+
+func (mng *MongoRepository) GetByID(ctx context.Context, gearboxID uint16) (*models.Gearbox, error) {
+	const op = "storage.gearbox.get_by_id"
+
+	filter := bson.D{{"id", gearboxID}}
+
+	var gearbox models.Gearbox
+	err := mng.gearboxes.FindOne(ctx, filter).Decode(&gearbox)
+
+	switch {
+	case err == nil:
+		return &gearbox, nil
+	case err == mongo.ErrNoDocuments:
+		return nil, storage.ErrGearboxNotFound
+
+	default:
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 }
 

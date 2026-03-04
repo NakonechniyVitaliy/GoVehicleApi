@@ -8,9 +8,8 @@ import (
 	dto "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/body_style"
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	bodyStyle "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/body_style"
+	service "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/body_style"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 )
 
@@ -19,14 +18,11 @@ type UpdateResponse struct {
 	BodyStyle *models.BodyStyle
 }
 
-func Update(log *slog.Logger, repository bodyStyle.RepositoryInterface) http.HandlerFunc {
+func Update(log *slog.Logger, service service.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.bodyStyle.update"
+		const op = "handlers.body_style.update"
 
-		log = log.With(
-			slog.String("op", op),
-			slog.String("request_id", middleware.GetReqID(r.Context())),
-		)
+		log = log.With(slog.String("op", op))
 
 		id64, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 16)
 		if err != nil {
@@ -57,7 +53,7 @@ func Update(log *slog.Logger, repository bodyStyle.RepositoryInterface) http.Han
 
 		bodyStyleFromRequest := req.BodyStyle.ToModel()
 
-		updatedBodyStyle, err := repository.Update(r.Context(), bodyStyleFromRequest, bodyStyleID)
+		updatedBodyStyle, err := service.Update(r.Context(), bodyStyleFromRequest, bodyStyleID)
 		if err != nil {
 			log.Error("failed to update bodyStyle", slog.String("error", err.Error()))
 			render.JSON(w, r, resp.Error("Failed to update bodyStyle"))

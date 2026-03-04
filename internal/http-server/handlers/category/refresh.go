@@ -7,7 +7,7 @@ import (
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/config"
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	CategoryRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/category"
-	CategoryService "github.com/NakonechniyVitaliy/GoVehicleApi/internal/service/category"
+	CategoryService "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/category"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 )

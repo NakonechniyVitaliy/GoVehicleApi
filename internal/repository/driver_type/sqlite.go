@@ -19,6 +19,22 @@ func NewSqliteDriverTypeRepo(db *sql.DB) *SqliteRepository {
 	}
 }
 
+func (s *SqliteRepository) GetByID(ctx context.Context, driverTypeID uint16) (*models.DriverType, error) {
+	const op = "storage.driver_types.getByID"
+
+	const query = `SELECT id, name, value FROM driver_types WHERE id = ?`
+
+	var driverType models.DriverType
+	err := s.db.QueryRowContext(ctx, query, driverTypeID).Scan(
+		&driverType.ID, &driverType.Name, &driverType.Value,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("%s: Error to return driver type %w", op, err)
+	}
+
+	return &driverType, nil
+}
+
 func (s *SqliteRepository) GetAll(ctx context.Context) ([]models.DriverType, error) {
 	const op = "storage.driverTypes.GetAll"
 

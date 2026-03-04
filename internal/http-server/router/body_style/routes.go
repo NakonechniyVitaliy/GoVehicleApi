@@ -3,24 +3,23 @@ package body_style
 import (
 	"log/slog"
 
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/config"
-	bodyStyleHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/body_style"
-	bodyStyleRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/body_style"
+	handler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/body_style"
+	service "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/body_style"
+
 	"github.com/go-chi/chi/v5"
 )
 
 func SetupBodyStyleRoutes(
 	router chi.Router,
 	log *slog.Logger,
-	bodyStyleRepo bodyStyleRepo.RepositoryInterface,
-	cfg *config.Config,
+	service *service.Service,
 ) {
 	router.Route("/body-style", func(r chi.Router) {
-		r.Post("/", bodyStyleHandler.New(log, bodyStyleRepo))
-		r.Delete("/{id}", bodyStyleHandler.Delete(log, bodyStyleRepo))
-		r.Get("/{id}", bodyStyleHandler.Get(log, bodyStyleRepo))
-		r.Get("/all", bodyStyleHandler.GetAll(log, bodyStyleRepo))
-		r.Put("/{id}", bodyStyleHandler.Update(log, bodyStyleRepo))
-		r.Put("/refresh", bodyStyleHandler.Refresh(log, bodyStyleRepo, cfg))
+		r.Post("/", handler.New(log, service))
+		r.Delete("/{id}", handler.Delete(log, service))
+		r.Get("/{id}", handler.Get(log, *service))
+		r.Get("/all", handler.GetAll(log, *service))
+		r.Put("/{id}", handler.Update(log, *service))
+		r.Put("/refresh", handler.Refresh(log, *service))
 	})
 }

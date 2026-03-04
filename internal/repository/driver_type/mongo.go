@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
 	mongoStorage "github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -23,6 +24,25 @@ func NewMongoDriverTypeRepo(db *mongo.Database) *MongoRepository {
 	}
 }
 
+func (mng *MongoRepository) GetByID(ctx context.Context, driverTypeID uint16) (*models.DriverType, error) {
+	const op = "storage.driverType.get_by_id"
+
+	filter := bson.D{{"id", driverTypeID}}
+
+	var driverType models.DriverType
+	err := mng.driverTypes.FindOne(ctx, filter).Decode(&driverType)
+
+	switch {
+	case err == nil:
+		return &driverType, nil
+	case err == mongo.ErrNoDocuments:
+		return nil, storage.ErrDriverTypeNotFound
+
+	default:
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+}
+
 func (mng *MongoRepository) GetAll(ctx context.Context) ([]models.DriverType, error) {
 	const op = "storage.driverType.GetAllDriverType"
 
@@ -37,7 +57,6 @@ func (mng *MongoRepository) GetAll(ctx context.Context) ([]models.DriverType, er
 	}
 
 	return driverTypes, nil
-
 }
 
 func (mng *MongoRepository) InsertOrUpdate(ctx context.Context, driverType models.DriverType) error {

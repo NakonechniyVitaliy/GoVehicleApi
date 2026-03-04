@@ -2,7 +2,7 @@ package category
 
 import (
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/service/helper"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/helper"
 )
 
 func (dto CategoryDTO) ToModel() models.Category {

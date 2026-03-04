@@ -2,7 +2,7 @@ package brand
 
 import (
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/service/helper"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/helper"
 )
 
 func (dto BrandDTO) ToModel() models.Brand {

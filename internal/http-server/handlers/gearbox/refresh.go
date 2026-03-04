@@ -7,7 +7,7 @@ import (
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/config"
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	gearboxRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/gearbox"
-	gearboxService "github.com/NakonechniyVitaliy/GoVehicleApi/internal/service/gearbox"
+	gearboxService "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/gearbox"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 )

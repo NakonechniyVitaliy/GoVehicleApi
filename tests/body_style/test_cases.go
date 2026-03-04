@@ -1,7 +1,7 @@
 package body_style
 
 import (
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/service/helper"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/helper"
 	"github.com/brianvoe/gofakeit/v6"
 )
 

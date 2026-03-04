@@ -10,16 +10,24 @@ import (
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/config"
 	consts "github.com/NakonechniyVitaliy/GoVehicleApi/internal/constants"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/router"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/services"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/mongo"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/sqlite"
 
-	bodyStyleRep "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/body_style"
-	brandRep "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/brand"
-	categoryRep "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/category"
-	driverTypeRep "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/driver_type"
-	gearboxRep "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/gearbox"
-	vehicleRep "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/vehicle"
+	bodyStyleRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/body_style"
+	brandRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/brand"
+	categoryRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/category"
+	driverTypeRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/driver_type"
+	gearboxRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/gearbox"
+	vehicleRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/vehicle"
+
+	bodyService "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/body_style"
+	brandService "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/brand"
+	categoryService "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/category"
+	driverService "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/driver_type"
+	gearboxService "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/gearbox"
+	vehicleService "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/vehicle"
 )
 
 type App struct {
@@ -39,16 +47,9 @@ func New(log *slog.Logger, cfg *config.Config) (*App, error) {
 		return nil, err
 	}
 
-	appRouter := router.SetupRouter(
-		log,
-		repos.Brand,
-		repos.BodyStyle,
-		repos.Category,
-		repos.DriverType,
-		repos.Gearbox,
-		repos.Vehicle,
-		cfg,
-	)
+	serviceContainer := setupServices(repos, cfg.AutoriaKey)
+
+	appRouter := router.SetupRouter(log, serviceContainer)
 
 	return &App{
 		Router:  appRouter,
@@ -74,12 +75,12 @@ func setupStorage(cfg *config.Config) (storage.Storage, error) {
 }
 
 type Repositories struct {
-	Brand      brandRep.RepositoryInterface
-	BodyStyle  bodyStyleRep.RepositoryInterface
-	Category   categoryRep.RepositoryInterface
-	DriverType driverTypeRep.RepositoryInterface
-	Gearbox    gearboxRep.RepositoryInterface
-	Vehicle    vehicleRep.RepositoryInterface
+	Brand      brandRepo.RepositoryInterface
+	BodyStyle  bodyStyleRepo.RepositoryInterface
+	Category   categoryRepo.RepositoryInterface
+	DriverType driverTypeRepo.RepositoryInterface
+	Gearbox    gearboxRepo.RepositoryInterface
+	Vehicle    vehicleRepo.RepositoryInterface
 }
 
 func setupRepositories(Storage storage.Storage) (*Repositories, error) {
@@ -89,28 +90,46 @@ func setupRepositories(Storage storage.Storage) (*Repositories, error) {
 		// type assertion - get object from interface
 		mongoStorage := Storage.(*mongo.MongoStorage)
 		return &Repositories{
-			brandRep.NewMongoBrandRepo(mongoStorage.DB),
-			bodyStyleRep.NewMongoBodyStyleRepo(mongoStorage.DB),
-			categoryRep.NewMongoCategoryRepo(mongoStorage.DB),
-			driverTypeRep.NewMongoDriverTypeRepo(mongoStorage.DB),
-			gearboxRep.NewMongoGearboxRepo(mongoStorage.DB),
-			vehicleRep.NewMongoVehicleRepo(mongoStorage.DB),
+			brandRepo.NewMongoBrandRepo(mongoStorage.DB),
+			bodyStyleRepo.NewMongoBodyStyleRepo(mongoStorage.DB),
+			categoryRepo.NewMongoCategoryRepo(mongoStorage.DB),
+			driverTypeRepo.NewMongoDriverTypeRepo(mongoStorage.DB),
+			gearboxRepo.NewMongoGearboxRepo(mongoStorage.DB),
+			vehicleRepo.NewMongoVehicleRepo(mongoStorage.DB),
 		}, nil
 
 	case consts.SqLite:
 		// type assertion - get object from interface
 		sqliteStorage := Storage.(*sqlite.SqliteStorage)
 		return &Repositories{
-			brandRep.NewSqliteBrandRepo(sqliteStorage.DB),
-			bodyStyleRep.NewSqliteBodyStyleRepo(sqliteStorage.DB),
-			categoryRep.NewSqliteCategoryRepo(sqliteStorage.DB),
-			driverTypeRep.NewSqliteDriverTypeRepo(sqliteStorage.DB),
-			gearboxRep.NewSqliteGearboxRepo(sqliteStorage.DB),
-			vehicleRep.NewSqliteVehicleRepo(sqliteStorage.DB),
+			brandRepo.NewSqliteBrandRepo(sqliteStorage.DB),
+			bodyStyleRepo.NewSqliteBodyStyleRepo(sqliteStorage.DB),
+			categoryRepo.NewSqliteCategoryRepo(sqliteStorage.DB),
+			driverTypeRepo.NewSqliteDriverTypeRepo(sqliteStorage.DB),
+			gearboxRepo.NewSqliteGearboxRepo(sqliteStorage.DB),
+			vehicleRepo.NewSqliteVehicleRepo(sqliteStorage.DB),
 		}, nil
 
 	default:
 		return nil, fmt.Errorf("failed to setup %s repositories", Storage.GetName())
 	}
+}
 
+func setupServices(repos *Repositories, autoRiaKey string) services.Container {
+
+	return services.Container{
+		Brand:      brandService.NewService(repos.Brand, autoRiaKey),
+		BodyStyle:  bodyService.NewService(repos.BodyStyle, autoRiaKey),
+		Category:   categoryService.NewService(repos.Category, autoRiaKey),
+		DriverType: driverService.NewService(repos.DriverType, autoRiaKey),
+		Gearbox:    gearboxService.NewService(repos.Gearbox, autoRiaKey),
+		Vehicle: vehicleService.NewService(
+			repos.Vehicle,
+			repos.Brand,
+			repos.BodyStyle,
+			repos.Category,
+			repos.DriverType,
+			repos.Gearbox,
+		),
+	}
 }

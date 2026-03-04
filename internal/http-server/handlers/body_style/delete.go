@@ -6,15 +6,15 @@ import (
 	"strconv"
 
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
-	bodyStyle "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/body_style"
+	service "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/body_style"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 )
 
-func Delete(log *slog.Logger, repository bodyStyle.RepositoryInterface) http.HandlerFunc {
+func Delete(log *slog.Logger, service *service.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.bodyStyle.delete"
+		const op = "handlers.body_style.delete"
 
 		log = log.With(
 			slog.String("op", op),
@@ -31,7 +31,7 @@ func Delete(log *slog.Logger, repository bodyStyle.RepositoryInterface) http.Han
 		log.Info("ID retrieved successfully", slog.Any("body style ID", bodyStyleID))
 
 		log.Info("deleting body style")
-		err = repository.Delete(r.Context(), bodyStyleID)
+		err = service.Delete(r.Context(), bodyStyleID)
 		if err != nil {
 			log.Error("failed to delete body style", slog.String("error", err.Error()))
 			render.JSON(w, r, resp.Error("Failed to delete body style"))

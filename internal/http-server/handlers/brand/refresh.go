@@ -9,7 +9,7 @@ import (
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/brand"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/requests"
-	brandService "github.com/NakonechniyVitaliy/GoVehicleApi/internal/service/brand"
+	brandService "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/brand"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 )

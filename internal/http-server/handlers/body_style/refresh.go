@@ -4,15 +4,13 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/config"
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
-	bodyStyleRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/body_style"
-	bodyStyleService "github.com/NakonechniyVitaliy/GoVehicleApi/internal/service/body_style"
+	service "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/body_style"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 )
 
-func Refresh(log *slog.Logger, repository bodyStyleRepo.RepositoryInterface, cfg *config.Config) http.HandlerFunc {
+func Refresh(log *slog.Logger, service service.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.bodyStyle.refresh"
 
@@ -21,7 +19,7 @@ func Refresh(log *slog.Logger, repository bodyStyleRepo.RepositoryInterface, cfg
 			slog.String("request_id", middleware.GetReqID(r.Context())),
 		)
 
-		err := bodyStyleService.RefreshBodyStyles(r.Context(), cfg, repository)
+		err := service.Refresh(r.Context())
 		if err != nil {
 			log.Error("failed to update body styles", slog.String("error", err.Error()))
 			render.JSON(w, r, resp.Error("Failed to update body style"))

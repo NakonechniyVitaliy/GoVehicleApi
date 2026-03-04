@@ -8,7 +8,7 @@ import (
 
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	bodyStyle "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/body_style"
+	service "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/body_style"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -20,7 +20,7 @@ type GetResponse struct {
 	BodyStyle *models.BodyStyle
 }
 
-func Get(log *slog.Logger, repository bodyStyle.RepositoryInterface) http.HandlerFunc {
+func Get(log *slog.Logger, service service.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		const op = "handlers.body_style.get"
@@ -40,7 +40,7 @@ func Get(log *slog.Logger, repository bodyStyle.RepositoryInterface) http.Handle
 		log.Info("ID retrieved successfully", slog.Any("body style ID", BodyStyleID))
 
 		log.Info("getting BodyStyle")
-		BodyStyle, err := repository.GetByID(r.Context(), BodyStyleID)
+		BodyStyle, err := service.GetByID(r.Context(), BodyStyleID)
 		if err != nil {
 			log.Error("failed to get body style", slog.String("error", err.Error()))
 

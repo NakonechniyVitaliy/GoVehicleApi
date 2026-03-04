@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
 	mongoStorage "github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -20,6 +21,25 @@ func NewMongoCategoryRepo(db *mongo.Database) *MongoRepository {
 	return &MongoRepository{
 		db:         db,
 		categories: db.Collection("categories"),
+	}
+}
+
+func (mng *MongoRepository) GetByID(ctx context.Context, categoryID uint16) (*models.Category, error) {
+	const op = "storage.category.get_by_id"
+
+	filter := bson.D{{"id", categoryID}}
+
+	var category models.Category
+	err := mng.categories.FindOne(ctx, filter).Decode(&category)
+
+	switch {
+	case err == nil:
+		return &category, nil
+	case err == mongo.ErrNoDocuments:
+		return nil, storage.ErrCategoryNotFound
+
+	default:
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 }
 
