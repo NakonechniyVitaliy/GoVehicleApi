@@ -5,11 +5,17 @@ import (
 	"net/http"
 	"strconv"
 
+	dto "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/vehicle"
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	service "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/vehicle"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 )
+
+type GetExpandedResponse struct {
+	Response resp.Response
+	Vehicle  *dto.ExpandedVehicleDTO
+}
 
 func GetExpanded(log *slog.Logger, service *service.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -26,29 +32,17 @@ func GetExpanded(log *slog.Logger, service *service.Service) http.HandlerFunc {
 		vehicleID := uint16(id64)
 		log.Info("ID retrieved successfully", slog.Any("vehicleID", vehicleID))
 
-
 		log.Info("getting expanded vehicle")
 		expandedVehicle, err := service.GetExpanded(r.Context(), vehicleID)
-
-
-		//requestedVehicle, err := repository.GetByID(r.Context(), vehicleID)
-		//if err != nil {
-		//	log.Error("failed to get vehicle", slog.String("error", err.Error()))
-		//
-		//	if errors.Is(err, storage.ErrVehicleNotFound) {
-		//		render.Status(r, http.StatusNotFound)
-		//		render.JSON(w, r, resp.Error("vehicle not found"))
-		//		return
-		//	}
-		//
-		//	render.Status(r, http.StatusInternalServerError)
-		//	render.JSON(w, r, resp.Error("Failed to get vehicle"))
-		//	return
+		if err != nil {
+			render.Status(r, http.StatusInternalServerError)
+			render.JSON(w, r, resp.Error("Failed to get vehicle"))
+			return
 		}
 
-		render.JSON(w, r, GetResponse{
+		render.JSON(w, r, GetExpandedResponse{
 			Response: resp.OK(),
-			Vehicle:  requestedVehicle,
+			Vehicle:  expandedVehicle,
 		})
 	}
 }

@@ -15,6 +15,8 @@ import (
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/mongo"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/sqlite"
 
+	repositories "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository"
+
 	bodyStyleRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/body_style"
 	brandRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/brand"
 	categoryRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/category"
@@ -47,7 +49,7 @@ func New(log *slog.Logger, cfg *config.Config) (*App, error) {
 		return nil, err
 	}
 
-	serviceContainer := setupServices(repos, cfg.AutoriaKey)
+	serviceContainer := setupServices(repos, log, cfg.AutoriaKey)
 
 	appRouter := router.SetupRouter(log, serviceContainer)
 
@@ -74,40 +76,31 @@ func setupStorage(cfg *config.Config) (storage.Storage, error) {
 	}
 }
 
-type Repositories struct {
-	Brand      brandRepo.RepositoryInterface
-	BodyStyle  bodyStyleRepo.RepositoryInterface
-	Category   categoryRepo.RepositoryInterface
-	DriverType driverTypeRepo.RepositoryInterface
-	Gearbox    gearboxRepo.RepositoryInterface
-	Vehicle    vehicleRepo.RepositoryInterface
-}
-
-func setupRepositories(Storage storage.Storage) (*Repositories, error) {
+func setupRepositories(Storage storage.Storage) (*repositories.Repositories, error) {
 
 	switch Storage.GetName() {
 	case consts.MongoDB:
 		// type assertion - get object from interface
 		mongoStorage := Storage.(*mongo.MongoStorage)
-		return &Repositories{
-			brandRepo.NewMongoBrandRepo(mongoStorage.DB),
-			bodyStyleRepo.NewMongoBodyStyleRepo(mongoStorage.DB),
-			categoryRepo.NewMongoCategoryRepo(mongoStorage.DB),
-			driverTypeRepo.NewMongoDriverTypeRepo(mongoStorage.DB),
-			gearboxRepo.NewMongoGearboxRepo(mongoStorage.DB),
-			vehicleRepo.NewMongoVehicleRepo(mongoStorage.DB),
+		return &repositories.Repositories{
+			Brand:      brandRepo.NewMongoBrandRepo(mongoStorage.DB),
+			BodyStyle:  bodyStyleRepo.NewMongoBodyStyleRepo(mongoStorage.DB),
+			Category:   categoryRepo.NewMongoCategoryRepo(mongoStorage.DB),
+			DriverType: driverTypeRepo.NewMongoDriverTypeRepo(mongoStorage.DB),
+			Gearbox:    gearboxRepo.NewMongoGearboxRepo(mongoStorage.DB),
+			Vehicle:    vehicleRepo.NewMongoVehicleRepo(mongoStorage.DB),
 		}, nil
 
 	case consts.SqLite:
 		// type assertion - get object from interface
 		sqliteStorage := Storage.(*sqlite.SqliteStorage)
-		return &Repositories{
-			brandRepo.NewSqliteBrandRepo(sqliteStorage.DB),
-			bodyStyleRepo.NewSqliteBodyStyleRepo(sqliteStorage.DB),
-			categoryRepo.NewSqliteCategoryRepo(sqliteStorage.DB),
-			driverTypeRepo.NewSqliteDriverTypeRepo(sqliteStorage.DB),
-			gearboxRepo.NewSqliteGearboxRepo(sqliteStorage.DB),
-			vehicleRepo.NewSqliteVehicleRepo(sqliteStorage.DB),
+		return &repositories.Repositories{
+			Brand:      brandRepo.NewSqliteBrandRepo(sqliteStorage.DB),
+			BodyStyle:  bodyStyleRepo.NewSqliteBodyStyleRepo(sqliteStorage.DB),
+			Category:   categoryRepo.NewSqliteCategoryRepo(sqliteStorage.DB),
+			DriverType: driverTypeRepo.NewSqliteDriverTypeRepo(sqliteStorage.DB),
+			Gearbox:    gearboxRepo.NewSqliteGearboxRepo(sqliteStorage.DB),
+			Vehicle:    vehicleRepo.NewSqliteVehicleRepo(sqliteStorage.DB),
 		}, nil
 
 	default:
@@ -115,21 +108,14 @@ func setupRepositories(Storage storage.Storage) (*Repositories, error) {
 	}
 }
 
-func setupServices(repos *Repositories, autoRiaKey string) services.Container {
+func setupServices(repos *repositories.Repositories, log *slog.Logger, autoRiaKey string) services.Container {
 
 	return services.Container{
-		Brand:      brandService.NewService(repos.Brand, autoRiaKey),
-		BodyStyle:  bodyService.NewService(repos.BodyStyle, autoRiaKey),
-		Category:   categoryService.NewService(repos.Category, autoRiaKey),
-		DriverType: driverService.NewService(repos.DriverType, autoRiaKey),
-		Gearbox:    gearboxService.NewService(repos.Gearbox, autoRiaKey),
-		Vehicle: vehicleService.NewService(
-			repos.Vehicle,
-			repos.Brand,
-			repos.BodyStyle,
-			repos.Category,
-			repos.DriverType,
-			repos.Gearbox,
-		),
+		Brand:      brandService.NewService(repos.Brand, log, autoRiaKey),
+		BodyStyle:  bodyService.NewService(repos.BodyStyle, log, autoRiaKey),
+		Category:   categoryService.NewService(repos.Category, log, autoRiaKey),
+		DriverType: driverService.NewService(repos.DriverType, log, autoRiaKey),
+		Gearbox:    gearboxService.NewService(repos.Gearbox, log, autoRiaKey),
+		Vehicle:    vehicleService.NewService(repos, log),
 	}
 }

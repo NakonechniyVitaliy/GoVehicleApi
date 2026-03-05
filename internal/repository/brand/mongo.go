@@ -85,7 +85,7 @@ func (mng *MongoRepository) Update(ctx context.Context, brand models.Brand, bran
 }
 
 func (mng *MongoRepository) GetByID(ctx context.Context, brandID uint16) (*models.Brand, error) {
-	const op = "storage.brand.GetByID"
+	const op = "storage.brand.get_by_id"
 
 	filter := bson.D{{"id", brandID}}
 

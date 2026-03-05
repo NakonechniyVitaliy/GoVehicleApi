@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"log/slog"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
 	driverTypeRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/driver_type"
@@ -10,12 +11,14 @@ import (
 
 type Service struct {
 	repo       driverTypeRepo.RepositoryInterface
+	log        *slog.Logger
 	autoRiaKey string
 }
 
-func NewService(repository driverTypeRepo.RepositoryInterface, key string) *Service {
+func NewService(repository driverTypeRepo.RepositoryInterface, logger *slog.Logger, key string) *Service {
 	return &Service{
 		repo:       repository,
+		log:        logger,
 		autoRiaKey: key,
 	}
 }

@@ -2,9 +2,13 @@ package service
 
 import (
 	"context"
+	"fmt"
+	"log/slog"
 
 	dto "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/vehicle"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
+
+	repos "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository"
 
 	bodyStyleRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/body_style"
 	brandRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/brand"
@@ -21,23 +25,18 @@ type Service struct {
 	categoryRepo categoryRepo.RepositoryInterface
 	driverRepo   driverTypeRepo.RepositoryInterface
 	gearboxRepo  gearboxRepo.RepositoryInterface
+	log          *slog.Logger
 }
 
-func NewService(
-	vehicleRepo vehicleRepo.RepositoryInterface,
-	brandRepo brandRepo.RepositoryInterface,
-	bodyRepo bodyStyleRepo.RepositoryInterface,
-	categoryRepo categoryRepo.RepositoryInterface,
-	driverRepo driverTypeRepo.RepositoryInterface,
-	gearboxRepo gearboxRepo.RepositoryInterface,
-) *Service {
+func NewService(repos *repos.Repositories, logger *slog.Logger) *Service {
 	return &Service{
-		vehicleRepo,
-		brandRepo,
-		bodyRepo,
-		categoryRepo,
-		driverRepo,
-		gearboxRepo,
+		repos.Vehicle,
+		repos.Brand,
+		repos.BodyStyle,
+		repos.Category,
+		repos.DriverType,
+		repos.Gearbox,
+		logger,
 	}
 }
 
@@ -85,27 +84,33 @@ func (s Service) GetExpanded(ctx context.Context, id uint16) (*dto.ExpandedVehic
 
 	rawVehicle, err := s.GetByID(ctx, id)
 	if err != nil {
+		fmt.Println("!!!rawVehicle")
 		return nil, err
 	}
 
 	vBrand, err := s.brandRepo.GetByID(ctx, rawVehicle.Brand)
 	if err != nil {
+		fmt.Println("!!!vBrand")
 		return nil, err
 	}
 	vBodyStyle, err := s.bodyRepo.GetByID(ctx, rawVehicle.BodyStyle)
 	if err != nil {
+		fmt.Println("!!!vBodyStyle")
 		return nil, err
 	}
 	vCategory, err := s.categoryRepo.GetByID(ctx, rawVehicle.Category)
 	if err != nil {
+		fmt.Println("!!!vCategory")
 		return nil, err
 	}
 	vDriverType, err := s.driverRepo.GetByID(ctx, rawVehicle.DriverType)
 	if err != nil {
+		fmt.Println("!!!vDriverType")
 		return nil, err
 	}
 	vGearbox, err := s.gearboxRepo.GetByID(ctx, rawVehicle.Gearbox)
 	if err != nil {
+		fmt.Println("!!!vGearbox")
 		return nil, err
 	}
 

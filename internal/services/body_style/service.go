@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"log/slog"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
 	bodyStyleRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/body_style"
@@ -10,12 +11,14 @@ import (
 
 type Service struct {
 	repo       bodyStyleRepo.RepositoryInterface
+	log        *slog.Logger
 	autoRiaKey string
 }
 
-func NewService(repository bodyStyleRepo.RepositoryInterface, key string) *Service {
+func NewService(repository bodyStyleRepo.RepositoryInterface, logger *slog.Logger, key string) *Service {
 	return &Service{
 		repo:       repository,
+		log:        logger,
 		autoRiaKey: key,
 	}
 }
