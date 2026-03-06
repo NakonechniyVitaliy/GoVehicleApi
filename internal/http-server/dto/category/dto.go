@@ -1,6 +1,7 @@
 package category
 
 type CategoryDTO struct {
-	Name  *string `json:"name"`
-	Value *uint16 `json:"value"`
+	ID    *uint16 `json:"id,omitempty"`
+	Name  *string `json:"name,omitempty"`
+	Value *uint16 `json:"value,omitempty"`
 }

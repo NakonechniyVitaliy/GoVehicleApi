@@ -5,8 +5,15 @@ import (
 	"fmt"
 	"log/slog"
 
-	dto "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/vehicle"
+	bsDTO "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/body_style"
+	bDTO "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/brand"
+	cDTO "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/category"
+	dDTO "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/driver_type"
+	gDTO "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/gearbox"
+	vDTO "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/vehicle"
+
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/helper"
 
 	repos "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository"
 
@@ -80,7 +87,7 @@ func (s Service) Delete(ctx context.Context, id uint16) error {
 	return nil
 }
 
-func (s Service) GetExpanded(ctx context.Context, id uint16) (*dto.ExpandedVehicleDTO, error) {
+func (s Service) GetExpanded(ctx context.Context, id uint16) (*vDTO.ExpandedVehicleDTO, error) {
 
 	rawVehicle, err := s.GetByID(ctx, id)
 	if err != nil {
@@ -114,15 +121,30 @@ func (s Service) GetExpanded(ctx context.Context, id uint16) (*dto.ExpandedVehic
 		return nil, err
 	}
 
-	return &dto.ExpandedVehicleDTO{
-		ID:         rawVehicle.ID,
-		Brand:      vBrand,
-		DriverType: vDriverType,
-		Gearbox:    vGearbox,
-		BodyStyle:  vBodyStyle,
-		Category:   vCategory,
-		Mileage:    rawVehicle.Mileage,
-		Model:      rawVehicle.Model,
-		Price:      rawVehicle.Price,
+	return &vDTO.ExpandedVehicleDTO{
+		ID: rawVehicle.ID,
+		Brand: bDTO.CompressedBrandDTO{
+			ID:   vBrand.ID,
+			Name: vBrand.Name,
+		},
+		DriverType: dDTO.DriverTypeDTO{
+			ID:   helper.PtrUint16(vDriverType.ID),
+			Name: helper.PtrString(vDriverType.Name),
+		},
+		Gearbox: gDTO.GearboxDTO{
+			ID:   helper.PtrUint16(vGearbox.ID),
+			Name: helper.PtrString(vGearbox.Name),
+		},
+		BodyStyle: bsDTO.BodyStyleDTO{
+			ID:   helper.PtrUint16(vBodyStyle.ID),
+			Name: helper.PtrString(vBodyStyle.Name),
+		},
+		Category: cDTO.CategoryDTO{
+			ID:   helper.PtrUint16(vCategory.ID),
+			Name: helper.PtrString(vCategory.Name),
+		},
+		Mileage: rawVehicle.Mileage,
+		Model:   rawVehicle.Model,
+		Price:   rawVehicle.Price,
 	}, nil
 }
