@@ -5,12 +5,11 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/_errors"
+	dtoErrors "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/_errors"
 	dto "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/body_style"
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
 	service "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/body_style"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
 	"github.com/go-chi/render"
 )
 
@@ -19,46 +18,36 @@ type SaveResponse struct {
 	BodyStyle *models.BodyStyle
 }
 
-func New(log *slog.Logger, service *service.Service) http.HandlerFunc {
+func New(log *slog.Logger, srv *service.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		const op = "handlers.bodyStyle.new"
-		log = log.With(slog.String("op", op))
+		log = log.With(slog.String("op", "handlers.body_style.new"))
 
 		var req dto.SaveRequest
 		err := render.DecodeJSON(r.Body, &req)
 		if err != nil {
-			log.Error(_errors.InvalidJSONorWrongFieldType, slog.String("error", err.Error()))
-			render.Status(r, http.StatusBadRequest)
-			render.JSON(w, r, resp.Error(_errors.InvalidJSONorWrongFieldType))
+			log.Error(dtoErrors.InvalidJSONorWrongFieldType, slog.String("error", err.Error()))
+			resp.RenderError(w, r, http.StatusBadRequest, dtoErrors.InvalidJSONorWrongFieldType)
 			return
 		}
-		log.Info("request body decoded", slog.Any("request", req))
-
 		err = req.Validate()
 		if err != nil {
 			log.Error("validation error", slog.String("error", err.Error()))
-			render.Status(r, http.StatusBadRequest)
-			render.JSON(w, r, resp.Error(err.Error()))
+			resp.RenderError(w, r, http.StatusBadRequest, err.Error())
 			return
 		}
 
 		mappedBodyStyle := req.BodyStyle.ToModel()
-		log.Info("saving body style", slog.Any("body style", mappedBodyStyle))
+		createdBS, err := srv.Save(r.Context(), mappedBodyStyle)
 
-		createdBS, err := service.Save(r.Context(), mappedBodyStyle)
-		if errors.Is(err, storage.ErrBodyStyleExists) {
-			log.Info("bodyStyle already exists", slog.String("body style", createdBS.Name))
-			render.JSON(w, r, resp.Error("body style already exists"))
+		if errors.Is(err, service.ErrBodyStyleExists) {
+			resp.RenderError(w, r, http.StatusConflict, service.ErrBodyStyleExists.Error())
 			return
 		}
-
-		if err != nil {
-			log.Error("failed to save body style", slog.String("error", err.Error()))
-			render.JSON(w, r, resp.Error("Failed to save body style"))
+		if errors.Is(err, service.ErrSaveBodyStyle) {
+			resp.RenderError(w, r, http.StatusInternalServerError, service.ErrSaveBodyStyle.Error())
 			return
 		}
-		log.Info("bodyStyle saved", slog.String("body style", createdBS.Name))
 
 		render.JSON(w, r, SaveResponse{
 			Response:  resp.OK(),

@@ -1,8 +1,6 @@
-package autoria
+package body_styles
 
 import (
-	"fmt"
-	"log/slog"
 	"net/http"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
@@ -16,14 +14,14 @@ func GetBodyStyles(key string) ([]models.BodyStyle, error) {
 
 	resp, err := http.Get(url)
 	if err != nil {
-		return nil, fmt.Errorf("fetching Error %s", slog.String("error", err.Error()))
+		return nil, ErrBodyStylesFetch
 	}
 	defer resp.Body.Close()
 
 	var bodyStyles []models.BodyStyle
 	err = render.DecodeJSON(resp.Body, &bodyStyles)
 	if err != nil {
-		return nil, fmt.Errorf("failed to decode Autoria response body %s", slog.String("error", err.Error()))
+		return nil, ErrDecodeBodyStyles
 	}
 
 	return bodyStyles, nil

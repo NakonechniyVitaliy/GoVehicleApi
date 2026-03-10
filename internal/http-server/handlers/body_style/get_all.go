@@ -1,6 +1,7 @@
 package body_style
 
 import (
+	"errors"
 	"log/slog"
 	"net/http"
 
@@ -15,21 +16,17 @@ type GetAllResponse struct {
 	BodyStyles []models.BodyStyle
 }
 
-func GetAll(log *slog.Logger, service service.Service) http.HandlerFunc {
+func GetAll(log *slog.Logger, svc service.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.BodyStyle.getAll"
 
-		log = log.With(slog.String("op", op))
+		log = log.With(slog.String("op", "handlers.body_style.get_all"))
 
-		log.Info("getting body styles")
+		BodyStyles, err := svc.GetAll(r.Context())
 
-		BodyStyles, err := service.GetAll(r.Context())
-		if err != nil {
-			log.Error("failed to get body style", slog.String("error", err.Error()))
-			render.JSON(w, r, resp.Error("Failed to get body style"))
+		if errors.Is(err, service.ErrGetBodyStyles) {
+			resp.RenderError(w, r, http.StatusInternalServerError, service.ErrGetBodyStyles.Error())
 			return
 		}
-
 		render.JSON(w, r, GetAllResponse{
 			Response:   resp.OK(),
 			BodyStyles: BodyStyles,

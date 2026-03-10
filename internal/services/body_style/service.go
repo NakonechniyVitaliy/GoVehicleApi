@@ -1,21 +1,23 @@
-package service
+package body_style
 
 import (
 	"context"
+	"errors"
 	"log/slog"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	bodyStyleRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/body_style"
-	bodyStyleRequests "github.com/NakonechniyVitaliy/GoVehicleApi/internal/requests/autoria/body_styles"
+	repoErrors "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/_errors"
+	repo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/body_style"
+	requests "github.com/NakonechniyVitaliy/GoVehicleApi/internal/requests/autoria/body_styles"
 )
 
 type Service struct {
-	repo       bodyStyleRepo.RepositoryInterface
+	repo       repo.RepositoryInterface
 	log        *slog.Logger
 	autoRiaKey string
 }
 
-func NewService(repository bodyStyleRepo.RepositoryInterface, logger *slog.Logger, key string) *Service {
+func NewService(repository repo.RepositoryInterface, logger *slog.Logger, key string) *Service {
 	return &Service{
 		repo:       repository,
 		log:        logger,
@@ -24,55 +26,106 @@ func NewService(repository bodyStyleRepo.RepositoryInterface, logger *slog.Logge
 }
 
 func (s Service) Refresh(ctx context.Context) error {
-	bodyStyles, err := bodyStyleRequests.GetBodyStyles(s.autoRiaKey)
+	log := s.log.With(slog.String("op", "services.body_style.refresh"))
+
+	bodyStyles, err := requests.GetBodyStyles(s.autoRiaKey)
 	if err != nil {
-		return err
+		switch {
+		case errors.Is(err, requests.ErrBodyStylesFetch):
+			log.Error(ErrBodyStylesFetch.Error(), slog.String("error", err.Error()))
+
+		case errors.Is(err, requests.ErrDecodeBodyStyles):
+			log.Error(ErrDecodeBodyStyles.Error(), slog.String("error", err.Error()))
+		}
+		return ErrRefreshBodyStyles
+
 	}
+
 	for _, oneCategory := range bodyStyles {
 		err = s.repo.InsertOrUpdate(ctx, oneCategory)
 		if err != nil {
-			return err
+			return ErrRefreshBodyStyles
 		}
 	}
 	return nil
 }
 
 func (s Service) GetByID(ctx context.Context, id uint16) (*models.BodyStyle, error) {
+	log := s.log.With(slog.String("op", "services.body_style.get_by_id"))
+
 	bodyStyle, err := s.repo.GetByID(ctx, id)
+
+	if errors.Is(err, repoErrors.ErrBodyStyleNotFound) {
+		log.Error(ErrBodyStyleNotFound.Error(), slog.String("error", err.Error()))
+		return nil, ErrGetBodyStyle
+	}
+
 	if err != nil {
+		log.Error(ErrGetBodyStyle.Error(), slog.String("error", err.Error()))
 		return nil, err
 	}
 	return bodyStyle, nil
 }
 
 func (s Service) GetAll(ctx context.Context) ([]models.BodyStyle, error) {
+	log := s.log.With(slog.String("op", "handlers.body_style.get_all"))
+
 	bodyStyles, err := s.repo.GetAll(ctx)
 	if err != nil {
-		return nil, err
+		log.Error(ErrGetBodyStyles.Error(), slog.String("error", err.Error()))
+		return nil, ErrGetBodyStyles
 	}
 	return bodyStyles, nil
 }
 
 func (s Service) Save(ctx context.Context, bodyStyle models.BodyStyle) (*models.BodyStyle, error) {
+	log := s.log.With(slog.String("op", "services.body_style.save"))
+
 	savedBodyStyle, err := s.repo.Create(ctx, bodyStyle)
-	if err != nil {
-		return nil, err
+	if errors.Is(err, repoErrors.ErrBodyStyleExists) {
+		log.Error(ErrBodyStyleExists.Error(), slog.String("error", err.Error()))
+		return nil, ErrBodyStyleExists
 	}
+	if err != nil {
+		log.Error(ErrSaveBodyStyle.Error(), slog.String("error", err.Error()))
+		return nil, ErrSaveBodyStyle
+	}
+
 	return savedBodyStyle, nil
 }
 
 func (s Service) Update(ctx context.Context, bodyStyle models.BodyStyle, id uint16) (*models.BodyStyle, error) {
+	log := s.log.With(slog.String("op", "services.body_style.update"))
+
 	updatedBodyStyle, err := s.repo.Update(ctx, bodyStyle, id)
-	if err != nil {
-		return nil, err
+
+	if errors.Is(err, repoErrors.ErrBodyStyleNotFound) {
+		log.Error(ErrBodyStyleNotFound.Error(), slog.String("error", err.Error()))
+		return nil, ErrBodyStyleNotFound
 	}
+
+	if err != nil {
+		log.Error(ErrUpdateBodyStyle.Error(), slog.String("error", err.Error()))
+		return nil, ErrUpdateBodyStyle
+	}
+
 	return updatedBodyStyle, nil
 }
 
 func (s Service) Delete(ctx context.Context, id uint16) error {
+	log := s.log.With(slog.String("op", "services.body_style.delete"))
+
 	err := s.repo.Delete(ctx, id)
-	if err != nil {
-		return err
+
+	if errors.Is(err, repoErrors.ErrBodyStyleNotFound) {
+		log.Error(ErrBodyStyleNotFound.Error(), slog.String("error", err.Error()))
+		return ErrBodyStyleNotFound
 	}
+
+	if err != nil {
+		log.Error("failed to delete body style", slog.String("error", err.Error()))
+		return ErrGetBodyStyle
+	}
+
 	return nil
 }

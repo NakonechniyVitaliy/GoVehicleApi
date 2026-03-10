@@ -2,8 +2,9 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
+
+	repoErrors "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/_errors"
 
 	bsDTO "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/body_style"
 	bDTO "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/brand"
@@ -91,34 +92,29 @@ func (s Service) GetExpanded(ctx context.Context, id uint16) (*vDTO.ExpandedVehi
 
 	rawVehicle, err := s.GetByID(ctx, id)
 	if err != nil {
-		fmt.Println("!!!rawVehicle")
-		return nil, err
+		s.log.Error("failed to get raw vehicle", slog.String("error", err.Error()))
+		return nil, repoErrors.ErrVehicleNotFound
 	}
 
 	vBrand, err := s.brandRepo.GetByID(ctx, rawVehicle.Brand)
 	if err != nil {
-		fmt.Println("!!!vBrand")
-		return nil, err
+		return nil, repoErrors.ErrBrandNotFound
 	}
 	vBodyStyle, err := s.bodyRepo.GetByID(ctx, rawVehicle.BodyStyle)
 	if err != nil {
-		fmt.Println("!!!vBodyStyle")
-		return nil, err
+		return nil, repoErrors.ErrBodyStyleNotFound
 	}
 	vCategory, err := s.categoryRepo.GetByID(ctx, rawVehicle.Category)
 	if err != nil {
-		fmt.Println("!!!vCategory")
-		return nil, err
+		return nil, repoErrors.ErrCategoryNotFound
 	}
 	vDriverType, err := s.driverRepo.GetByID(ctx, rawVehicle.DriverType)
 	if err != nil {
-		fmt.Println("!!!vDriverType")
-		return nil, err
+		return nil, repoErrors.ErrDriverTypeNotFound
 	}
 	vGearbox, err := s.gearboxRepo.GetByID(ctx, rawVehicle.Gearbox)
 	if err != nil {
-		fmt.Println("!!!vGearbox")
-		return nil, err
+		return nil, repoErrors.ErrGearboxNotFound
 	}
 
 	return &vDTO.ExpandedVehicleDTO{

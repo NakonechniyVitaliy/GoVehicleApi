@@ -6,23 +6,17 @@ import (
 
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	service "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/body_style"
-	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 )
 
-func Refresh(log *slog.Logger, service service.Service) http.HandlerFunc {
+func Refresh(log *slog.Logger, srv service.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.bodyStyle.refresh"
 
-		log = log.With(
-			slog.String("op", op),
-			slog.String("request_id", middleware.GetReqID(r.Context())),
-		)
+		log = log.With(slog.String("op", "handlers.body_style.refresh"))
 
-		err := service.Refresh(r.Context())
+		err := srv.Refresh(r.Context())
 		if err != nil {
-			log.Error("failed to update body styles", slog.String("error", err.Error()))
-			render.JSON(w, r, resp.Error("Failed to update body style"))
+			resp.RenderError(w, r, http.StatusInternalServerError, service.ErrRefreshBodyStyles.Error())
 			return
 		}
 

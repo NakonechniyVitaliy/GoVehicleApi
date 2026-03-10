@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/_errors"
 	mongoStorage "github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -47,7 +47,7 @@ func (mng *MongoRepository) Create(ctx context.Context, bodyStyle models.BodySty
 }
 
 func (mng *MongoRepository) Update(ctx context.Context, bodyStyle models.BodyStyle, bodyStyleID uint16) (*models.BodyStyle, error) {
-	const op = "storage.bodyStyle.UpdateBodyStyle"
+	const op = "storage.body_style.update"
 
 	filter := bson.M{
 		"id": bodyStyleID,
@@ -66,7 +66,7 @@ func (mng *MongoRepository) Update(ctx context.Context, bodyStyle models.BodySty
 	}
 
 	if res.MatchedCount == 0 {
-		return nil, storage.ErrBodyStyleNotFound
+		return nil, _errors.ErrBodyStyleNotFound
 	}
 
 	filter = bson.M{
@@ -79,7 +79,7 @@ func (mng *MongoRepository) Update(ctx context.Context, bodyStyle models.BodySty
 }
 
 func (mng *MongoRepository) GetByID(ctx context.Context, bodyStyleID uint16) (*models.BodyStyle, error) {
-	const op = "storage.bodyStyle.GetByID"
+	const op = "storage.body_style.get_by_id"
 
 	filter := bson.D{{"id", bodyStyleID}}
 
@@ -90,7 +90,7 @@ func (mng *MongoRepository) GetByID(ctx context.Context, bodyStyleID uint16) (*m
 	case err == nil:
 		return &bodyStyle, nil
 	case err == mongo.ErrNoDocuments:
-		return nil, storage.ErrBodyStyleNotFound
+		return nil, _errors.ErrBodyStyleNotFound
 
 	default:
 		return nil, fmt.Errorf("%s: %w", op, err)
@@ -98,7 +98,7 @@ func (mng *MongoRepository) GetByID(ctx context.Context, bodyStyleID uint16) (*m
 }
 
 func (mng *MongoRepository) GetAll(ctx context.Context) ([]models.BodyStyle, error) {
-	const op = "storage.bodyStyle.UpdateBodyStyle"
+	const op = "storage.body_style.update"
 
 	result, err := mng.bodyStyles.Find(ctx, bson.M{})
 	if err != nil {
@@ -115,7 +115,7 @@ func (mng *MongoRepository) GetAll(ctx context.Context) ([]models.BodyStyle, err
 }
 
 func (mng *MongoRepository) Delete(ctx context.Context, bodyStyleID uint16) error {
-	const op = "storage.bodyStyle.Delete"
+	const op = "storage.body_style.delete"
 
 	filter := bson.D{{"id", bodyStyleID}}
 
@@ -125,14 +125,14 @@ func (mng *MongoRepository) Delete(ctx context.Context, bodyStyleID uint16) erro
 	}
 
 	if res.DeletedCount == 0 {
-		return storage.ErrBodyStyleNotFound
+		return _errors.ErrBodyStyleNotFound
 	}
 	return nil
 
 }
 
 func (mng *MongoRepository) InsertOrUpdate(ctx context.Context, bodyStyle models.BodyStyle) error {
-	const op = "storage.bodyStyle.InsertOrUpdate"
+	const op = "storage.body_style.insert_or_update"
 
 	id, err := mongoStorage.GetNextID(ctx, mng.db, "body_styles")
 	if err != nil {

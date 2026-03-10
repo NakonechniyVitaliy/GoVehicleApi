@@ -1,6 +1,7 @@
 package body_style
 
 import (
+	"errors"
 	"log/slog"
 	"net/http"
 	"strconv"
@@ -8,38 +9,31 @@ import (
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	service "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/body_style"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 )
 
-func Delete(log *slog.Logger, service *service.Service) http.HandlerFunc {
+func Delete(log *slog.Logger, srv *service.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.body_style.delete"
 
-		log = log.With(
-			slog.String("op", op),
-			slog.String("request_id", middleware.GetReqID(r.Context())),
-		)
+		log = log.With(slog.String("op", "handlers.body_style.delete"))
 
 		id64, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 16)
 		if err != nil {
 			log.Error("failed to get body style ID", slog.String("error", err.Error()))
-			render.JSON(w, r, resp.Error("Failed to get body style ID"))
+			resp.RenderError(w, r, http.StatusBadRequest, "failed to get body style ID")
 			return
 		}
 		bodyStyleID := uint16(id64)
-		log.Info("ID retrieved successfully", slog.Any("body style ID", bodyStyleID))
 
-		log.Info("deleting body style")
-		err = service.Delete(r.Context(), bodyStyleID)
-		if err != nil {
-			log.Error("failed to delete body style", slog.String("error", err.Error()))
-			render.JSON(w, r, resp.Error("Failed to delete body style"))
+		err = srv.Delete(r.Context(), bodyStyleID)
+		if errors.Is(err, service.ErrBodyStyleNotFound) {
+			resp.RenderError(w, r, http.StatusNotFound, service.ErrBodyStyleNotFound.Error())
 			return
 		}
-
-		log.Info("body style deleted", slog.Any("body style ID", bodyStyleID))
-
+		if err != nil {
+			resp.RenderError(w, r, http.StatusInternalServerError, service.ErrGetBodyStyle.Error())
+			return
+		}
 		render.JSON(w, r, resp.OK())
 	}
 }
