@@ -30,9 +30,9 @@ func Get(log *slog.Logger, srv service.Service) http.HandlerFunc {
 			return
 		}
 
-		BodyStyleID := uint16(id64)
+		bodyStyleID := uint16(id64)
 
-		BodyStyle, err := srv.GetByID(r.Context(), BodyStyleID)
+		BodyStyle, err := srv.GetByID(r.Context(), bodyStyleID)
 		if errors.Is(err, service.ErrBodyStyleNotFound) {
 			resp.RenderError(w, r, http.StatusNotFound, service.ErrBodyStyleNotFound.Error())
 			return

@@ -1,13 +1,13 @@
 package brand
 
 import (
+	"errors"
 	"log/slog"
 	"net/http"
 
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
 	service "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/brand"
-	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 )
 
@@ -16,24 +16,17 @@ type GetAllResponse struct {
 	Brands   []models.Brand
 }
 
-func GetAll(log *slog.Logger, service *service.Service) http.HandlerFunc {
+func GetAll(log *slog.Logger, srv *service.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.brand.get"
 
-		log = log.With(
-			slog.String("op", op),
-			slog.String("request_id", middleware.GetReqID(r.Context())),
-		)
+		log = log.With(slog.String("op", "handlers.brand.get"))
 
-		log.Info("getting brands")
+		brands, err := srv.GetAll(r.Context())
 
-		brands, err := service.GetAll(r.Context())
-		if err != nil {
-			log.Error("failed to get brand", slog.String("error", err.Error()))
-			render.JSON(w, r, resp.Error("Failed to get brand"))
+		if errors.Is(err, service.ErrGetBrands) {
+			resp.RenderError(w, r, http.StatusInternalServerError, service.ErrGetBrands.Error())
 			return
 		}
-
 		render.JSON(w, r, GetAllResponse{
 			Response: resp.OK(),
 			Brands:   brands,

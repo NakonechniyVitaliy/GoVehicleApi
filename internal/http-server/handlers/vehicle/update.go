@@ -1,10 +1,12 @@
 package vehicle
 
 import (
+	"errors"
 	"log/slog"
 	"net/http"
 	"strconv"
 
+	dtoErrors "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/_errors"
 	dto "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/vehicle"
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
@@ -18,45 +20,44 @@ type UpdateResponse struct {
 	Vehicle  *models.Vehicle
 }
 
-func Update(log *slog.Logger, service *service.Service) http.HandlerFunc {
+func Update(log *slog.Logger, srv *service.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.vehicle.update"
 
-		log = log.With(slog.String("op", op))
+		log = log.With(slog.String("op", "handlers.vehicle.update"))
 
 		id64, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 16)
 		if err != nil {
 			log.Error("failed to get vehicle ID", slog.String("error", err.Error()))
-			render.JSON(w, r, resp.Error("Failed to get vehicle ID"))
+			resp.RenderError(w, r, http.StatusBadRequest, "failed to get vehicle ID")
 			return
 		}
-		vehicleID := uint16(id64)
-		log.Info("ID retrieved successfully", slog.Any("vehicleID", vehicleID))
 
+		vehicleID := uint16(id64)
 		var req dto.UpdateRequest
+
 		err = render.DecodeJSON(r.Body, &req)
 		if err != nil {
-			log.Error("invalid JSON or wrong field types", slog.String("error", err.Error()))
-			render.Status(r, http.StatusBadRequest)
-			render.JSON(w, r, resp.Error("invalid JSON or wrong field types"))
+			log.Error(dtoErrors.InvalidJSONorWrongFieldType, slog.String("error", err.Error()))
+			resp.RenderError(w, r, http.StatusBadRequest, dtoErrors.InvalidJSONorWrongFieldType)
 			return
 		}
-		log.Info("request body decoded", slog.Any("request", req))
 
 		err = req.Validate()
 		if err != nil {
 			log.Error("validation error", slog.String("error", err.Error()))
-			render.Status(r, http.StatusBadRequest)
-			render.JSON(w, r, resp.Error(err.Error()))
+			resp.RenderError(w, r, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		vehicleFromRequest := req.Vehicle.ToModel()
+		bodyStyleFromRequest := req.Vehicle.ToModel()
+		updatedVehicle, err := srv.Update(r.Context(), bodyStyleFromRequest, vehicleID)
 
-		updatedVehicle, err := service.Update(r.Context(), vehicleFromRequest, vehicleID)
-		if err != nil {
-			log.Error("failed to update vehicle", slog.String("error", err.Error()))
-			render.JSON(w, r, resp.Error("Failed to update vehicle"))
+		if errors.Is(err, service.ErrVehicleNotFound) {
+			resp.RenderError(w, r, http.StatusNotFound, service.ErrVehicleNotFound.Error())
+			return
+		}
+		if errors.Is(err, service.ErrUpdateVehicle) {
+			resp.RenderError(w, r, http.StatusInternalServerError, service.ErrUpdateVehicle.Error())
 			return
 		}
 
@@ -64,6 +65,5 @@ func Update(log *slog.Logger, service *service.Service) http.HandlerFunc {
 			Response: resp.OK(),
 			Vehicle:  updatedVehicle,
 		})
-
 	}
 }

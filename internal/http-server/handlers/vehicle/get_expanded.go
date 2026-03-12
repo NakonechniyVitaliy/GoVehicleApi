@@ -1,6 +1,7 @@
 package vehicle
 
 import (
+	"errors"
 	"log/slog"
 	"net/http"
 	"strconv"
@@ -17,26 +18,26 @@ type GetExpandedResponse struct {
 	Vehicle  *dto.ExpandedVehicleDTO
 }
 
-func GetExpanded(log *slog.Logger, service *service.Service) http.HandlerFunc {
+func GetExpanded(log *slog.Logger, srv *service.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.vehicle.get_expanded"
 
-		log = log.With(slog.String("op", op))
+		log = log.With(slog.String("op", "handlers.vehicle.get_expanded"))
 
 		id64, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 16)
 		if err != nil {
 			log.Error("failed to get vehicle ID", slog.String("error", err.Error()))
-			render.JSON(w, r, resp.Error("Failed to get vehicle ID"))
+			resp.RenderError(w, r, http.StatusBadRequest, "failed to get vehicle ID")
 			return
 		}
 		vehicleID := uint16(id64)
-		log.Info("ID retrieved successfully", slog.Any("vehicleID", vehicleID))
 
-		log.Info("getting expanded vehicle")
-		expandedVehicle, err := service.GetExpanded(r.Context(), vehicleID)
+		expandedVehicle, err := srv.GetExpanded(r.Context(), vehicleID)
+		if errors.Is(err, service.ErrVehicleNotFound) {
+			resp.RenderError(w, r, http.StatusNotFound, service.ErrVehicleNotFound.Error())
+			return
+		}
 		if err != nil {
-			render.Status(r, http.StatusInternalServerError)
-			render.JSON(w, r, resp.Error("Failed to get vehicle"))
+			resp.RenderError(w, r, http.StatusInternalServerError, service.ErrGetVehicle.Error())
 			return
 		}
 

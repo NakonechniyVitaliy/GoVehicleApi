@@ -5,11 +5,11 @@ import (
 	"log/slog"
 	"net/http"
 
+	dtoErrors "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/_errors"
 	dto "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/brand"
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
 	service "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/brand"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
 	"github.com/go-chi/render"
 )
 
@@ -18,47 +18,36 @@ type SaveResponse struct {
 	Brand    *models.Brand
 }
 
-func New(log *slog.Logger, service *service.Service) http.HandlerFunc {
+func New(log *slog.Logger, srv *service.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.brand.save.New"
 
-		log = log.With(slog.String("op", op))
+		log = log.With(slog.String("op", "handlers.brand.save"))
 
 		var req dto.SaveRequest
 		err := render.DecodeJSON(r.Body, &req)
 		if err != nil {
-			log.Error("invalid JSON or wrong field types", slog.String("error", err.Error()))
-			render.Status(r, http.StatusBadRequest)
-			render.JSON(w, r, resp.Error("invalid JSON or wrong field types"))
+			log.Error(dtoErrors.InvalidJSONorWrongFieldType, slog.String("error", err.Error()))
+			resp.RenderError(w, r, http.StatusBadRequest, dtoErrors.InvalidJSONorWrongFieldType)
 			return
 		}
-		log.Info("request body decoded", slog.Any("request", req))
-
 		err = req.Validate()
 		if err != nil {
 			log.Error("validation error", slog.String("error", err.Error()))
-			render.Status(r, http.StatusBadRequest)
-			render.JSON(w, r, resp.Error(err.Error()))
+			resp.RenderError(w, r, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		newBrand := req.Brand.ToModel()
-		log.Info("saving brand", slog.Any("brand", newBrand))
+		mappedBrand := req.Brand.ToModel()
+		createdBrand, err := srv.Save(r.Context(), mappedBrand)
 
-		createdBrand, err := service.Save(r.Context(), newBrand)
-		if errors.Is(err, storage.ErrBrandExists) {
-			log.Info("brand already exists", slog.String("brand", createdBrand.Name))
-			render.JSON(w, r, resp.Error("Brand already exists"))
+		if errors.Is(err, service.ErrBrandExists) {
+			resp.RenderError(w, r, http.StatusConflict, service.ErrBrandExists.Error())
 			return
 		}
-
-		if err != nil {
-			log.Error("failed to save brand", slog.String("error", err.Error()))
-			render.JSON(w, r, resp.Error("Failed to save brand"))
+		if errors.Is(err, service.ErrSaveBrand) {
+			resp.RenderError(w, r, http.StatusInternalServerError, service.ErrSaveBrand.Error())
 			return
 		}
-
-		log.Info("brand saved", slog.String("brand", createdBrand.Name))
 
 		render.JSON(w, r, SaveResponse{
 			Response: resp.OK(),

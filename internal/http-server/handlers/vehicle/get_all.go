@@ -1,6 +1,7 @@
 package vehicle
 
 import (
+	"errors"
 	"log/slog"
 	"net/http"
 
@@ -15,21 +16,17 @@ type GetAllResponse struct {
 	Vehicles []models.Vehicle
 }
 
-func GetAll(log *slog.Logger, service *service.Service) http.HandlerFunc {
+func GetAll(log *slog.Logger, srv *service.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.vehicle.get"
 
-		log = log.With(slog.String("op", op))
+		log = log.With(slog.String("op", "handlers.vehicle.get"))
 
-		log.Info("getting vehicles")
+		vehicles, err := srv.GetAll(r.Context())
 
-		vehicles, err := service.GetAll(r.Context())
-		if err != nil {
-			log.Error("failed to get vehicle", slog.String("error", err.Error()))
-			render.JSON(w, r, resp.Error("Failed to get vehicle"))
+		if errors.Is(err, service.ErrGetVehicles) {
+			resp.RenderError(w, r, http.StatusInternalServerError, service.ErrGetVehicles.Error())
 			return
 		}
-
 		render.JSON(w, r, GetAllResponse{
 			Response: resp.OK(),
 			Vehicles: vehicles,

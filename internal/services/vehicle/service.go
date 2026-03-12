@@ -1,7 +1,8 @@
-package service
+package vehicle
 
 import (
 	"context"
+	"errors"
 	"log/slog"
 
 	repoErrors "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/_errors"
@@ -49,42 +50,82 @@ func NewService(repos *repos.Repositories, logger *slog.Logger) *Service {
 }
 
 func (s Service) GetByID(ctx context.Context, id uint16) (*models.Vehicle, error) {
+	log := s.log.With(slog.String("op", "services.vehicle.get_by_id"))
+
 	vehicle, err := s.vehicleRepo.GetByID(ctx, id)
+
+	if errors.Is(err, repoErrors.ErrVehicleNotFound) {
+		log.Error(ErrVehicleNotFound.Error(), slog.String("error", err.Error()))
+		return nil, ErrGetVehicle
+	}
+
 	if err != nil {
+		log.Error(ErrGetVehicle.Error(), slog.String("error", err.Error()))
 		return nil, err
 	}
 	return vehicle, nil
 }
 
 func (s Service) GetAll(ctx context.Context) ([]models.Vehicle, error) {
+	log := s.log.With(slog.String("op", "handlers.vehicle.get_all"))
+
 	vehicles, err := s.vehicleRepo.GetAll(ctx)
 	if err != nil {
-		return nil, err
+		log.Error(ErrGetVehicles.Error(), slog.String("error", err.Error()))
+		return nil, ErrGetVehicles
 	}
 	return vehicles, nil
 }
 
 func (s Service) Save(ctx context.Context, vehicle models.Vehicle) (*models.Vehicle, error) {
+	log := s.log.With(slog.String("op", "services.vehicle.save"))
+
 	savedVehicle, err := s.vehicleRepo.Create(ctx, vehicle)
-	if err != nil {
-		return nil, err
+	if errors.Is(err, repoErrors.ErrVehicleExists) {
+		log.Error(ErrVehicleExists.Error(), slog.String("error", err.Error()))
+		return nil, ErrVehicleExists
 	}
+	if err != nil {
+		log.Error(ErrSaveVehicle.Error(), slog.String("error", err.Error()))
+		return nil, ErrSaveVehicle
+	}
+
 	return savedVehicle, nil
 }
 
 func (s Service) Update(ctx context.Context, vehicle models.Vehicle, id uint16) (*models.Vehicle, error) {
+	log := s.log.With(slog.String("op", "services.vehicle.update"))
+
 	updatedVehicle, err := s.vehicleRepo.Update(ctx, vehicle, id)
-	if err != nil {
-		return nil, err
+
+	if errors.Is(err, repoErrors.ErrVehicleNotFound) {
+		log.Error(ErrVehicleNotFound.Error(), slog.String("error", err.Error()))
+		return nil, ErrVehicleNotFound
 	}
+
+	if err != nil {
+		log.Error(ErrUpdateVehicle.Error(), slog.String("error", err.Error()))
+		return nil, ErrUpdateVehicle
+	}
+
 	return updatedVehicle, nil
 }
 
 func (s Service) Delete(ctx context.Context, id uint16) error {
+	log := s.log.With(slog.String("op", "services.vehicle.delete"))
+
 	err := s.vehicleRepo.Delete(ctx, id)
-	if err != nil {
-		return err
+
+	if errors.Is(err, repoErrors.ErrVehicleNotFound) {
+		log.Error(ErrVehicleNotFound.Error(), slog.String("error", err.Error()))
+		return ErrVehicleNotFound
 	}
+
+	if err != nil {
+		log.Error("failed to delete vehicle", slog.String("error", err.Error()))
+		return ErrGetVehicle
+	}
+
 	return nil
 }
 
@@ -92,29 +133,28 @@ func (s Service) GetExpanded(ctx context.Context, id uint16) (*vDTO.ExpandedVehi
 
 	rawVehicle, err := s.GetByID(ctx, id)
 	if err != nil {
-		s.log.Error("failed to get raw vehicle", slog.String("error", err.Error()))
-		return nil, repoErrors.ErrVehicleNotFound
+		return nil, err
 	}
 
 	vBrand, err := s.brandRepo.GetByID(ctx, rawVehicle.Brand)
 	if err != nil {
-		return nil, repoErrors.ErrBrandNotFound
+		return nil, err
 	}
 	vBodyStyle, err := s.bodyRepo.GetByID(ctx, rawVehicle.BodyStyle)
 	if err != nil {
-		return nil, repoErrors.ErrBodyStyleNotFound
+		return nil, err
 	}
 	vCategory, err := s.categoryRepo.GetByID(ctx, rawVehicle.Category)
 	if err != nil {
-		return nil, repoErrors.ErrCategoryNotFound
+		return nil, err
 	}
 	vDriverType, err := s.driverRepo.GetByID(ctx, rawVehicle.DriverType)
 	if err != nil {
-		return nil, repoErrors.ErrDriverTypeNotFound
+		return nil, err
 	}
 	vGearbox, err := s.gearboxRepo.GetByID(ctx, rawVehicle.Gearbox)
 	if err != nil {
-		return nil, repoErrors.ErrGearboxNotFound
+		return nil, err
 	}
 
 	return &vDTO.ExpandedVehicleDTO{

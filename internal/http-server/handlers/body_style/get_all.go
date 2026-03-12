@@ -21,7 +21,7 @@ func GetAll(log *slog.Logger, svc service.Service) http.HandlerFunc {
 
 		log = log.With(slog.String("op", "handlers.body_style.get_all"))
 
-		BodyStyles, err := svc.GetAll(r.Context())
+		bodyStyles, err := svc.GetAll(r.Context())
 
 		if errors.Is(err, service.ErrGetBodyStyles) {
 			resp.RenderError(w, r, http.StatusInternalServerError, service.ErrGetBodyStyles.Error())
@@ -29,7 +29,7 @@ func GetAll(log *slog.Logger, svc service.Service) http.HandlerFunc {
 		}
 		render.JSON(w, r, GetAllResponse{
 			Response:   resp.OK(),
-			BodyStyles: BodyStyles,
+			BodyStyles: bodyStyles,
 		})
 	}
 }

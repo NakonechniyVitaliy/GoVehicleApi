@@ -1,10 +1,12 @@
 package brand
 
 import (
+	"errors"
 	"log/slog"
 	"net/http"
 	"strconv"
 
+	dtoErrors "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/_errors"
 	dto "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/brand"
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
@@ -18,45 +20,44 @@ type UpdateResponse struct {
 	Brand    *models.Brand
 }
 
-func Update(log *slog.Logger, service *service.Service) http.HandlerFunc {
+func Update(log *slog.Logger, srv *service.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.brand.update"
 
-		log = log.With(slog.String("op", op))
+		log = log.With(slog.String("op", "handlers.brand.update"))
 
 		id64, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 16)
 		if err != nil {
 			log.Error("failed to get brand ID", slog.String("error", err.Error()))
-			render.JSON(w, r, resp.Error("Failed to get brand ID"))
+			resp.RenderError(w, r, http.StatusBadRequest, "failed to get brand ID")
 			return
 		}
-		brandID := uint16(id64)
-		log.Info("ID retrieved successfully", slog.Any("brandID", brandID))
 
+		brandID := uint16(id64)
 		var req dto.UpdateRequest
+
 		err = render.DecodeJSON(r.Body, &req)
 		if err != nil {
-			log.Error("invalid JSON or wrong field types", slog.String("error", err.Error()))
-			render.Status(r, http.StatusBadRequest)
-			render.JSON(w, r, resp.Error("invalid JSON or wrong field types"))
+			log.Error(dtoErrors.InvalidJSONorWrongFieldType, slog.String("error", err.Error()))
+			resp.RenderError(w, r, http.StatusBadRequest, dtoErrors.InvalidJSONorWrongFieldType)
 			return
 		}
-		log.Info("request body decoded", slog.Any("request", req))
 
 		err = req.Validate()
 		if err != nil {
 			log.Error("validation error", slog.String("error", err.Error()))
-			render.Status(r, http.StatusBadRequest)
-			render.JSON(w, r, resp.Error(err.Error()))
+			resp.RenderError(w, r, http.StatusBadRequest, err.Error())
 			return
 		}
 
 		brandFromRequest := req.Brand.ToModel()
+		updatedBrand, err := srv.Update(r.Context(), brandFromRequest, brandID)
 
-		updatedBrand, err := service.Update(r.Context(), brandFromRequest, brandID)
-		if err != nil {
-			log.Error("failed to update brand", slog.String("error", err.Error()))
-			render.JSON(w, r, resp.Error("Failed to update brand"))
+		if errors.Is(err, service.ErrBrandNotFound) {
+			resp.RenderError(w, r, http.StatusNotFound, service.ErrBrandNotFound.Error())
+			return
+		}
+		if errors.Is(err, service.ErrUpdateBrand) {
+			resp.RenderError(w, r, http.StatusInternalServerError, service.ErrUpdateBrand.Error())
 			return
 		}
 
