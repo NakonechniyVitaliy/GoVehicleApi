@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/_errors"
 	mongoStorage "github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -25,7 +25,7 @@ func NewMongoBrandRepo(db *mongo.Database) *MongoRepository {
 }
 
 func (mng *MongoRepository) Create(ctx context.Context, brand models.Brand) (*models.Brand, error) {
-	const op = "storage.brand.CreateBrand"
+	const op = "storage.brand.create"
 
 	id, err := mongoStorage.GetNextID(ctx, mng.db, "brands")
 	if err != nil {
@@ -48,7 +48,7 @@ func (mng *MongoRepository) Create(ctx context.Context, brand models.Brand) (*mo
 }
 
 func (mng *MongoRepository) Update(ctx context.Context, brand models.Brand, brandID uint16) (*models.Brand, error) {
-	const op = "storage.brand.UpdateBrand"
+	const op = "storage.brand.update"
 
 	filter := bson.M{
 		"id": brandID,
@@ -72,7 +72,7 @@ func (mng *MongoRepository) Update(ctx context.Context, brand models.Brand, bran
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	if res.MatchedCount == 0 {
-		return nil, storage.ErrBrandNotFound
+		return nil, _errors.ErrBrandNotFound
 	}
 
 	filter = bson.M{
@@ -96,7 +96,7 @@ func (mng *MongoRepository) GetByID(ctx context.Context, brandID uint16) (*model
 	case err == nil:
 		return &brand, nil
 	case err == mongo.ErrNoDocuments:
-		return nil, storage.ErrBrandNotFound
+		return nil, _errors.ErrBrandNotFound
 
 	default:
 		return nil, fmt.Errorf("%s: %w", op, err)
@@ -104,7 +104,7 @@ func (mng *MongoRepository) GetByID(ctx context.Context, brandID uint16) (*model
 }
 
 func (mng *MongoRepository) GetAll(ctx context.Context) ([]models.Brand, error) {
-	const op = "storage.brand.UpdateBrand"
+	const op = "storage.brand.get_all"
 
 	result, err := mng.brands.Find(ctx, bson.M{})
 	if err != nil {
@@ -121,7 +121,7 @@ func (mng *MongoRepository) GetAll(ctx context.Context) ([]models.Brand, error) 
 }
 
 func (mng *MongoRepository) Delete(ctx context.Context, brandID uint16) error {
-	const op = "storage.brand.Delete"
+	const op = "storage.brand.delete"
 
 	filter := bson.D{{"id", brandID}}
 
@@ -131,14 +131,14 @@ func (mng *MongoRepository) Delete(ctx context.Context, brandID uint16) error {
 	}
 
 	if res.DeletedCount == 0 {
-		return storage.ErrBrandNotFound
+		return _errors.ErrBrandNotFound
 	}
 	return nil
 
 }
 
 func (mng *MongoRepository) InsertOrUpdate(ctx context.Context, brand models.Brand) error {
-	const op = "storage.brand.InsertOrUpdate"
+	const op = "storage.brand.insert_or_update"
 
 	id, err := mongoStorage.GetNextID(ctx, mng.db, "brands")
 	if err != nil {

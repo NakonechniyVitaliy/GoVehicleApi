@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/_errors"
 )
 
 type SqliteRepository struct {
@@ -23,7 +23,7 @@ func NewSqliteBrandRepo(db *sql.DB) *SqliteRepository {
 }
 
 func (s *SqliteRepository) GetByID(ctx context.Context, brandID uint16) (*models.Brand, error) {
-	const op = "storage.brands.GetByID"
+	const op = "storage.brands.get_by_id"
 
 	const query = `SELECT id, marka_id, category_id, cnt, country_id, eng, name, slang, value FROM brands WHERE id = ?`
 
@@ -33,7 +33,7 @@ func (s *SqliteRepository) GetByID(ctx context.Context, brandID uint16) (*models
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, storage.ErrBrandNotFound
+			return nil, _errors.ErrBrandNotFound
 		}
 		return nil, fmt.Errorf("%s: Error to return brand %w", op, err)
 	}
@@ -42,7 +42,7 @@ func (s *SqliteRepository) GetByID(ctx context.Context, brandID uint16) (*models
 }
 
 func (s *SqliteRepository) GetAll(ctx context.Context) ([]models.Brand, error) {
-	const op = "storage.brands.GetAll"
+	const op = "storage.brands.get_all"
 
 	const query = `SELECT marka_id, category_id, cnt, country_id, eng, name, slang, value FROM brands`
 
@@ -66,7 +66,7 @@ func (s *SqliteRepository) GetAll(ctx context.Context) ([]models.Brand, error) {
 }
 
 func (s *SqliteRepository) Update(ctx context.Context, brand models.Brand, brandID uint16) (*models.Brand, error) {
-	const op = "storage.brand.Update"
+	const op = "storage.brand.update"
 
 	const query = `
 		UPDATE brands
@@ -100,7 +100,7 @@ func (s *SqliteRepository) Update(ctx context.Context, brand models.Brand, brand
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	if affected == 0 {
-		return nil, storage.ErrBrandNotFound
+		return nil, _errors.ErrBrandNotFound
 	}
 
 	updatedBrand, err := s.GetByID(ctx, brandID)
@@ -112,7 +112,7 @@ func (s *SqliteRepository) Update(ctx context.Context, brand models.Brand, brand
 }
 
 func (s *SqliteRepository) Delete(ctx context.Context, brandID uint16) error {
-	const op = "storage.brand.DeleteBrand"
+	const op = "storage.brand.delete"
 
 	res, err := s.db.ExecContext(
 		ctx,
@@ -129,14 +129,14 @@ func (s *SqliteRepository) Delete(ctx context.Context, brandID uint16) error {
 	}
 
 	if affected == 0 {
-		return storage.ErrBrandNotFound
+		return _errors.ErrBrandNotFound
 	}
 
 	return nil
 }
 
 func (s *SqliteRepository) Create(ctx context.Context, brand models.Brand) (*models.Brand, error) {
-	const op = "storage.brand.NewBrand"
+	const op = "storage.brand.create"
 
 	const query = `
 		INSERT INTO brands (
@@ -165,7 +165,7 @@ func (s *SqliteRepository) Create(ctx context.Context, brand models.Brand) (*mod
 	)
 	if err != nil {
 		if strings.Contains(err.Error(), "UNIQUE") {
-			return nil, storage.ErrBrandExists
+			return nil, _errors.ErrBrandExists
 		}
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
@@ -174,7 +174,7 @@ func (s *SqliteRepository) Create(ctx context.Context, brand models.Brand) (*mod
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	if affected == 0 {
-		return nil, storage.ErrBrandExists
+		return nil, _errors.ErrBrandExists
 	}
 
 	createdBrandID, err := res.LastInsertId()
@@ -191,7 +191,7 @@ func (s *SqliteRepository) Create(ctx context.Context, brand models.Brand) (*mod
 }
 
 func (s *SqliteRepository) InsertOrUpdate(ctx context.Context, brand models.Brand) error {
-	const op = "storage.brand.InsertOrUpdate"
+	const op = "storage.brand.insert_or_update"
 
 	const query = `
 		INSERT INTO brands (

@@ -1,12 +1,13 @@
-package service
+package category
 
 import (
 	"context"
+	"errors"
 	"log/slog"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
 	categoryRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/category"
-	categoryRequests "github.com/NakonechniyVitaliy/GoVehicleApi/internal/requests/autoria/categories"
+	requests "github.com/NakonechniyVitaliy/GoVehicleApi/internal/requests/autoria/categories"
 )
 
 type Service struct {
@@ -25,23 +26,37 @@ func NewService(repository categoryRepo.RepositoryInterface, logger *slog.Logger
 
 func (s Service) Refresh(ctx context.Context) error {
 
-	categories, err := categoryRequests.GetCategories(s.autoRiaKey)
+	log := s.log.With(slog.String("op", "services.category.refresh"))
+
+	categories, err := requests.GetCategories(s.autoRiaKey)
 	if err != nil {
-		return err
+		switch {
+		case errors.Is(err, requests.ErrCategoriesFetch):
+			log.Error(ErrCategoriesFetch.Error(), slog.String("error", err.Error()))
+
+		case errors.Is(err, requests.ErrDecodeCategories):
+			log.Error(ErrDecodeCategories.Error(), slog.String("error", err.Error()))
+		}
+		return ErrRefreshCategories
+
 	}
 	for _, oneCategory := range categories {
 		err = s.repo.InsertOrUpdate(ctx, oneCategory)
 		if err != nil {
-			return err
+			return ErrRefreshCategories
 		}
 	}
 	return nil
 }
 
 func (s Service) GetAll(ctx context.Context) ([]models.Category, error) {
+
+	log := s.log.With(slog.String("op", "services.category.get_all"))
+
 	categories, err := s.repo.GetAll(ctx)
 	if err != nil {
-		return nil, err
+		log.Error(ErrGetCategories.Error(), slog.String("error", err.Error()))
+		return nil, ErrGetCategories
 	}
 	return categories, nil
 }

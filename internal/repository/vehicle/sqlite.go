@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/_errors"
 )
 
 type SqliteRepository struct {
@@ -23,7 +23,7 @@ func NewSqliteVehicleRepo(db *sql.DB) *SqliteRepository {
 }
 
 func (s *SqliteRepository) GetByID(ctx context.Context, vehicleID uint16) (*models.Vehicle, error) {
-	const op = "storage.vehicles.getByID"
+	const op = "storage.vehicles.get_by_id"
 
 	const query = `SELECT id, brand, driver_type, gearbox, body_style, category, mileage, model, price FROM vehicles WHERE id = ?`
 
@@ -33,7 +33,7 @@ func (s *SqliteRepository) GetByID(ctx context.Context, vehicleID uint16) (*mode
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, storage.ErrVehicleNotFound
+			return nil, _errors.ErrVehicleNotFound
 		}
 		return nil, fmt.Errorf("%s: Error to return vehicle %w", op, err)
 	}
@@ -42,7 +42,7 @@ func (s *SqliteRepository) GetByID(ctx context.Context, vehicleID uint16) (*mode
 }
 
 func (s *SqliteRepository) GetAll(ctx context.Context) ([]models.Vehicle, error) {
-	const op = "storage.vehicles.getAll"
+	const op = "storage.vehicles.get_all"
 
 	const query = `SELECT id, brand, driver_type, gearbox, body_style, category, mileage, model, price FROM vehicles`
 
@@ -102,7 +102,7 @@ func (s *SqliteRepository) Update(ctx context.Context, vehicle models.Vehicle, v
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	if affected == 0 {
-		return nil, storage.ErrVehicleNotFound
+		return nil, _errors.ErrVehicleNotFound
 	}
 
 	updatedVehicle, err := s.GetByID(ctx, vehicleID)
@@ -131,14 +131,14 @@ func (s *SqliteRepository) Delete(ctx context.Context, vehicleID uint16) error {
 	}
 
 	if affected == 0 {
-		return storage.ErrVehicleNotFound
+		return _errors.ErrVehicleNotFound
 	}
 
 	return nil
 }
 
 func (s *SqliteRepository) Create(ctx context.Context, vehicle models.Vehicle) (*models.Vehicle, error) {
-	const op = "storage.vehicle.NewVehicle"
+	const op = "storage.vehicle.create"
 
 	const query = `
 		INSERT INTO vehicles (
@@ -167,7 +167,7 @@ func (s *SqliteRepository) Create(ctx context.Context, vehicle models.Vehicle) (
 	)
 	if err != nil {
 		if strings.Contains(err.Error(), "UNIQUE") {
-			return nil, storage.ErrVehicleExists
+			return nil, _errors.ErrVehicleExists
 		}
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
@@ -176,7 +176,7 @@ func (s *SqliteRepository) Create(ctx context.Context, vehicle models.Vehicle) (
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	if affected == 0 {
-		return nil, storage.ErrVehicleExists
+		return nil, _errors.ErrVehicleExists
 	}
 
 	createdVehicleID, err := res.LastInsertId()

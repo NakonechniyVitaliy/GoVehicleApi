@@ -1,12 +1,13 @@
-package service
+package gearbox
 
 import (
 	"context"
+	"errors"
 	"log/slog"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
 	gearboxRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/gearbox"
-	gearboxRequests "github.com/NakonechniyVitaliy/GoVehicleApi/internal/requests/autoria/gearboxes"
+	requests "github.com/NakonechniyVitaliy/GoVehicleApi/internal/requests/autoria/gearboxes"
 )
 
 type Service struct {
@@ -24,24 +25,36 @@ func NewService(repository gearboxRepo.RepositoryInterface, logger *slog.Logger,
 }
 
 func (s Service) Refresh(ctx context.Context) error {
+	log := s.log.With(slog.String("op", "services.gearbox.refresh"))
 
-	gearboxes, err := gearboxRequests.GetGearboxes(s.autoRiaKey)
+	gearboxes, err := requests.GetGearboxes(s.autoRiaKey)
 	if err != nil {
-		return err
+		switch {
+		case errors.Is(err, requests.ErrGearboxesFetch):
+			log.Error(ErrGearboxesFetch.Error(), slog.String("error", err.Error()))
+
+		case errors.Is(err, requests.ErrDecodeGearboxes):
+			log.Error(ErrDecodeGearboxes.Error(), slog.String("error", err.Error()))
+		}
+		return ErrRefreshGearboxes
 	}
+
 	for _, oneGearbox := range gearboxes {
 		err = s.repo.InsertOrUpdate(ctx, oneGearbox)
 		if err != nil {
-			return err
+			return ErrRefreshGearboxes
 		}
 	}
 	return nil
 }
 
 func (s Service) GetAll(ctx context.Context) ([]models.Gearbox, error) {
+	log := s.log.With(slog.String("op", "services.gearbox.get_all"))
+
 	gearboxes, err := s.repo.GetAll(ctx)
 	if err != nil {
-		return nil, err
+		log.Error(ErrGetGearboxes.Error(), slog.String("error", err.Error()))
+		return nil, ErrGetGearboxes
 	}
 	return gearboxes, nil
 }

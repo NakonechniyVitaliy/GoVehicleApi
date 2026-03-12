@@ -2,10 +2,11 @@ package category
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/_errors"
 	mongoStorage "github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -35,8 +36,8 @@ func (mng *MongoRepository) GetByID(ctx context.Context, categoryID uint16) (*mo
 	switch {
 	case err == nil:
 		return &category, nil
-	case err == mongo.ErrNoDocuments:
-		return nil, storage.ErrCategoryNotFound
+	case errors.Is(err, mongo.ErrNoDocuments):
+		return nil, _errors.ErrCategoryNotFound
 
 	default:
 		return nil, fmt.Errorf("%s: %w", op, err)
@@ -61,7 +62,7 @@ func (mng *MongoRepository) GetAll(ctx context.Context) ([]models.Category, erro
 }
 
 func (mng *MongoRepository) InsertOrUpdate(ctx context.Context, category models.Category) error {
-	const op = "storage.category.InsertOrUpdate"
+	const op = "storage.category.insert_or_update"
 
 	id, err := mongoStorage.GetNextID(ctx, mng.db, "categories")
 	if err != nil {

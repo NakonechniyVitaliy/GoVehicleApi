@@ -20,7 +20,7 @@ func NewSqliteCategoryRepo(db *sql.DB) *SqliteRepository {
 }
 
 func (s *SqliteRepository) GetByID(ctx context.Context, categoryID uint16) (*models.Category, error) {
-	const op = "storage.categories.getByID"
+	const op = "storage.categories.get_by_id"
 
 	const query = `SELECT id, name, value FROM categories WHERE id = ?`
 
@@ -36,7 +36,7 @@ func (s *SqliteRepository) GetByID(ctx context.Context, categoryID uint16) (*mod
 }
 
 func (s *SqliteRepository) GetAll(ctx context.Context) ([]models.Category, error) {
-	const op = "storage.categories.GetAll"
+	const op = "storage.categories.get_all"
 
 	const query = `SELECT id, name, value FROM categories`
 
@@ -60,7 +60,7 @@ func (s *SqliteRepository) GetAll(ctx context.Context) ([]models.Category, error
 }
 
 func (s *SqliteRepository) InsertOrUpdate(ctx context.Context, category models.Category) error {
-	const op = "storage.category.InsertOrUpdate"
+	const op = "storage.category.insert_or_update"
 
 	const query = `
 		INSERT INTO categories (

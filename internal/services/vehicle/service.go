@@ -56,7 +56,7 @@ func (s Service) GetByID(ctx context.Context, id uint16) (*models.Vehicle, error
 
 	if errors.Is(err, repoErrors.ErrVehicleNotFound) {
 		log.Error(ErrVehicleNotFound.Error(), slog.String("error", err.Error()))
-		return nil, ErrGetVehicle
+		return nil, ErrVehicleNotFound
 	}
 
 	if err != nil {

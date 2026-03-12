@@ -38,11 +38,10 @@ func (s Service) Refresh(ctx context.Context) error {
 			log.Error(ErrDecodeBrands.Error(), slog.String("error", err.Error()))
 		}
 		return ErrRefreshBrands
-
 	}
 
-	for _, oneCategory := range brands {
-		err = s.repo.InsertOrUpdate(ctx, oneCategory)
+	for _, oneBrand := range brands {
+		err = s.repo.InsertOrUpdate(ctx, oneBrand)
 		if err != nil {
 			return ErrRefreshBrands
 		}

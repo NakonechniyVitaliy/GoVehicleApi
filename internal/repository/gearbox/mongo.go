@@ -2,10 +2,11 @@ package gearbox
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/_errors"
 	mongoStorage "github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -35,8 +36,8 @@ func (mng *MongoRepository) GetByID(ctx context.Context, gearboxID uint16) (*mod
 	switch {
 	case err == nil:
 		return &gearbox, nil
-	case err == mongo.ErrNoDocuments:
-		return nil, storage.ErrGearboxNotFound
+	case errors.Is(err, mongo.ErrNoDocuments):
+		return nil, _errors.ErrGearboxNotFound
 
 	default:
 		return nil, fmt.Errorf("%s: %w", op, err)
@@ -44,7 +45,7 @@ func (mng *MongoRepository) GetByID(ctx context.Context, gearboxID uint16) (*mod
 }
 
 func (mng *MongoRepository) GetAll(ctx context.Context) ([]models.Gearbox, error) {
-	const op = "storage.gearbox.GetAllGearbox"
+	const op = "storage.gearbox.get_all"
 
 	result, err := mng.gearboxes.Find(ctx, bson.M{})
 	if err != nil {
@@ -61,7 +62,7 @@ func (mng *MongoRepository) GetAll(ctx context.Context) ([]models.Gearbox, error
 }
 
 func (mng *MongoRepository) InsertOrUpdate(ctx context.Context, gearbox models.Gearbox) error {
-	const op = "storage.gearbox.InsertOrUpdate"
+	const op = "storage.gearbox.insert_or_update"
 
 	id, err := mongoStorage.GetNextID(ctx, mng.db, "gearboxes")
 	if err != nil {

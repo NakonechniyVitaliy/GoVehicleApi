@@ -9,16 +9,14 @@ import (
 	"github.com/go-chi/render"
 )
 
-func Refresh(log *slog.Logger, service *service.Service) http.HandlerFunc {
+func Refresh(log *slog.Logger, srv *service.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.category.refresh"
 
-		log = log.With(slog.String("op", op))
+		log = log.With(slog.String("op", "handlers.category.refresh"))
 
-		err := service.Refresh(r.Context())
+		err := srv.Refresh(r.Context())
 		if err != nil {
-			log.Error("failed to update categories", slog.String("error", err.Error()))
-			render.JSON(w, r, resp.Error("Failed to update category"))
+			resp.RenderError(w, r, http.StatusInternalServerError, service.ErrRefreshCategories.Error())
 			return
 		}
 

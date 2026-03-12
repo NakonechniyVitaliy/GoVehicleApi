@@ -2,6 +2,7 @@ package body_style
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
@@ -89,7 +90,7 @@ func (mng *MongoRepository) GetByID(ctx context.Context, bodyStyleID uint16) (*m
 	switch {
 	case err == nil:
 		return &bodyStyle, nil
-	case err == mongo.ErrNoDocuments:
+	case errors.Is(err, mongo.ErrNoDocuments):
 		return nil, _errors.ErrBodyStyleNotFound
 
 	default:

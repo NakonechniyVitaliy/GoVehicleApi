@@ -20,7 +20,7 @@ func NewSqliteGearboxRepo(db *sql.DB) *SqliteRepository {
 }
 
 func (s *SqliteRepository) GetByID(ctx context.Context, gearboxID uint16) (*models.Gearbox, error) {
-	const op = "storage.gearboxes.getByID"
+	const op = "storage.gearboxes.get_by_id"
 
 	const query = `SELECT id, name, value FROM gearboxes WHERE id = ?`
 
@@ -36,7 +36,7 @@ func (s *SqliteRepository) GetByID(ctx context.Context, gearboxID uint16) (*mode
 }
 
 func (s *SqliteRepository) GetAll(ctx context.Context) ([]models.Gearbox, error) {
-	const op = "storage.gearbox.GetAll"
+	const op = "storage.gearbox.get_all"
 
 	const query = `SELECT id, name, value FROM gearboxes`
 
@@ -60,7 +60,7 @@ func (s *SqliteRepository) GetAll(ctx context.Context) ([]models.Gearbox, error)
 }
 
 func (s *SqliteRepository) InsertOrUpdate(ctx context.Context, gearbox models.Gearbox) error {
-	const op = "storage.gearbox.InsertOrUpdate"
+	const op = "storage.gearbox.insert_or_update"
 
 	const query = `
 		INSERT INTO gearboxes (

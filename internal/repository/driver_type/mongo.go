@@ -2,10 +2,11 @@ package driver_type
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/_errors"
 	mongoStorage "github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -25,7 +26,7 @@ func NewMongoDriverTypeRepo(db *mongo.Database) *MongoRepository {
 }
 
 func (mng *MongoRepository) GetByID(ctx context.Context, driverTypeID uint16) (*models.DriverType, error) {
-	const op = "storage.driverType.get_by_id"
+	const op = "storage.driver_type.get_by_id"
 
 	filter := bson.D{{"id", driverTypeID}}
 
@@ -35,8 +36,8 @@ func (mng *MongoRepository) GetByID(ctx context.Context, driverTypeID uint16) (*
 	switch {
 	case err == nil:
 		return &driverType, nil
-	case err == mongo.ErrNoDocuments:
-		return nil, storage.ErrDriverTypeNotFound
+	case errors.Is(err, mongo.ErrNoDocuments):
+		return nil, _errors.ErrDriverTypeNotFound
 
 	default:
 		return nil, fmt.Errorf("%s: %w", op, err)
@@ -44,7 +45,7 @@ func (mng *MongoRepository) GetByID(ctx context.Context, driverTypeID uint16) (*
 }
 
 func (mng *MongoRepository) GetAll(ctx context.Context) ([]models.DriverType, error) {
-	const op = "storage.driverType.GetAllDriverType"
+	const op = "storage.driver_type.get_all"
 
 	result, err := mng.driverTypes.Find(ctx, bson.M{})
 	if err != nil {
@@ -60,7 +61,7 @@ func (mng *MongoRepository) GetAll(ctx context.Context) ([]models.DriverType, er
 }
 
 func (mng *MongoRepository) InsertOrUpdate(ctx context.Context, driverType models.DriverType) error {
-	const op = "storage.driverType.InsertOrUpdate"
+	const op = "storage.driver_type.insert_or_update"
 
 	id, err := mongoStorage.GetNextID(ctx, mng.db, "driver_types")
 	if err != nil {

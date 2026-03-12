@@ -1,6 +1,7 @@
 package category
 
 import (
+	"errors"
 	"log/slog"
 	"net/http"
 
@@ -15,21 +16,17 @@ type GetAllResponse struct {
 	Categories []models.Category
 }
 
-func GetAll(log *slog.Logger, service *service.Service) http.HandlerFunc {
+func GetAll(log *slog.Logger, srv *service.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.category.get_all"
 
-		log = log.With(slog.String("op", op))
+		log = log.With(slog.String("op", "handlers.category.get_all"))
 
-		log.Info("getting categories")
+		categories, err := srv.GetAll(r.Context())
 
-		categories, err := service.GetAll(r.Context())
-		if err != nil {
-			log.Error("failed to get categories", slog.String("error", err.Error()))
-			render.JSON(w, r, resp.Error("Failed to get categories"))
+		if errors.Is(err, service.ErrGetCategories) {
+			resp.RenderError(w, r, http.StatusInternalServerError, service.ErrGetCategories.Error())
 			return
 		}
-
 		render.JSON(w, r, GetAllResponse{
 			Response:   resp.OK(),
 			Categories: categories,

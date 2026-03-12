@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/_errors"
 	mongoStorage "github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -47,7 +47,7 @@ func (mng *MongoRepository) Create(ctx context.Context, vehicle models.Vehicle) 
 }
 
 func (mng *MongoRepository) Update(ctx context.Context, vehicle models.Vehicle, vehicleID uint16) (*models.Vehicle, error) {
-	const op = "storage.vehicle.UpdateVehicle"
+	const op = "storage.vehicle.update"
 
 	filter := bson.M{
 		"id": vehicleID,
@@ -71,7 +71,7 @@ func (mng *MongoRepository) Update(ctx context.Context, vehicle models.Vehicle, 
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	if res.MatchedCount == 0 {
-		return nil, storage.ErrVehicleNotFound
+		return nil, _errors.ErrVehicleNotFound
 	}
 
 	filter = bson.M{
@@ -84,7 +84,7 @@ func (mng *MongoRepository) Update(ctx context.Context, vehicle models.Vehicle, 
 }
 
 func (mng *MongoRepository) GetByID(ctx context.Context, vehicleID uint16) (*models.Vehicle, error) {
-	const op = "storage.vehicle.getByID"
+	const op = "storage.vehicle.get_by_id"
 
 	filter := bson.D{{"id", vehicleID}}
 
@@ -95,7 +95,7 @@ func (mng *MongoRepository) GetByID(ctx context.Context, vehicleID uint16) (*mod
 	case err == nil:
 		return &vehicle, nil
 	case err == mongo.ErrNoDocuments:
-		return nil, storage.ErrVehicleNotFound
+		return nil, _errors.ErrVehicleNotFound
 
 	default:
 		return nil, fmt.Errorf("%s: %w", op, err)
@@ -103,7 +103,7 @@ func (mng *MongoRepository) GetByID(ctx context.Context, vehicleID uint16) (*mod
 }
 
 func (mng *MongoRepository) GetAll(ctx context.Context) ([]models.Vehicle, error) {
-	const op = "storage.vehicle.getAll"
+	const op = "storage.vehicle.get_all"
 
 	result, err := mng.vehicles.Find(ctx, bson.M{})
 	if err != nil {
@@ -130,7 +130,7 @@ func (mng *MongoRepository) Delete(ctx context.Context, vehicleID uint16) error 
 	}
 
 	if res.DeletedCount == 0 {
-		return storage.ErrVehicleNotFound
+		return _errors.ErrVehicleNotFound
 	}
 	return nil
 

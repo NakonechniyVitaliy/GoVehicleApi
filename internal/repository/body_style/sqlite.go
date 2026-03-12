@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/_errors"
 )
 
 type SqliteRepository struct {
@@ -23,7 +23,7 @@ func NewSqliteBodyStyleRepo(db *sql.DB) *SqliteRepository {
 }
 
 func (s *SqliteRepository) GetByID(ctx context.Context, bodyStyleID uint16) (*models.BodyStyle, error) {
-	const op = "storage.body_styles.getByID"
+	const op = "storage.body_styles.get_by_id"
 
 	const query = `SELECT id, name, value FROM body_styles WHERE id = ?`
 
@@ -32,14 +32,14 @@ func (s *SqliteRepository) GetByID(ctx context.Context, bodyStyleID uint16) (*mo
 		&bodyStyle.ID, &bodyStyle.Name, &bodyStyle.Value,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("%s: Error to return bodyStyle %w", op, err)
+		return nil, fmt.Errorf("%s: error to return body style %w", op, err)
 	}
 
 	return &bodyStyle, nil
 }
 
 func (s *SqliteRepository) GetAll(ctx context.Context) ([]models.BodyStyle, error) {
-	const op = "storage.body_styles.GetBodyStyles"
+	const op = "storage.body_styles.get_all"
 
 	const query = `SELECT id, name, value FROM body_styles`
 
@@ -67,7 +67,7 @@ func (s *SqliteRepository) Update(
 	bodyStyle models.BodyStyle,
 	bodyStyleID uint16,
 ) (*models.BodyStyle, error) {
-	const op = "storage.bodyStyle.UpdateBodyStyle"
+	const op = "storage.body_style.update"
 
 	const query = `
 		UPDATE body_styles
@@ -93,7 +93,7 @@ func (s *SqliteRepository) Update(
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	if affected == 0 {
-		return nil, storage.ErrBodyStyleNotFound
+		return nil, _errors.ErrBodyStyleNotFound
 	}
 
 	createdBodyStyleID, err := res.LastInsertId()
@@ -110,7 +110,7 @@ func (s *SqliteRepository) Update(
 }
 
 func (s *SqliteRepository) Delete(ctx context.Context, bodyStyleID uint16) error {
-	const op = "storage.bodyStyle.DeleteBodyStyle"
+	const op = "storage.body_style.delete"
 
 	res, err := s.db.ExecContext(
 		ctx,
@@ -127,14 +127,14 @@ func (s *SqliteRepository) Delete(ctx context.Context, bodyStyleID uint16) error
 	}
 
 	if affected == 0 {
-		return storage.ErrBodyStyleNotFound
+		return _errors.ErrBodyStyleNotFound
 	}
 
 	return nil
 }
 
 func (s *SqliteRepository) Create(ctx context.Context, bodyStyle models.BodyStyle) (*models.BodyStyle, error) {
-	const op = "storage.bodyStyle.NewBodyStyle"
+	const op = "storage.body_style.create"
 
 	const query = `
 		INSERT INTO body_styles (
@@ -151,7 +151,7 @@ func (s *SqliteRepository) Create(ctx context.Context, bodyStyle models.BodyStyl
 	)
 	if err != nil {
 		if strings.Contains(err.Error(), "UNIQUE") {
-			return nil, storage.ErrBodyStyleExists
+			return nil, _errors.ErrBodyStyleExists
 		}
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
@@ -161,7 +161,7 @@ func (s *SqliteRepository) Create(ctx context.Context, bodyStyle models.BodyStyl
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	if affected == 0 {
-		return nil, storage.ErrBodyStyleExists
+		return nil, _errors.ErrBodyStyleExists
 	}
 
 	bodyStyleID, err := res.LastInsertId()
@@ -178,7 +178,7 @@ func (s *SqliteRepository) Create(ctx context.Context, bodyStyle models.BodyStyl
 }
 
 func (s *SqliteRepository) InsertOrUpdate(ctx context.Context, bodyStyle models.BodyStyle) error {
-	const op = "storage.bodyStyle.InsertOrUpdate"
+	const op = "storage.body_style.insert_or_update"
 
 	const query = `
 		INSERT INTO body_styles (
