@@ -56,7 +56,7 @@ func (s Service) GetByID(ctx context.Context, id uint16) (*models.Brand, error) 
 
 	if errors.Is(err, repoErrors.ErrBrandNotFound) {
 		log.Error(ErrBrandNotFound.Error(), slog.String("error", err.Error()))
-		return nil, ErrGetBrand
+		return nil, ErrBrandNotFound
 	}
 
 	if err != nil {

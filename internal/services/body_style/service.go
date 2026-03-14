@@ -57,7 +57,7 @@ func (s Service) GetByID(ctx context.Context, id uint16) (*models.BodyStyle, err
 
 	if errors.Is(err, repoErrors.ErrBodyStyleNotFound) {
 		log.Error(ErrBodyStyleNotFound.Error(), slog.String("error", err.Error()))
-		return nil, ErrGetBodyStyle
+		return nil, ErrBodyStyleNotFound
 	}
 
 	if err != nil {

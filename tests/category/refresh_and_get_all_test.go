@@ -24,5 +24,5 @@ func doTestRefreshPositive(e *httpexpect.Expect) {
 
 func doTestGetAllPositive(e *httpexpect.Expect) {
 	obj := e.GET("/category/all").Expect().Status(http.StatusOK).JSON().Object()
-	obj.Value("BodyStyles").Array().NotEmpty()
+	obj.Value("Categories").Array().NotEmpty()
 }

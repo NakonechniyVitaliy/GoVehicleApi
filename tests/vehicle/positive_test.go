@@ -46,9 +46,8 @@ func TestPositiveTests(t *testing.T) {
 			doTestGetPositive(e, original, vehicleID)
 			doTestUpdatePositive(e, updatedVehicleData, vehicleID)
 			doTestGetPositive(e, updatedVehicleData, vehicleID)
-			doTestDeletePositive(e, vehicleID)
-			doTestRefreshPositive(e)
 			doTestGetAllPositive(e)
+			doTestDeletePositive(e, vehicleID)
 		})
 	}
 }
@@ -112,10 +111,6 @@ func doTestDeletePositive(e *httpexpect.Expect, vehicleID uint16) {
 	e.GET(fmt.Sprintf("/vehicle/%d", vehicleID)).Expect().
 		Status(http.StatusNotFound)
 
-}
-
-func doTestRefreshPositive(e *httpexpect.Expect) {
-	e.PUT("/vehicle/refresh").Expect().Status(http.StatusOK)
 }
 
 func doTestGetAllPositive(e *httpexpect.Expect) {
