@@ -8,6 +8,7 @@
       </functions>
       <methods>
         <method importPath="database/sql" receiver="*DB" name="ExecContext" />
+        <method importPath="github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/user" receiver="RepositoryInterface" name="GetByLogin" />
       </methods>
     </inspection_tool>
   </profile>
