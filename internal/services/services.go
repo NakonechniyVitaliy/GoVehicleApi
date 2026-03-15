@@ -1,6 +1,10 @@
 package services
 
-import bodyStyleService "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/body_style"
+import (
+	bodyStyleService "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/body_style"
+	jwtService "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/jwt"
+	userService "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/user"
+)
 import brandService "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/brand"
 import categoryService "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/category"
 import driverTypeService "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/driver_type"
@@ -14,4 +18,6 @@ type Container struct {
 	DriverType *driverTypeService.Service
 	Gearbox    *gearboxService.Service
 	Vehicle    *vehicleService.Service
+	User       *userService.Service
+	JWT        *jwtService.Service
 }

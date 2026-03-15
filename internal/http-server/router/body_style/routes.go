@@ -4,7 +4,7 @@ import (
 	"log/slog"
 
 	handler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/body_style"
-	service "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/body_style"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/services"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -12,14 +12,14 @@ import (
 func SetupBodyStyleRoutes(
 	router chi.Router,
 	log *slog.Logger,
-	service *service.Service,
+	services services.Container,
 ) {
 	router.Route("/body-style", func(r chi.Router) {
-		r.Post("/", handler.New(log, service))
-		r.Delete("/{id}", handler.Delete(log, service))
-		r.Get("/{id}", handler.Get(log, *service))
-		r.Get("/all", handler.GetAll(log, *service))
-		r.Put("/{id}", handler.Update(log, *service))
-		r.Put("/refresh", handler.Refresh(log, *service))
+		r.Post("/", handler.New(log, services.BodyStyle))
+		r.Delete("/{id}", handler.Delete(log, services.BodyStyle))
+		r.Get("/{id}", handler.Get(log, *services.BodyStyle))
+		r.Get("/all", handler.GetAll(log, *services.BodyStyle))
+		r.Put("/{id}", handler.Update(log, *services.BodyStyle))
+		r.Put("/refresh", handler.Refresh(log, *services.BodyStyle))
 	})
 }

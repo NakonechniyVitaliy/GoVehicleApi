@@ -11,6 +11,7 @@ import (
 	consts "github.com/NakonechniyVitaliy/GoVehicleApi/internal/constants"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/router"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/services"
+	jwtService "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/jwt"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/mongo"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/sqlite"
@@ -22,6 +23,7 @@ import (
 	categoryRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/category"
 	driverTypeRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/driver_type"
 	gearboxRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/gearbox"
+	userRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/user"
 	vehicleRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/vehicle"
 
 	bodyService "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/body_style"
@@ -29,6 +31,7 @@ import (
 	categoryService "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/category"
 	driverService "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/driver_type"
 	gearboxService "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/gearbox"
+	userService "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/user"
 	vehicleService "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/vehicle"
 )
 
@@ -49,7 +52,7 @@ func New(log *slog.Logger, cfg *config.Config) (*App, error) {
 		return nil, err
 	}
 
-	serviceContainer := setupServices(repos, log, cfg.AutoriaKey)
+	serviceContainer := setupServices(repos, log, cfg)
 
 	appRouter := router.SetupRouter(log, serviceContainer)
 
@@ -89,6 +92,7 @@ func setupRepositories(Storage storage.Storage) (*repositories.Repositories, err
 			DriverType: driverTypeRepo.NewMongoDriverTypeRepo(mongoStorage.DB),
 			Gearbox:    gearboxRepo.NewMongoGearboxRepo(mongoStorage.DB),
 			Vehicle:    vehicleRepo.NewMongoVehicleRepo(mongoStorage.DB),
+			User:       userRepo.NewMongoUserRepo(mongoStorage.DB),
 		}, nil
 
 	case consts.SqLite:
@@ -101,6 +105,7 @@ func setupRepositories(Storage storage.Storage) (*repositories.Repositories, err
 			DriverType: driverTypeRepo.NewSqliteDriverTypeRepo(sqliteStorage.DB),
 			Gearbox:    gearboxRepo.NewSqliteGearboxRepo(sqliteStorage.DB),
 			Vehicle:    vehicleRepo.NewSqliteVehicleRepo(sqliteStorage.DB),
+			User:       userRepo.NewSqliteUserRepo(sqliteStorage.DB),
 		}, nil
 
 	default:
@@ -108,14 +113,16 @@ func setupRepositories(Storage storage.Storage) (*repositories.Repositories, err
 	}
 }
 
-func setupServices(repos *repositories.Repositories, log *slog.Logger, autoRiaKey string) services.Container {
+func setupServices(repos *repositories.Repositories, log *slog.Logger, cfg *config.Config) services.Container {
 
 	return services.Container{
-		Brand:      brandService.NewService(repos.Brand, log, autoRiaKey),
-		BodyStyle:  bodyService.NewService(repos.BodyStyle, log, autoRiaKey),
-		Category:   categoryService.NewService(repos.Category, log, autoRiaKey),
-		DriverType: driverService.NewService(repos.DriverType, log, autoRiaKey),
-		Gearbox:    gearboxService.NewService(repos.Gearbox, log, autoRiaKey),
+		Brand:      brandService.NewService(repos.Brand, log, cfg.AutoriaKey),
+		BodyStyle:  bodyService.NewService(repos.BodyStyle, log, cfg.AutoriaKey),
+		Category:   categoryService.NewService(repos.Category, log, cfg.AutoriaKey),
+		DriverType: driverService.NewService(repos.DriverType, log, cfg.AutoriaKey),
+		Gearbox:    gearboxService.NewService(repos.Gearbox, log, cfg.AutoriaKey),
 		Vehicle:    vehicleService.NewService(repos, log),
+		JWT:        jwtService.NewService(log, []byte(cfg.SecretJwtKey), time.Hour*24),
+		User:       userService.NewService(repos.User, log, cfg.SecretJwtKey),
 	}
 }

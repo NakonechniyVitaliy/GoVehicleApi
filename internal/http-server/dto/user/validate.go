@@ -6,27 +6,16 @@ import (
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/_errors"
 )
 
-type SignUpRequest struct {
-	User SignUpDTO
-}
+func (dto SignUpDTO) Validate() error {
 
-func (r SignUpRequest) Validate() error {
-	g := r.User
-
-	if g.Username == nil || g.Login == nil || g.Password == nil {
+	if dto.Username == nil || dto.Login == nil || dto.Password == nil {
 		return fmt.Errorf(_errors.AllFieldsAreRequired)
 	}
 	return nil
 }
 
-type SignInRequest struct {
-	SignData SignInDTO
-}
-
-func (r SignInRequest) Validate() error {
-	g := r.SignData
-
-	if g.Login == nil || g.Password == nil {
+func (dto SignInDTO) Validate() error {
+	if dto.Login == nil || dto.Password == nil {
 		return fmt.Errorf(_errors.AllFieldsAreRequired)
 	}
 	return nil

@@ -1,0 +1,20 @@
+[{
+  "create": "users",
+  "validator": {
+    "$jsonSchema": {
+      "bsonType": "object",
+      "required": [
+        "id",
+        "username",
+        "login",
+        "password"
+      ],
+      "properties": {
+        "id": { "bsonType": "int" },
+        "username": { "bsonType": "string" },
+        "login": { "bsonType": "string" },
+        "password": { "bsonType": "string" }
+      }
+    }
+  }
+}]

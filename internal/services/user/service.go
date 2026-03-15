@@ -9,20 +9,21 @@ import (
 	repoErrors "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/_errors"
 	userRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/user"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/helper"
+	jwtService "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/jwt"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type Service struct {
-	repo       userRepo.RepositoryInterface
-	log        *slog.Logger
-	autoRiaKey string
+	repo userRepo.RepositoryInterface
+	log  *slog.Logger
+	key  string
 }
 
-func NewService(repository userRepo.RepositoryInterface, logger *slog.Logger, key string) *Service {
+func NewService(repository userRepo.RepositoryInterface, logger *slog.Logger, secretJwtKey string) *Service {
 	return &Service{
-		repo:       repository,
-		log:        logger,
-		autoRiaKey: key,
+		repo: repository,
+		log:  logger,
+		key:  secretJwtKey,
 	}
 }
 
@@ -35,7 +36,8 @@ func (s Service) SignUp(ctx context.Context, userData dto.SignUpDTO) error {
 		return ErrSaveUser
 	}
 
-	user := userData.ToModel(hash)
+	userData.Password = helper.PtrString(string(hash))
+	user := userData.ToModel()
 
 	err = s.repo.Create(ctx, user)
 	if errors.Is(err, repoErrors.ErrUserExists) {
@@ -50,27 +52,31 @@ func (s Service) SignUp(ctx context.Context, userData dto.SignUpDTO) error {
 	return nil
 }
 
-func (s Service) SignIn(ctx context.Context, signData dto.SignInDTO) (tokenJWT *string, err error) {
+func (s Service) SignIn(ctx context.Context, signData dto.SignInDTO, jwtService *jwtService.Service) (string, error) {
 	log := s.log.With(slog.String("op", "services.user.sign_in"))
 
 	user, err := s.repo.GetByLogin(ctx, helper.DerefString(signData.Login))
 
 	if errors.Is(err, repoErrors.ErrUserNotFound) {
 		log.Error(ErrUserNotFound.Error(), slog.String("error", err.Error()))
-		return nil, ErrIncorrectLoginOrPass
+		return "", ErrIncorrectLoginOrPass
 	}
 	if err != nil {
 		log.Error(ErrSignIn.Error(), slog.String("error", err.Error()))
-		return nil, ErrSignIn
+		return "", ErrSignIn
 	}
 
-	err = bcrypt.CompareHashAndPassword(user.Password, []byte(helper.DerefString(signData.Password)))
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(helper.DerefString(signData.Password)))
 	if err != nil {
 		log.Error(ErrComparePass.Error(), slog.String("error", err.Error()))
-		return nil, ErrIncorrectLoginOrPass
+		return "", ErrIncorrectLoginOrPass
 	}
 
-	token := "fake-jwt-token"
+	token, err := jwtService.GenerateToken(user.ID)
+	if err != nil {
+		log.Error(ErrSignIn.Error(), slog.String("error", err.Error()))
+		return "", ErrSignIn
+	}
 
-	return &token, nil
+	return token, nil
 }

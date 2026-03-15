@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
@@ -23,6 +24,25 @@ func NewMongoUserRepo(db *mongo.Database) *MongoRepository {
 	}
 }
 
+func (mng *MongoRepository) GetByLogin(ctx context.Context, login string) (*models.User, error) {
+	const op = "storage.user.get_by_login"
+
+	filter := bson.D{{"login", login}}
+
+	var user models.User
+	err := mng.users.FindOne(ctx, filter).Decode(&user)
+
+	switch {
+	case err == nil:
+		return &user, nil
+	case errors.Is(err, mongo.ErrNoDocuments):
+		return nil, _errors.ErrUserNotFound
+
+	default:
+		return nil, fmt.Errorf("%s: Error to return user %w", op, err)
+	}
+}
+
 func (mng *MongoRepository) Create(ctx context.Context, user models.User) error {
 	const op = "storage.user.create"
 
@@ -32,35 +52,10 @@ func (mng *MongoRepository) Create(ctx context.Context, user models.User) error 
 	}
 	user.ID = id
 
-	res, err := mng.users.InsertOne(ctx, user)
+	_, err = mng.users.InsertOne(ctx, user)
 	if err != nil {
 		return fmt.Errorf("%s: %w", op, err)
 	}
 
-	filter := bson.M{
-		"_id": res.InsertedID,
-	}
-	var createdUser models.User
-	err = mng.users.FindOne(ctx, filter).Decode(&createdUser)
-
 	return nil
-}
-
-func (mng *MongoRepository) GetByID(ctx context.Context, userID uint16) error {
-	const op = "storage.user.get_by_id"
-
-	filter := bson.D{{"id", userID}}
-
-	var user models.User
-	err := mng.users.FindOne(ctx, filter).Decode(&user)
-
-	switch {
-	case err == nil:
-		return nil
-	case err == mongo.ErrNoDocuments:
-		return _errors.ErrUserNotFound
-
-	default:
-		return fmt.Errorf("%s: %w", op, err)
-	}
 }

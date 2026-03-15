@@ -17,7 +17,7 @@ func SignUp(log *slog.Logger, srv *service.Service) http.HandlerFunc {
 
 		log = log.With(slog.String("op", "handlers.user.sign_up"))
 
-		var req dto.SignUpRequest
+		var req dto.SignUpDTO
 		err := render.DecodeJSON(r.Body, &req)
 		if err != nil {
 			log.Error(dtoErrors.InvalidJSONorWrongFieldType, slog.String("error", err.Error()))
@@ -32,7 +32,7 @@ func SignUp(log *slog.Logger, srv *service.Service) http.HandlerFunc {
 			return
 		}
 
-		err = srv.SignUp(r.Context(), req.User)
+		err = srv.SignUp(r.Context(), req)
 
 		if errors.Is(err, service.ErrUserExists) {
 			resp.RenderError(w, r, http.StatusConflict, service.ErrUserExists.Error())

@@ -6,6 +6,7 @@ import (
 	categoryRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/category"
 	driverTypeRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/driver_type"
 	gearboxRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/gearbox"
+	userRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/user"
 	vehicleRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/vehicle"
 )
 
@@ -16,4 +17,5 @@ type Repositories struct {
 	DriverType driverTypeRepo.RepositoryInterface
 	Gearbox    gearboxRepo.RepositoryInterface
 	Vehicle    vehicleRepo.RepositoryInterface
+	User       userRepo.RepositoryInterface
 }

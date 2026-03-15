@@ -8,6 +8,7 @@ import (
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/router/category"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/router/driver_type"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/router/gearbox"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/router/user"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/router/vehicle"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/services"
 
@@ -27,12 +28,13 @@ func SetupRouter(
 	router.Use(middleware.Recoverer) // Востановление после критикал ошибки
 	router.Use(middleware.URLFormat) // Удобное получение параметров из сслыки
 
-	body_style.SetupBodyStyleRoutes(router, log, services.BodyStyle)
-	driver_type.SetupDriverTypeRoutes(router, log, services.DriverType)
-	brand.SetupBrandRoutes(router, log, services.Brand)
-	category.SetupCategoryRoutes(router, log, services.Category)
-	gearbox.SetupGearboxRoutes(router, log, services.Gearbox)
-	vehicle.SetupVehiclesRoutes(router, log, services.Vehicle)
+	body_style.SetupBodyStyleRoutes(router, log, services)
+	driver_type.SetupDriverTypeRoutes(router, log, services)
+	brand.SetupBrandRoutes(router, log, services)
+	category.SetupCategoryRoutes(router, log, services)
+	gearbox.SetupGearboxRoutes(router, log, services)
+	vehicle.SetupVehiclesRoutes(router, log, services)
+	user.SetupUserRoutes(router, log, services)
 
 	return router
 }
