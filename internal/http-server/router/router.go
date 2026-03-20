@@ -3,6 +3,7 @@ package router
 import (
 	"log/slog"
 
+	myMiddleware "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/middleware"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/router/body_style"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/router/brand"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/router/category"
@@ -27,6 +28,7 @@ func SetupRouter(
 	router.Use(middleware.Logger)    // Логирование
 	router.Use(middleware.Recoverer) // Востановление после критикал ошибки
 	router.Use(middleware.URLFormat) // Удобное получение параметров из сслыки
+	router.Use(myMiddleware.JWTAuth(log, services.JWT))
 
 	body_style.SetupBodyStyleRoutes(router, log, services)
 	driver_type.SetupDriverTypeRoutes(router, log, services)

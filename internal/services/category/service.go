@@ -24,9 +24,9 @@ func NewService(repository categoryRepo.RepositoryInterface, logger *slog.Logger
 	}
 }
 
-func (s Service) Refresh(ctx context.Context) error {
+func (s Service) Fetch(ctx context.Context) error {
 
-	log := s.log.With(slog.String("op", "services.category.refresh"))
+	log := s.log.With(slog.String("op", "services.category.fetch"))
 
 	categories, err := requests.GetCategories(s.autoRiaKey)
 	if err != nil {
@@ -38,12 +38,24 @@ func (s Service) Refresh(ctx context.Context) error {
 			log.Error(ErrDecodeCategories.Error(), slog.String("error", err.Error()))
 		}
 		return ErrRefreshCategories
-
 	}
+
+	err = s.InsertOrUpdate(ctx, categories)
+	if err != nil {
+		return ErrRefreshCategories
+	}
+
+	return nil
+}
+
+func (s Service) InsertOrUpdate(ctx context.Context, categories []models.Category) error {
+	log := s.log.With(slog.String("op", "services.category.insert_or_update"))
+
 	for _, oneCategory := range categories {
-		err = s.repo.InsertOrUpdate(ctx, oneCategory)
+		err := s.repo.InsertOrUpdate(ctx, oneCategory)
 		if err != nil {
-			return ErrRefreshCategories
+			log.Error(ErrRefreshCategories.Error(), slog.String("error", err.Error()))
+			return err
 		}
 	}
 	return nil

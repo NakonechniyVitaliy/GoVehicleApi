@@ -19,7 +19,7 @@ func Refresh(log *slog.Logger, srv *service.Service) http.HandlerFunc {
 
 		log = log.With(slog.String("op", op))
 
-		err := srv.Refresh(r.Context())
+		err := srv.Fetch(r.Context())
 		if err != nil {
 			log.Error("failed to update driver types", slog.String("error", err.Error()))
 			render.JSON(w, r, resp.Error("Failed to update driver types"))

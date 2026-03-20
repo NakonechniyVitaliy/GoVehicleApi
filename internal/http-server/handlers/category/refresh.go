@@ -14,7 +14,7 @@ func Refresh(log *slog.Logger, srv *service.Service) http.HandlerFunc {
 
 		log = log.With(slog.String("op", "handlers.category.refresh"))
 
-		err := srv.Refresh(r.Context())
+		err := srv.Fetch(r.Context())
 		if err != nil {
 			resp.RenderError(w, r, http.StatusInternalServerError, service.ErrRefreshCategories.Error())
 			return

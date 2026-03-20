@@ -25,10 +25,10 @@ func NewService(repository repo.RepositoryInterface, logger *slog.Logger, key st
 	}
 }
 
-func (s Service) Refresh(ctx context.Context) error {
-	log := s.log.With(slog.String("op", "services.body_style.refresh"))
+func (s Service) Fetch(ctx context.Context) error {
+	log := s.log.With(slog.String("op", "services.body_style.fetch"))
 
-	bodyStyles, err := requests.GetBodyStyles(s.autoRiaKey)
+	bStyles, err := requests.GetBodyStyles(s.autoRiaKey)
 	if err != nil {
 		switch {
 		case errors.Is(err, requests.ErrBodyStylesFetch):
@@ -38,13 +38,24 @@ func (s Service) Refresh(ctx context.Context) error {
 			log.Error(ErrDecodeBodyStyles.Error(), slog.String("error", err.Error()))
 		}
 		return ErrRefreshBodyStyles
-
 	}
 
-	for _, oneCategory := range bodyStyles {
-		err = s.repo.InsertOrUpdate(ctx, oneCategory)
+	err = s.InsertOrUpdate(ctx, bStyles)
+	if err != nil {
+		return ErrRefreshBodyStyles
+	}
+
+	return nil
+}
+
+func (s Service) InsertOrUpdate(ctx context.Context, bStyles []models.BodyStyle) error {
+	log := s.log.With(slog.String("op", "services.body_style.insert_or_update"))
+
+	for _, oneBstyle := range bStyles {
+		err := s.repo.InsertOrUpdate(ctx, oneBstyle)
 		if err != nil {
-			return ErrRefreshBodyStyles
+			log.Error(ErrRefreshBodyStyles.Error(), slog.String("error", err.Error()))
+			return err
 		}
 	}
 	return nil

@@ -25,8 +25,8 @@ func NewService(repository brandRepo.RepositoryInterface, logger *slog.Logger, k
 	}
 }
 
-func (s Service) Refresh(ctx context.Context) error {
-	log := s.log.With(slog.String("op", "services.brand.refresh"))
+func (s Service) Fetch(ctx context.Context) error {
+	log := s.log.With(slog.String("op", "services.brand.fetch"))
 
 	brands, err := requests.GetBrands(s.autoRiaKey)
 	if err != nil {
@@ -40,10 +40,22 @@ func (s Service) Refresh(ctx context.Context) error {
 		return ErrRefreshBrands
 	}
 
-	for _, oneBrand := range brands {
-		err = s.repo.InsertOrUpdate(ctx, oneBrand)
+	err = s.InsertOrUpdate(ctx, brands)
+	if err != nil {
+		return ErrRefreshBrands
+	}
+
+	return nil
+}
+
+func (s Service) InsertOrUpdate(ctx context.Context, brands []models.Brand) error {
+	log := s.log.With(slog.String("op", "services.brand.insert_or_update"))
+
+	for _, oneBS := range brands {
+		err := s.repo.InsertOrUpdate(ctx, oneBS)
 		if err != nil {
-			return ErrRefreshBrands
+			log.Error(ErrRefreshBrands.Error(), slog.String("error", err.Error()))
+			return err
 		}
 	}
 	return nil

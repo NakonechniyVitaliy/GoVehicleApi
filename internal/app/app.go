@@ -36,8 +36,9 @@ import (
 )
 
 type App struct {
-	Router  http.Handler
-	Storage storage.Storage
+	Router   http.Handler
+	Storage  storage.Storage
+	Services services.Container
 }
 
 func New(log *slog.Logger, cfg *config.Config) (*App, error) {
@@ -57,8 +58,9 @@ func New(log *slog.Logger, cfg *config.Config) (*App, error) {
 	appRouter := router.SetupRouter(log, serviceContainer)
 
 	return &App{
-		Router:  appRouter,
-		Storage: appStorage,
+		Router:   appRouter,
+		Storage:  appStorage,
+		Services: serviceContainer,
 	}, nil
 }
 

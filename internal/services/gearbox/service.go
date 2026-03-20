@@ -24,8 +24,8 @@ func NewService(repository gearboxRepo.RepositoryInterface, logger *slog.Logger,
 	}
 }
 
-func (s Service) Refresh(ctx context.Context) error {
-	log := s.log.With(slog.String("op", "services.gearbox.refresh"))
+func (s Service) Fetch(ctx context.Context) error {
+	log := s.log.With(slog.String("op", "services.gearbox.fetch"))
 
 	gearboxes, err := requests.GetGearboxes(s.autoRiaKey)
 	if err != nil {
@@ -39,10 +39,21 @@ func (s Service) Refresh(ctx context.Context) error {
 		return ErrRefreshGearboxes
 	}
 
-	for _, oneGearbox := range gearboxes {
-		err = s.repo.InsertOrUpdate(ctx, oneGearbox)
+	err = s.InsertOrUpdate(ctx, gearboxes)
+	if err != nil {
+		return ErrRefreshGearboxes
+	}
+	return nil
+}
+
+func (s Service) InsertOrUpdate(ctx context.Context, dTypes []models.Gearbox) error {
+	log := s.log.With(slog.String("op", "services.gearbox.insert_or_update"))
+
+	for _, gearbox := range dTypes {
+		err := s.repo.InsertOrUpdate(ctx, gearbox)
 		if err != nil {
-			return ErrRefreshGearboxes
+			log.Error(ErrRefreshGearboxes.Error(), slog.String("error", err.Error()))
+			return err
 		}
 	}
 	return nil

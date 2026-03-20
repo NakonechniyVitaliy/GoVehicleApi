@@ -24,10 +24,10 @@ func NewService(repository driverTypeRepo.RepositoryInterface, logger *slog.Logg
 	}
 }
 
-func (s Service) Refresh(ctx context.Context) error {
-	log := s.log.With(slog.String("op", "services.driver_type.refresh"))
+func (s Service) Fetch(ctx context.Context) error {
+	log := s.log.With(slog.String("op", "services.driver_type.fetch"))
 
-	driverTypes, err := requests.GetDriverTypes(s.autoRiaKey)
+	dTypes, err := requests.GetDriverTypes(s.autoRiaKey)
 	if err != nil {
 		switch {
 		case errors.Is(err, requests.ErrDriverTypesFetch):
@@ -39,10 +39,22 @@ func (s Service) Refresh(ctx context.Context) error {
 		return ErrRefreshDriverTypes
 
 	}
-	for _, oneDriverType := range driverTypes {
-		err = s.repo.InsertOrUpdate(ctx, oneDriverType)
+	
+	err = s.InsertOrUpdate(ctx, dTypes)
+	if err != nil {
+		return ErrRefreshDriverTypes
+	}
+	return nil
+}
+
+func (s Service) InsertOrUpdate(ctx context.Context, dTypes []models.DriverType) error {
+	log := s.log.With(slog.String("op", "services.driver_type.insert_or_update"))
+
+	for _, oneDtype := range dTypes {
+		err := s.repo.InsertOrUpdate(ctx, oneDtype)
 		if err != nil {
-			return ErrRefreshDriverTypes
+			log.Error(ErrRefreshDriverTypes.Error(), slog.String("error", err.Error()))
+			return err
 		}
 	}
 	return nil
