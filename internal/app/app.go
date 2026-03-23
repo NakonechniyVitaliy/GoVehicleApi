@@ -15,6 +15,7 @@ import (
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/mongo"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/sqlite"
+	"github.com/redis/go-redis/v9"
 
 	repositories "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository"
 
@@ -39,6 +40,7 @@ type App struct {
 	Router   http.Handler
 	Storage  storage.Storage
 	Services services.Container
+	Redis    *redis.Client
 }
 
 func New(log *slog.Logger, cfg *config.Config) (*App, error) {
@@ -53,15 +55,33 @@ func New(log *slog.Logger, cfg *config.Config) (*App, error) {
 		return nil, err
 	}
 
-	serviceContainer := setupServices(repos, log, cfg)
+	redisClient, err := setupRedisClient(cfg)
+	if err != nil {
+		return nil, err
+	}
 
+	serviceContainer := setupServices(repos, log, cfg, redisClient)
 	appRouter := router.SetupRouter(log, serviceContainer)
 
 	return &App{
 		Router:   appRouter,
 		Storage:  appStorage,
 		Services: serviceContainer,
+		Redis:    redisClient,
 	}, nil
+}
+
+func setupRedisClient(cfg *config.Config) (*redis.Client, error) {
+	client := redis.NewClient(&redis.Options{
+		Addr:     cfg.Redis.Address,
+		Password: cfg.Redis.Password,
+		DB:       cfg.Redis.DB,
+	})
+	if err := client.Ping(context.Background()).Err(); err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }
 
 func setupStorage(cfg *config.Config) (storage.Storage, error) {
@@ -115,7 +135,7 @@ func setupRepositories(Storage storage.Storage) (*repositories.Repositories, err
 	}
 }
 
-func setupServices(repos *repositories.Repositories, log *slog.Logger, cfg *config.Config) services.Container {
+func setupServices(repos *repositories.Repositories, log *slog.Logger, cfg *config.Config, redis *redis.Client) services.Container {
 
 	return services.Container{
 		Brand:      brandService.NewService(repos.Brand, log, cfg.AutoriaKey),
@@ -123,7 +143,7 @@ func setupServices(repos *repositories.Repositories, log *slog.Logger, cfg *conf
 		Category:   categoryService.NewService(repos.Category, log, cfg.AutoriaKey),
 		DriverType: driverService.NewService(repos.DriverType, log, cfg.AutoriaKey),
 		Gearbox:    gearboxService.NewService(repos.Gearbox, log, cfg.AutoriaKey),
-		Vehicle:    vehicleService.NewService(repos, log),
+		Vehicle:    vehicleService.NewService(repos, log, redis),
 		JWT:        jwtService.NewService(log, []byte(cfg.SecretJwtKey), time.Hour*24),
 		User:       userService.NewService(repos.User, log, cfg.SecretJwtKey),
 	}

@@ -16,12 +16,19 @@ type Config struct {
 	SecretJwtKey string `yaml:"secret_jwt_key" env-required:"true"`
 	AutoriaKey   string `yaml:"autoria_key" env-required:"true"`
 	HTTPServer   `yaml:"http_server"`
+	Redis        `yaml:"redis"`
 }
 
 type HTTPServer struct {
-	Address     string        `yaml:"address" env-required:"localhost:8080"`
+	Address     string        `yaml:"address" env-required:"true"`
 	Timeout     time.Duration `yaml:"timeout" env-default:"4s"`
 	IdleTimeout time.Duration `yaml:"idle_timeout" env-default:"60s"`
+}
+
+type Redis struct {
+	Address  string `yaml:"address" env-required:"true"`
+	Password string `yaml:"password" env-required:"true"`
+	DB       int    `yaml:"db" env-default:"0"`
 }
 
 func MustLoad() *Config {

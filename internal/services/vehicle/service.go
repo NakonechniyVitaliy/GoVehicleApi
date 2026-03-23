@@ -2,10 +2,14 @@ package vehicle
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"log/slog"
+	"time"
 
 	repoErrors "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/_errors"
+	"github.com/redis/go-redis/v9"
 
 	bsDTO "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/body_style"
 	bDTO "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/brand"
@@ -35,9 +39,10 @@ type Service struct {
 	driverRepo   driverTypeRepo.RepositoryInterface
 	gearboxRepo  gearboxRepo.RepositoryInterface
 	log          *slog.Logger
+	redis        *redis.Client
 }
 
-func NewService(repos *repos.Repositories, logger *slog.Logger) *Service {
+func NewService(repos *repos.Repositories, logger *slog.Logger, redis *redis.Client) *Service {
 	return &Service{
 		repos.Vehicle,
 		repos.Brand,
@@ -46,23 +51,45 @@ func NewService(repos *repos.Repositories, logger *slog.Logger) *Service {
 		repos.DriverType,
 		repos.Gearbox,
 		logger,
+		redis,
 	}
 }
 
-func (s Service) GetByID(ctx context.Context, id uint16) (*models.Vehicle, error) {
+func (s *Service) GetByID(ctx context.Context, id uint16) (*models.Vehicle, error) {
 	log := s.log.With(slog.String("op", "services.vehicle.get_by_id"))
+	redisKey := fmt.Sprintf("vehicle:%d", id)
+
+	cachedData, err := s.redis.Get(ctx, redisKey).Result()
+	if err == nil {
+		var cachedVehicle models.Vehicle
+		if err := json.Unmarshal([]byte(cachedData), &cachedVehicle); err == nil {
+			log.Info("vehicle fetched from redis")
+			return &cachedVehicle, nil
+		}
+		log.Error("redis unmarshal error", slog.String("error", err.Error()))
+	} else if !errors.Is(err, redis.Nil) {
+		log.Error("redis get error", slog.String("error", err.Error()))
+	}
 
 	vehicle, err := s.vehicleRepo.GetByID(ctx, id)
-
 	if errors.Is(err, repoErrors.ErrVehicleNotFound) {
 		log.Error(ErrVehicleNotFound.Error(), slog.String("error", err.Error()))
 		return nil, ErrVehicleNotFound
 	}
-
 	if err != nil {
 		log.Error(ErrGetVehicle.Error(), slog.String("error", err.Error()))
 		return nil, err
 	}
+
+	data, err := json.Marshal(vehicle)
+	if err != nil {
+		log.Error("json marshal error", slog.String("error", err.Error()))
+	} else {
+		if err := s.redis.Set(ctx, redisKey, data, time.Minute*5).Err(); err != nil {
+			log.Error("redis set error", slog.String("error", err.Error()))
+		}
+	}
+
 	return vehicle, nil
 }
 

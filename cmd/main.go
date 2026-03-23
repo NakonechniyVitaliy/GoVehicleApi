@@ -23,9 +23,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	log.Info("starting server on", slog.String("address", cfg.Address))
+	log.Info("starting server on", slog.String("address", cfg.HTTPServer.Address))
 	server := &http.Server{
-		Addr:         cfg.Address,
+		Addr:         cfg.HTTPServer.Address,
 		Handler:      application.Router,
 		ReadTimeout:  cfg.HTTPServer.Timeout,
 		WriteTimeout: cfg.HTTPServer.Timeout,
