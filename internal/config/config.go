@@ -26,9 +26,10 @@ type HTTPServer struct {
 }
 
 type Redis struct {
-	Address  string `yaml:"address" env-required:"true"`
-	Password string `yaml:"password" env-required:"true"`
-	DB       int    `yaml:"db" env-default:"0"`
+	Address   string        `yaml:"address" env-required:"true"`
+	Password  string        `yaml:"password" env-required:"true"`
+	DB        int           `yaml:"db" env-default:"0"`
+	CacheTime time.Duration `yaml:"cache_time" env-default:"5m"`
 }
 
 func MustLoad() *Config {

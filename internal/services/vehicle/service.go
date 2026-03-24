@@ -2,12 +2,11 @@ package vehicle
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"log/slog"
-	"time"
 
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/cache"
 	repoErrors "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/_errors"
 	"github.com/redis/go-redis/v9"
 
@@ -39,10 +38,10 @@ type Service struct {
 	driverRepo   driverTypeRepo.RepositoryInterface
 	gearboxRepo  gearboxRepo.RepositoryInterface
 	log          *slog.Logger
-	redis        *redis.Client
+	cache        *cache.AppCache
 }
 
-func NewService(repos *repos.Repositories, logger *slog.Logger, redis *redis.Client) *Service {
+func NewService(repos *repos.Repositories, logger *slog.Logger, cache *cache.AppCache) *Service {
 	return &Service{
 		repos.Vehicle,
 		repos.Brand,
@@ -51,23 +50,21 @@ func NewService(repos *repos.Repositories, logger *slog.Logger, redis *redis.Cli
 		repos.DriverType,
 		repos.Gearbox,
 		logger,
-		redis,
+		cache,
 	}
 }
 
 func (s *Service) GetByID(ctx context.Context, id uint16) (*models.Vehicle, error) {
 	log := s.log.With(slog.String("op", "services.vehicle.get_by_id"))
+
 	redisKey := fmt.Sprintf("vehicle:%d", id)
 
-	cachedData, err := s.redis.Get(ctx, redisKey).Result()
+	var cachedVehicle models.Vehicle
+	err := s.cache.Get(ctx, redisKey, &cachedVehicle)
 	if err == nil {
-		var cachedVehicle models.Vehicle
-		if err := json.Unmarshal([]byte(cachedData), &cachedVehicle); err == nil {
-			log.Info("vehicle fetched from redis")
-			return &cachedVehicle, nil
-		}
-		log.Error("redis unmarshal error", slog.String("error", err.Error()))
-	} else if !errors.Is(err, redis.Nil) {
+		return &cachedVehicle, nil
+	}
+	if !errors.Is(err, redis.Nil) {
 		log.Error("redis get error", slog.String("error", err.Error()))
 	}
 
@@ -81,13 +78,9 @@ func (s *Service) GetByID(ctx context.Context, id uint16) (*models.Vehicle, erro
 		return nil, err
 	}
 
-	data, err := json.Marshal(vehicle)
+	err = s.cache.Set(ctx, redisKey, vehicle)
 	if err != nil {
-		log.Error("json marshal error", slog.String("error", err.Error()))
-	} else {
-		if err := s.redis.Set(ctx, redisKey, data, time.Minute*5).Err(); err != nil {
-			log.Error("redis set error", slog.String("error", err.Error()))
-		}
+		log.Error("redis set error", slog.String("error", err.Error()))
 	}
 
 	return vehicle, nil
