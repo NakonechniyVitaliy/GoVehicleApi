@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"net/http"
 
+	fDTO "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/vehicle/filter"
 	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
 	service "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/vehicle"
@@ -16,13 +17,24 @@ type GetAllResponse struct {
 	Vehicles []models.Vehicle
 }
 
-func GetAll(log *slog.Logger, srv *service.Service) http.HandlerFunc {
+func GetList(log *slog.Logger, srv *service.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		log = log.With(slog.String("op", "handlers.vehicle.get_list"))
 
-		log = log.With(slog.String("op", "handlers.vehicle.get"))
+		page := r.URL.Query().Get("page")
+		limit := r.URL.Query().Get("limit")
 
-		vehicles, err := srv.GetAll(r.Context())
+		filterDTO := fDTO.FilterDTO{
+			Page:  page,
+			Limit: limit,
+		}
 
+		filter, err := filterDTO.ValidateAndToModel()
+		if err != nil {
+			resp.RenderError(w, r, http.StatusBadRequest, err.Error())
+		}
+
+		vehicles, err := srv.GetList(r.Context(), *filter)
 		if errors.Is(err, service.ErrGetVehicles) {
 			resp.RenderError(w, r, http.StatusInternalServerError, service.ErrGetVehicles.Error())
 			return

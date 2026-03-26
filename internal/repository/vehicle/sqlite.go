@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/vehicle/filter"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/_errors"
 )
@@ -47,6 +48,34 @@ func (s *SqliteRepository) GetAll(ctx context.Context) ([]models.Vehicle, error)
 	const query = `SELECT id, brand, driver_type, gearbox, body_style, category, mileage, model, price FROM vehicles`
 
 	rows, err := s.db.QueryContext(ctx, query)
+	if err != nil {
+		return nil, fmt.Errorf("%s: exec: %w", op, err)
+	}
+	defer rows.Close()
+
+	var vehicles []models.Vehicle
+	for rows.Next() {
+		var v models.Vehicle
+		if err := rows.Scan(
+			&v.ID, &v.Brand, &v.DriverType, &v.Gearbox, &v.BodyStyle, &v.Category, &v.Mileage, &v.Model, &v.Price); err != nil {
+			return nil, fmt.Errorf("%s: scan: %w", op, err)
+		}
+		vehicles = append(vehicles, v)
+	}
+
+	return vehicles, nil
+}
+
+func (s *SqliteRepository) GetByPage(ctx context.Context, f filter.Filter) ([]models.Vehicle, error) {
+	const op = "storage.vehicles.get_all"
+
+	offset := (f.Page - 1) * f.Limit
+
+	const query = `SELECT id, brand, driver_type, gearbox, body_style, category, mileage, model, price 
+				   FROM vehicles
+				   LIMIT ? OFFSET ?`
+
+	rows, err := s.db.QueryContext(ctx, query, f.Limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("%s: exec: %w", op, err)
 	}

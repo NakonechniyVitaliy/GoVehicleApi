@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/vehicle/filter"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/_errors"
 	mongoStorage "github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/mongo"
@@ -117,6 +118,11 @@ func (mng *MongoRepository) GetAll(ctx context.Context) ([]models.Vehicle, error
 
 	return vehicles, nil
 
+}
+
+func (mng *MongoRepository) GetByPage(ctx context.Context, f filter.Filter) ([]models.Vehicle, error) {
+	return nil, nil
+	//TODO
 }
 
 func (mng *MongoRepository) Delete(ctx context.Context, vehicleID uint16) error {

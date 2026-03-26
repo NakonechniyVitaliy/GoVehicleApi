@@ -19,7 +19,7 @@ func SetupVehiclesRoutes(
 		r.Delete("/{id}", vehicleHandler.Delete(log, services.Vehicle))
 		r.Get("/{id}", vehicleHandler.Get(log, services.Vehicle))
 		r.Put("/{id}", vehicleHandler.Update(log, services.Vehicle))
-		r.Get("/all", vehicleHandler.GetAll(log, services.Vehicle))
+		r.Get("/", vehicleHandler.GetList(log, services.Vehicle))
 		r.Get("/expanded/{id}", vehicleHandler.GetExpanded(log, services.Vehicle))
 	})
 }

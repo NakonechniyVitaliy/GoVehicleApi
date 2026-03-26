@@ -3,6 +3,7 @@ package cache
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/redis/go-redis/v9"
@@ -40,4 +41,12 @@ func (c *AppCache) Set(ctx context.Context, key string, value any, ttl ...time.D
 	}
 
 	return c.client.Set(ctx, key, data, expiration).Err()
+}
+
+func (c *AppCache) Delete(ctx context.Context, key string) error {
+	return c.client.Del(ctx, key).Err()
+}
+
+func (c *AppCache) RedisKey(name any, id any) string {
+	return fmt.Sprintf("%s:%s", name, id)
 }

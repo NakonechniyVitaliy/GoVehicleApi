@@ -7,6 +7,7 @@ import (
 	"log/slog"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/cache"
+	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/cache_key"
 	repoErrors "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/_errors"
 	"github.com/redis/go-redis/v9"
 
@@ -16,6 +17,7 @@ import (
 	dDTO "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/driver_type"
 	gDTO "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/gearbox"
 	vDTO "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/vehicle"
+	fDTO "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/vehicle/filter"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/helper"
@@ -57,10 +59,10 @@ func NewService(repos *repos.Repositories, logger *slog.Logger, cache *cache.App
 func (s *Service) GetByID(ctx context.Context, id uint16) (*models.Vehicle, error) {
 	log := s.log.With(slog.String("op", "services.vehicle.get_by_id"))
 
-	redisKey := fmt.Sprintf("vehicle:%d", id)
+	cacheKey := cache_key.VehicleByID(id)
 
 	var cachedVehicle models.Vehicle
-	err := s.cache.Get(ctx, redisKey, &cachedVehicle)
+	err := s.cache.Get(ctx, cacheKey, &cachedVehicle)
 	if err == nil {
 		return &cachedVehicle, nil
 	}
@@ -78,7 +80,7 @@ func (s *Service) GetByID(ctx context.Context, id uint16) (*models.Vehicle, erro
 		return nil, err
 	}
 
-	err = s.cache.Set(ctx, redisKey, vehicle)
+	err = s.cache.Set(ctx, cacheKey, vehicle)
 	if err != nil {
 		log.Error("redis set error", slog.String("error", err.Error()))
 	}
@@ -86,10 +88,26 @@ func (s *Service) GetByID(ctx context.Context, id uint16) (*models.Vehicle, erro
 	return vehicle, nil
 }
 
-func (s Service) GetAll(ctx context.Context) ([]models.Vehicle, error) {
+func (s Service) GetList(ctx context.Context, f fDTO.Filter) ([]models.Vehicle, error) {
 	log := s.log.With(slog.String("op", "handlers.vehicle.get_all"))
 
-	vehicles, err := s.vehicleRepo.GetAll(ctx)
+	if f.Limit == 0 && f.Page == 0 {
+		vehicles, err := s.vehicleRepo.GetAll(ctx)
+		if err != nil {
+			log.Error(ErrGetVehicles.Error(), slog.String("error", err.Error()))
+			return nil, ErrGetVehicles
+		}
+		return vehicles, nil
+	}
+
+	return s.GetByPage(ctx, f)
+
+}
+
+func (s Service) GetByPage(ctx context.Context, f fDTO.Filter) ([]models.Vehicle, error) {
+	log := s.log.With(slog.String("op", "handlers.vehicle.get_by_page"))
+
+	vehicles, err := s.vehicleRepo.GetByPage(ctx, f)
 	if err != nil {
 		log.Error(ErrGetVehicles.Error(), slog.String("error", err.Error()))
 		return nil, ErrGetVehicles
@@ -117,7 +135,6 @@ func (s Service) Update(ctx context.Context, vehicle models.Vehicle, id uint16) 
 	log := s.log.With(slog.String("op", "services.vehicle.update"))
 
 	updatedVehicle, err := s.vehicleRepo.Update(ctx, vehicle, id)
-
 	if errors.Is(err, repoErrors.ErrVehicleNotFound) {
 		log.Error(ErrVehicleNotFound.Error(), slog.String("error", err.Error()))
 		return nil, ErrVehicleNotFound
@@ -128,6 +145,11 @@ func (s Service) Update(ctx context.Context, vehicle models.Vehicle, id uint16) 
 		return nil, ErrUpdateVehicle
 	}
 
+	redisKey := fmt.Sprintf("vehicle:%d", id)
+	if err := s.cache.Delete(ctx, redisKey); err != nil {
+		log.Error("redis delete error", slog.String("error", err.Error()))
+	}
+
 	return updatedVehicle, nil
 }
 
@@ -135,15 +157,18 @@ func (s Service) Delete(ctx context.Context, id uint16) error {
 	log := s.log.With(slog.String("op", "services.vehicle.delete"))
 
 	err := s.vehicleRepo.Delete(ctx, id)
-
 	if errors.Is(err, repoErrors.ErrVehicleNotFound) {
 		log.Error(ErrVehicleNotFound.Error(), slog.String("error", err.Error()))
 		return ErrVehicleNotFound
 	}
-
 	if err != nil {
 		log.Error("failed to delete vehicle", slog.String("error", err.Error()))
 		return ErrGetVehicle
+	}
+
+	redisKey := fmt.Sprintf("vehicle:%d", id)
+	if err := s.cache.Delete(ctx, redisKey); err != nil {
+		log.Error("redis delete error", slog.String("error", err.Error()))
 	}
 
 	return nil
