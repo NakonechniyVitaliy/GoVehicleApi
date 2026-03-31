@@ -1,10 +1,16 @@
 env: "local" # local, dev, prod
 storage_path: "./storage/storage.db"
-mongo_uri: "mongodb://localhost:27017/core"
+mongo_uri: "mongodb://mongo:27017"
 database: "mongo"
+secret_jwt_key: rhifewh32yr7932yuyfew8ygf8g2fg
 autoria_key: fake-autoria-key
 http_server:
-  address: "localhost:8082"
+  address: "0.0.0.0:8082"
   timeout: 4s
   iddle_timeout: 60s
+redis:
+  address: "redis:6379"
+  password: some-secret-password
+  db: 0
+  cache_time: 5m
 
