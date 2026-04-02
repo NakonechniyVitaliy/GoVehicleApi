@@ -1,4 +1,4 @@
-package gearbox
+package user
 
 type SignUpDTO struct {
 	Username *string `json:"username,omitempty"`

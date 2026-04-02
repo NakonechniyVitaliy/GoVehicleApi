@@ -1,16 +1,15 @@
 env: "local" # local, dev, prod
 storage_path: "./storage/storage.db"
 mongo_uri: "mongodb://mongo:27017"
-database: "mongo"
-secret_jwt_key: "CHANGE_ME"
-autoria_key: "CHANGE_ME"
+database: "sqlite"
+secret_jwt_key: rhifewh32yr7932yuyfew8ygf8g2fg
+autoria_key: TNpQ7YqaUyOGliV5zsEfeBtDiKSO3ZhMVJgIdUtm
 http_server:
   address: "0.0.0.0:8082"
   timeout: 4s
   idle_timeout: 60s
 redis:
   address: "redis:6379"
-  password: "CHANGE_ME"
+  password: some-secret-password
   db: 0
   cache_time: 5m
-

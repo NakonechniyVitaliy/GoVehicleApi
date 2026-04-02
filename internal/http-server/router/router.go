@@ -3,6 +3,7 @@ package router
 import (
 	"log/slog"
 
+	myMiddleware "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/middleware"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/router/body_style"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/router/brand"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/router/category"
@@ -28,15 +29,20 @@ func SetupRouter(
 	router.Use(middleware.Recoverer) // Востановление после критикал ошибки
 	router.Use(middleware.URLFormat) // Удобное получение параметров из сслыки
 
-	//router.Use(myMiddleware.JWTAuth(log, services.JWT))
-
-	body_style.SetupBodyStyleRoutes(router, log, services)
-	driver_type.SetupDriverTypeRoutes(router, log, services)
-	brand.SetupBrandRoutes(router, log, services)
-	category.SetupCategoryRoutes(router, log, services)
-	gearbox.SetupGearboxRoutes(router, log, services)
-	vehicle.SetupVehiclesRoutes(router, log, services)
+	// Публичные роуты (без аутентификации)
 	user.SetupUserRoutes(router, log, services)
+
+	// Защищённые роуты (требуют JWT токен)
+	router.Group(func(r chi.Router) {
+		r.Use(myMiddleware.JWTAuth(log, services.JWT))
+
+		body_style.SetupBodyStyleRoutes(r, log, services)
+		driver_type.SetupDriverTypeRoutes(r, log, services)
+		brand.SetupBrandRoutes(r, log, services)
+		category.SetupCategoryRoutes(r, log, services)
+		gearbox.SetupGearboxRoutes(r, log, services)
+		vehicle.SetupVehiclesRoutes(r, log, services)
+	})
 
 	return router
 }

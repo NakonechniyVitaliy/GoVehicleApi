@@ -5,7 +5,8 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"strings"
+
+	sqlite3 "github.com/mattn/go-sqlite3"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/vehicle/filter"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
@@ -195,7 +196,8 @@ func (s *SqliteRepository) Create(ctx context.Context, vehicle models.Vehicle) (
 		vehicle.Price,
 	)
 	if err != nil {
-		if strings.Contains(err.Error(), "UNIQUE") {
+		var sqliteErr sqlite3.Error
+		if errors.As(err, &sqliteErr) && sqliteErr.ExtendedCode == sqlite3.ErrConstraintUnique {
 			return nil, _errors.ErrVehicleExists
 		}
 		return nil, fmt.Errorf("%s: %w", op, err)

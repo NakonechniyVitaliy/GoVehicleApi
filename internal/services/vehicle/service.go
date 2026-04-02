@@ -10,6 +10,7 @@ import (
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/cache_key"
 	repoErrors "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/_errors"
 	"github.com/redis/go-redis/v9"
+	"golang.org/x/sync/errgroup"
 
 	bsDTO "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/body_style"
 	bDTO "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/brand"
@@ -181,24 +182,42 @@ func (s Service) GetExpanded(ctx context.Context, id uint16) (*vDTO.ExpandedVehi
 		return nil, err
 	}
 
-	vBrand, err := s.brandRepo.GetByID(ctx, rawVehicle.Brand)
-	if err != nil {
-		return nil, err
-	}
-	vBodyStyle, err := s.bodyRepo.GetByID(ctx, rawVehicle.BodyStyle)
-	if err != nil {
-		return nil, err
-	}
-	vCategory, err := s.categoryRepo.GetByID(ctx, rawVehicle.Category)
-	if err != nil {
-		return nil, err
-	}
-	vDriverType, err := s.driverRepo.GetByID(ctx, rawVehicle.DriverType)
-	if err != nil {
-		return nil, err
-	}
-	vGearbox, err := s.gearboxRepo.GetByID(ctx, rawVehicle.Gearbox)
-	if err != nil {
+	var (
+		vBrand      *models.Brand
+		vBodyStyle  *models.BodyStyle
+		vCategory   *models.Category
+		vDriverType *models.DriverType
+		vGearbox    *models.Gearbox
+	)
+
+	g, gCtx := errgroup.WithContext(ctx)
+	g.Go(func() error {
+		var e error
+		vBrand, e = s.brandRepo.GetByID(gCtx, rawVehicle.Brand)
+		return e
+	})
+	g.Go(func() error {
+		var e error
+		vBodyStyle, e = s.bodyRepo.GetByID(gCtx, rawVehicle.BodyStyle)
+		return e
+	})
+	g.Go(func() error {
+		var e error
+		vCategory, e = s.categoryRepo.GetByID(gCtx, rawVehicle.Category)
+		return e
+	})
+	g.Go(func() error {
+		var e error
+		vDriverType, e = s.driverRepo.GetByID(gCtx, rawVehicle.DriverType)
+		return e
+	})
+	g.Go(func() error {
+		var e error
+		vGearbox, e = s.gearboxRepo.GetByID(gCtx, rawVehicle.Gearbox)
+		return e
+	})
+
+	if err := g.Wait(); err != nil {
 		return nil, err
 	}
 

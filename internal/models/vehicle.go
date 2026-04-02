@@ -9,5 +9,5 @@ type Vehicle struct {
 	Category   uint16 `bson:"category" json:"category"`
 	Mileage    uint32 `bson:"mileage" json:"mileage"`
 	Model      string `bson:"model" json:"model"`
-	Price      uint16 `bson:"price" json:"price"`
+	Price      uint32 `bson:"price" json:"price"`
 }

@@ -18,7 +18,7 @@ type MongoStorage struct {
 func New(ctx context.Context, cfg *config.Config) (*MongoStorage, error) {
 	const op = "storage.mongo.New"
 
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://127.0.0.1:27017"))
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(cfg.MongoURI))
 	if err != nil {
 		return nil, err
 	}

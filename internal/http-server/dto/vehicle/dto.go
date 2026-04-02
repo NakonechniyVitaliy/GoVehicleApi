@@ -17,7 +17,7 @@ type VehicleDTO struct {
 	Category   *uint16 `json:"category"`
 	Mileage    *uint32 `json:"mileage"`
 	Model      *string `json:"model"`
-	Price      *uint16 `json:"price"`
+	Price      *uint32 `json:"price"`
 }
 
 type ExpandedVehicleDTO struct {
@@ -29,5 +29,5 @@ type ExpandedVehicleDTO struct {
 	Category   categoryDTO.CategoryDTO     `json:"category"`
 	Mileage    uint32                      `json:"mileage"`
 	Model      string                      `json:"model"`
-	Price      uint16                      `json:"price"`
+	Price      uint32                      `json:"price"`
 }

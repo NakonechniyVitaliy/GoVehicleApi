@@ -1,4 +1,4 @@
-package gearbox
+package user
 
 import (
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"

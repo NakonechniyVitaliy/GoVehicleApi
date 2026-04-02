@@ -14,6 +14,6 @@ func (dto VehicleDTO) ToModel() models.Vehicle {
 		Category:   helper.DerefUint16(dto.Category),
 		Mileage:    helper.DerefUint32(dto.Mileage),
 		Model:      helper.DerefString(dto.Model),
-		Price:      helper.DerefUint16(dto.Price),
+		Price:      helper.DerefUint32(dto.Price),
 	}
 }

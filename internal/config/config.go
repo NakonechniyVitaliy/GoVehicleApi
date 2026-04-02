@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/ilyakaznacheev/cleanenv"
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -13,8 +14,8 @@ type Config struct {
 	StoragePath  string `yaml:"storage_path" env-required:"true"`
 	MongoURI     string `yaml:"mongo_uri" env-required:"true"`
 	DataBase     string `yaml:"database" env-default:"sqlite"`
-	SecretJwtKey string `yaml:"secret_jwt_key" env-required:"true"`
-	AutoriaKey   string `yaml:"autoria_key" env-required:"true"`
+	SecretJwtKey string `yaml:"secret_jwt_key" env:"SECRET_JWT_KEY" env-required:"true"`
+	AutoriaKey   string `yaml:"autoria_key" env:"AUTORIA_KEY" env-required:"true"`
 	HTTPServer   `yaml:"http_server"`
 	Redis        `yaml:"redis"`
 }
@@ -27,12 +28,16 @@ type HTTPServer struct {
 
 type Redis struct {
 	Address   string        `yaml:"address" env-required:"true"`
-	Password  string        `yaml:"password" env-required:"true"`
+	Password  string        `yaml:"password" env:"REDIS_PASSWORD" env-required:"true"`
 	DB        int           `yaml:"db" env-default:"0"`
 	CacheTime time.Duration `yaml:"cache_time" env-default:"5m"`
 }
 
 func MustLoad() *Config {
+	// Загружаем .env если есть (локальная разработка).
+	// В Docker секреты передаются через environment: в docker-compose.
+	_ = godotenv.Load()
+
 	configPath := os.Getenv("CONFIG_PATH")
 	if configPath == "" {
 		log.Fatal("CONFIG_PATH is not set")
