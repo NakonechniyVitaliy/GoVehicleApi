@@ -15,6 +15,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 func SetupRouter(
@@ -28,6 +29,9 @@ func SetupRouter(
 	router.Use(middleware.Logger)    // Логирование
 	router.Use(middleware.Recoverer) // Востановление после критикал ошибки
 	router.Use(middleware.URLFormat) // Удобное получение параметров из сслыки
+
+	// Swagger UI (публічний)
+	router.Get("/swagger/*", httpSwagger.WrapHandler)
 
 	// Публичные роуты (без аутентификации)
 	user.SetupUserRoutes(router, log, services)

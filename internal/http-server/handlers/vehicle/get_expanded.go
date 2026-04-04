@@ -7,17 +7,28 @@ import (
 	"strconv"
 
 	dto "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/vehicle"
-	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
+	response "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	service "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/vehicle"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 )
 
 type GetExpandedResponse struct {
-	Response resp.Response
+	Response response.Response
 	Vehicle  *dto.ExpandedVehicleDTO
 }
 
+// GetExpanded godoc
+// @Summary      Отримати розгорнутий транспортний засіб за ID
+// @Tags         vehicle
+// @Security     BearerAuth
+// @Produce      json
+// @Param        id   path      int  true  "ID транспортного засобу"
+// @Success      200  {object}  GetExpandedSwaggerResponse
+// @Failure      400  {object}  response.Response
+// @Failure      404  {object}  response.Response
+// @Failure      500  {object}  response.Response
+// @Router       /vehicle/expanded/{id} [get]
 func GetExpanded(log *slog.Logger, srv *service.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -26,23 +37,23 @@ func GetExpanded(log *slog.Logger, srv *service.Service) http.HandlerFunc {
 		id64, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 16)
 		if err != nil {
 			log.Error("failed to get vehicle ID", slog.String("error", err.Error()))
-			resp.RenderError(w, r, http.StatusBadRequest, "failed to get vehicle ID")
+			response.RenderError(w, r, http.StatusBadRequest, "failed to get vehicle ID")
 			return
 		}
 		vehicleID := uint16(id64)
 
 		expandedVehicle, err := srv.GetExpanded(r.Context(), vehicleID)
 		if errors.Is(err, service.ErrVehicleNotFound) {
-			resp.RenderError(w, r, http.StatusNotFound, service.ErrVehicleNotFound.Error())
+			response.RenderError(w, r, http.StatusNotFound, service.ErrVehicleNotFound.Error())
 			return
 		}
 		if err != nil {
-			resp.RenderError(w, r, http.StatusInternalServerError, service.ErrGetVehicle.Error())
+			response.RenderError(w, r, http.StatusInternalServerError, service.ErrGetVehicle.Error())
 			return
 		}
 
 		render.JSON(w, r, GetExpandedResponse{
-			Response: resp.OK(),
+			Response: response.OK(),
 			Vehicle:  expandedVehicle,
 		})
 	}

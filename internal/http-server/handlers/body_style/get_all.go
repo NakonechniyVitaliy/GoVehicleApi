@@ -5,17 +5,25 @@ import (
 	"log/slog"
 	"net/http"
 
-	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
+	response "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
 	service "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/body_style"
 	"github.com/go-chi/render"
 )
 
 type GetAllResponse struct {
-	Response   resp.Response
+	Response   response.Response
 	BodyStyles []models.BodyStyle
 }
 
+// GetAll godoc
+// @Summary      Список стилів кузова
+// @Tags         body-style
+// @Security     BearerAuth
+// @Produce      json
+// @Success      200  {object}  GetAllResponse
+// @Failure      500  {object}  response.Response
+// @Router       /body-style/all [get]
 func GetAll(log *slog.Logger, svc service.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -24,11 +32,11 @@ func GetAll(log *slog.Logger, svc service.Service) http.HandlerFunc {
 		bodyStyles, err := svc.GetAll(r.Context())
 
 		if errors.Is(err, service.ErrGetBodyStyles) {
-			resp.RenderError(w, r, http.StatusInternalServerError, service.ErrGetBodyStyles.Error())
+			response.RenderError(w, r, http.StatusInternalServerError, service.ErrGetBodyStyles.Error())
 			return
 		}
 		render.JSON(w, r, GetAllResponse{
-			Response:   resp.OK(),
+			Response:   response.OK(),
 			BodyStyles: bodyStyles,
 		})
 	}

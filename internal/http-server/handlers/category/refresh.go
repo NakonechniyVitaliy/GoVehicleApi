@@ -4,11 +4,19 @@ import (
 	"log/slog"
 	"net/http"
 
-	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
+	response "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	service "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/category"
 	"github.com/go-chi/render"
 )
 
+// Refresh godoc
+// @Summary      Синхронізувати категорії з Autoria
+// @Tags         category
+// @Security     BearerAuth
+// @Produce      json
+// @Success      200  {object}  response.Response
+// @Failure      500  {object}  response.Response
+// @Router       /category/refresh [put]
 func Refresh(log *slog.Logger, srv *service.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -16,10 +24,10 @@ func Refresh(log *slog.Logger, srv *service.Service) http.HandlerFunc {
 
 		err := srv.Fetch(r.Context())
 		if err != nil {
-			resp.RenderError(w, r, http.StatusInternalServerError, service.ErrRefreshCategories.Error())
+			response.RenderError(w, r, http.StatusInternalServerError, service.ErrRefreshCategories.Error())
 			return
 		}
 
-		render.JSON(w, r, resp.OK())
+		render.JSON(w, r, response.OK())
 	}
 }

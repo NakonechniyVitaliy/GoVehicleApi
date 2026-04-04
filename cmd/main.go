@@ -9,10 +9,23 @@ import (
 	"syscall"
 	"time"
 
+	_ "github.com/NakonechniyVitaliy/GoVehicleApi/docs"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/app"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/config"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/logger"
 )
+
+// @title           GoVehicleApi
+// @version         1.0
+// @description     REST API для управління транспортними засобами (автомобілі, бренди, категорії тощо).
+
+// @host      localhost:8082
+// @BasePath  /
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Введіть токен у форматі: Bearer {token}
 
 func main() {
 	cfg := config.MustLoad()

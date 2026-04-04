@@ -4,17 +4,25 @@ import (
 	"log/slog"
 	"net/http"
 
-	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
+	response "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
 	service "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/gearbox"
 	"github.com/go-chi/render"
 )
 
 type GetAllResponse struct {
-	Response  resp.Response
+	Response  response.Response
 	Gearboxes []models.Gearbox
 }
 
+// GetAll godoc
+// @Summary      Список коробок передач
+// @Tags         gearbox
+// @Security     BearerAuth
+// @Produce      json
+// @Success      200  {object}  GetAllResponse
+// @Failure      500  {object}  response.Response
+// @Router       /gearbox/all [get]
 func GetAll(log *slog.Logger, service *service.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.gearbox.get_all"
@@ -26,12 +34,12 @@ func GetAll(log *slog.Logger, service *service.Service) http.HandlerFunc {
 		gearboxes, err := service.GetAll(r.Context())
 		if err != nil {
 			log.Error("failed to get vehicle gearboxes", slog.String("error", err.Error()))
-			render.JSON(w, r, resp.Error("Failed to get vehicle gearboxes"))
+			render.JSON(w, r, response.Error("Failed to get vehicle gearboxes"))
 			return
 		}
 
 		render.JSON(w, r, GetAllResponse{
-			Response:  resp.OK(),
+			Response:  response.OK(),
 			Gearboxes: gearboxes,
 		})
 	}

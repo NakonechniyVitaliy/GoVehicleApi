@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
-	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
+	response "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
 	service "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/brand"
 	"github.com/go-chi/chi/v5"
@@ -14,10 +14,21 @@ import (
 )
 
 type GetResponse struct {
-	Response resp.Response
+	Response response.Response
 	Brand    *models.Brand
 }
 
+// Get godoc
+// @Summary      Отримати бренд за ID
+// @Tags         brand
+// @Security     BearerAuth
+// @Produce      json
+// @Param        id   path      int  true  "ID бренду"
+// @Success      200  {object}  GetResponse
+// @Failure      400  {object}  response.Response
+// @Failure      404  {object}  response.Response
+// @Failure      500  {object}  response.Response
+// @Router       /brand/{id} [get]
 func Get(log *slog.Logger, srv *service.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -26,7 +37,7 @@ func Get(log *slog.Logger, srv *service.Service) http.HandlerFunc {
 		id64, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 16)
 		if err != nil {
 			log.Error("failed to get body style ID", slog.String("error", err.Error()))
-			resp.RenderError(w, r, http.StatusBadRequest, "failed to get body style ID")
+			response.RenderError(w, r, http.StatusBadRequest, "failed to get body style ID")
 			return
 		}
 
@@ -34,16 +45,16 @@ func Get(log *slog.Logger, srv *service.Service) http.HandlerFunc {
 
 		Brand, err := srv.GetByID(r.Context(), brandID)
 		if errors.Is(err, service.ErrBrandNotFound) {
-			resp.RenderError(w, r, http.StatusNotFound, service.ErrBrandNotFound.Error())
+			response.RenderError(w, r, http.StatusNotFound, service.ErrBrandNotFound.Error())
 			return
 		}
 		if err != nil {
-			resp.RenderError(w, r, http.StatusInternalServerError, service.ErrGetBrand.Error())
+			response.RenderError(w, r, http.StatusInternalServerError, service.ErrGetBrand.Error())
 			return
 		}
 
 		render.JSON(w, r, GetResponse{
-			Response: resp.OK(),
+			Response: response.OK(),
 			Brand:    Brand,
 		})
 	}

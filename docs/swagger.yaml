@@ -1,0 +1,1086 @@
+basePath: /
+definitions:
+  body_style.BodyStylePayload:
+    properties:
+      BodyStyle:
+        properties:
+          name:
+            type: string
+          value:
+            type: integer
+        type: object
+    type: object
+  body_style.GetAllResponse:
+    properties:
+      bodyStyles:
+        items:
+          $ref: '#/definitions/models.BodyStyle'
+        type: array
+      response:
+        $ref: '#/definitions/response.Response'
+    type: object
+  body_style.GetResponse:
+    properties:
+      bodyStyle:
+        $ref: '#/definitions/models.BodyStyle'
+      response:
+        $ref: '#/definitions/response.Response'
+    type: object
+  body_style.SaveResponse:
+    properties:
+      bodyStyle:
+        $ref: '#/definitions/models.BodyStyle'
+      response:
+        $ref: '#/definitions/response.Response'
+    type: object
+  body_style.UpdateResponse:
+    properties:
+      bodyStyle:
+        $ref: '#/definitions/models.BodyStyle'
+      response:
+        $ref: '#/definitions/response.Response'
+    type: object
+  brand.BrandPayload:
+    properties:
+      Brand:
+        properties:
+          category_id:
+            type: integer
+          cnt:
+            type: integer
+          country_id:
+            type: integer
+          eng:
+            type: string
+          marka_id:
+            type: integer
+          name:
+            type: string
+          slang:
+            type: string
+          value:
+            type: integer
+        type: object
+    type: object
+  brand.GetAllResponse:
+    properties:
+      brands:
+        items:
+          $ref: '#/definitions/models.Brand'
+        type: array
+      response:
+        $ref: '#/definitions/response.Response'
+    type: object
+  brand.GetResponse:
+    properties:
+      brand:
+        $ref: '#/definitions/models.Brand'
+      response:
+        $ref: '#/definitions/response.Response'
+    type: object
+  brand.SaveResponse:
+    properties:
+      brand:
+        $ref: '#/definitions/models.Brand'
+      response:
+        $ref: '#/definitions/response.Response'
+    type: object
+  brand.UpdateResponse:
+    properties:
+      brand:
+        $ref: '#/definitions/models.Brand'
+      response:
+        $ref: '#/definitions/response.Response'
+    type: object
+  category.GetAllResponse:
+    properties:
+      categories:
+        items:
+          $ref: '#/definitions/models.Category'
+        type: array
+      response:
+        $ref: '#/definitions/response.Response'
+    type: object
+  driver_type.GetAllResponse:
+    properties:
+      driverTypes:
+        items:
+          $ref: '#/definitions/models.DriverType'
+        type: array
+      response:
+        $ref: '#/definitions/response.Response'
+    type: object
+  gearbox.GetAllResponse:
+    properties:
+      gearboxes:
+        items:
+          $ref: '#/definitions/models.Gearbox'
+        type: array
+      response:
+        $ref: '#/definitions/response.Response'
+    type: object
+  models.BodyStyle:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      value:
+        type: integer
+    type: object
+  models.Brand:
+    properties:
+      category_id:
+        type: integer
+      cnt:
+        type: integer
+      country_id:
+        type: integer
+      eng:
+        type: string
+      id:
+        type: integer
+      marka_id:
+        type: integer
+      name:
+        type: string
+      slang:
+        type: string
+      value:
+        type: integer
+    type: object
+  models.Category:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      value:
+        type: integer
+    type: object
+  models.DriverType:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      value:
+        type: integer
+    type: object
+  models.Gearbox:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      value:
+        type: integer
+    type: object
+  models.Vehicle:
+    properties:
+      body_style:
+        type: integer
+      brand:
+        type: integer
+      category:
+        type: integer
+      driver_type:
+        type: integer
+      gearbox:
+        type: integer
+      id:
+        type: integer
+      mileage:
+        type: integer
+      model:
+        type: string
+      price:
+        type: integer
+    type: object
+  response.Response:
+    properties:
+      error:
+        type: string
+      status:
+        type: string
+    type: object
+  user.GetResponse:
+    properties:
+      response:
+        $ref: '#/definitions/response.Response'
+      tokenJWT:
+        type: string
+    type: object
+  user.SignInPayload:
+    properties:
+      login:
+        type: string
+      password:
+        type: string
+    type: object
+  user.SignUpPayload:
+    properties:
+      login:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  vehicle.ExpandedVehicleSwagger:
+    properties:
+      body_style:
+        $ref: '#/definitions/vehicle.swaggerBodyStyle'
+      brand:
+        $ref: '#/definitions/vehicle.swaggerCompressedBrand'
+      category:
+        $ref: '#/definitions/vehicle.swaggerCategory'
+      driver_type:
+        $ref: '#/definitions/vehicle.swaggerDriverType'
+      gearbox:
+        $ref: '#/definitions/vehicle.swaggerGearbox'
+      id:
+        type: integer
+      mileage:
+        type: integer
+      model:
+        type: string
+      price:
+        type: integer
+    type: object
+  vehicle.GetAllResponse:
+    properties:
+      response:
+        $ref: '#/definitions/response.Response'
+      vehicles:
+        items:
+          $ref: '#/definitions/models.Vehicle'
+        type: array
+    type: object
+  vehicle.GetExpandedSwaggerResponse:
+    properties:
+      response:
+        $ref: '#/definitions/response.Response'
+      vehicle:
+        $ref: '#/definitions/vehicle.ExpandedVehicleSwagger'
+    type: object
+  vehicle.GetResponse:
+    properties:
+      response:
+        $ref: '#/definitions/response.Response'
+      vehicle:
+        $ref: '#/definitions/models.Vehicle'
+    type: object
+  vehicle.SaveResponse:
+    properties:
+      response:
+        $ref: '#/definitions/response.Response'
+      vehicle:
+        $ref: '#/definitions/models.Vehicle'
+    type: object
+  vehicle.UpdateResponse:
+    properties:
+      response:
+        $ref: '#/definitions/response.Response'
+      vehicle:
+        $ref: '#/definitions/models.Vehicle'
+    type: object
+  vehicle.VehiclePayload:
+    properties:
+      Vehicle:
+        properties:
+          body_style:
+            type: integer
+          brand:
+            type: integer
+          category:
+            type: integer
+          driver_type:
+            type: integer
+          gearbox:
+            type: integer
+          mileage:
+            type: integer
+          model:
+            type: string
+          price:
+            type: integer
+        type: object
+    type: object
+  vehicle.swaggerBodyStyle:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      value:
+        type: integer
+    type: object
+  vehicle.swaggerCategory:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      value:
+        type: integer
+    type: object
+  vehicle.swaggerCompressedBrand:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  vehicle.swaggerDriverType:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      value:
+        type: integer
+    type: object
+  vehicle.swaggerGearbox:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      value:
+        type: integer
+    type: object
+host: localhost:8082
+info:
+  contact: {}
+  description: REST API для управління транспортними засобами (автомобілі, бренди,
+    категорії тощо).
+  title: GoVehicleApi
+  version: "1.0"
+paths:
+  /body-style/:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Дані стилю кузова
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/body_style.BodyStylePayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/body_style.SaveResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Створити стиль кузова
+      tags:
+      - body-style
+  /body-style/{id}:
+    delete:
+      parameters:
+      - description: ID стилю кузова
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Видалити стиль кузова
+      tags:
+      - body-style
+    get:
+      parameters:
+      - description: ID стилю кузова
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/body_style.GetResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Отримати стиль кузова за ID
+      tags:
+      - body-style
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID стилю кузова
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Нові дані
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/body_style.BodyStylePayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/body_style.UpdateResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Оновити стиль кузова
+      tags:
+      - body-style
+  /body-style/all:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/body_style.GetAllResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Список стилів кузова
+      tags:
+      - body-style
+  /body-style/refresh:
+    put:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Синхронізувати стилі кузова з Autoria
+      tags:
+      - body-style
+  /brand/:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Дані бренду
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/brand.BrandPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/brand.SaveResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Створити бренд
+      tags:
+      - brand
+  /brand/{id}:
+    delete:
+      parameters:
+      - description: ID бренду
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Видалити бренд
+      tags:
+      - brand
+    get:
+      parameters:
+      - description: ID бренду
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/brand.GetResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Отримати бренд за ID
+      tags:
+      - brand
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID бренду
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Нові дані
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/brand.BrandPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/brand.UpdateResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Оновити бренд
+      tags:
+      - brand
+  /brand/all:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/brand.GetAllResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Список брендів
+      tags:
+      - brand
+  /brand/refresh:
+    put:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Синхронізувати бренди з Autoria
+      tags:
+      - brand
+  /category/all:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/category.GetAllResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Список категорій
+      tags:
+      - category
+  /category/refresh:
+    put:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Синхронізувати категорії з Autoria
+      tags:
+      - category
+  /driver-type/all:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/driver_type.GetAllResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Список типів приводу
+      tags:
+      - driver-type
+  /driver-type/refresh:
+    put:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Синхронізувати типи приводу з Autoria
+      tags:
+      - driver-type
+  /gearbox/all:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gearbox.GetAllResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Список коробок передач
+      tags:
+      - gearbox
+  /gearbox/refresh:
+    put:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Синхронізувати коробки передач з Autoria
+      tags:
+      - gearbox
+  /user/sign-in:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Логін та пароль
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/user.SignInPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.GetResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Вхід користувача
+      tags:
+      - user
+  /user/sign-up:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Дані нового користувача
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/user.SignUpPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Реєстрація користувача
+      tags:
+      - user
+  /vehicle/:
+    get:
+      parameters:
+      - description: Номер сторінки
+        in: query
+        name: page
+        type: integer
+      - description: Кількість на сторінці
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/vehicle.GetAllResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Список транспортних засобів
+      tags:
+      - vehicle
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Дані транспортного засобу
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/vehicle.VehiclePayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/vehicle.SaveResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Створити транспортний засіб
+      tags:
+      - vehicle
+  /vehicle/{id}:
+    delete:
+      parameters:
+      - description: ID транспортного засобу
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Видалити транспортний засіб
+      tags:
+      - vehicle
+    get:
+      parameters:
+      - description: ID транспортного засобу
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/vehicle.GetResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Отримати транспортний засіб за ID
+      tags:
+      - vehicle
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID транспортного засобу
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Нові дані
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/vehicle.VehiclePayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/vehicle.UpdateResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Оновити транспортний засіб
+      tags:
+      - vehicle
+  /vehicle/expanded/{id}:
+    get:
+      parameters:
+      - description: ID транспортного засобу
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/vehicle.GetExpandedSwaggerResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Отримати розгорнутий транспортний засіб за ID
+      tags:
+      - vehicle
+securityDefinitions:
+  BearerAuth:
+    description: 'Введіть токен у форматі: Bearer {token}'
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

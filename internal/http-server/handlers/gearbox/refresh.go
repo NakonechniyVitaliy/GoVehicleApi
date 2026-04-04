@@ -4,16 +4,24 @@ import (
 	"log/slog"
 	"net/http"
 
-	resp "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
+	response "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
 	service "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/gearbox"
 
 	"github.com/go-chi/render"
 )
 
 type Response struct {
-	resp.Response
+	response.Response
 }
 
+// Refresh godoc
+// @Summary      Синхронізувати коробки передач з Autoria
+// @Tags         gearbox
+// @Security     BearerAuth
+// @Produce      json
+// @Success      200  {object}  response.Response
+// @Failure      500  {object}  response.Response
+// @Router       /gearbox/refresh [put]
 func Refresh(log *slog.Logger, service *service.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -22,10 +30,10 @@ func Refresh(log *slog.Logger, service *service.Service) http.HandlerFunc {
 		err := service.Fetch(r.Context())
 		if err != nil {
 			log.Error("failed to update gearboxes", slog.String("error", err.Error()))
-			render.JSON(w, r, resp.Error("Failed to update gearboxes"))
+			render.JSON(w, r, response.Error("Failed to update gearboxes"))
 			return
 		}
 
-		render.JSON(w, r, resp.OK())
+		render.JSON(w, r, response.OK())
 	}
 }
