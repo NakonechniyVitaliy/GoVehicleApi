@@ -14,8 +14,7 @@ import (
 )
 
 type SqliteRepository struct {
-	db    *sql.DB
-	table string
+	db *sql.DB
 }
 
 func NewSqliteVehicleRepo(db *sql.DB) *SqliteRepository {

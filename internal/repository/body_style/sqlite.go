@@ -11,14 +11,12 @@ import (
 )
 
 type SqliteRepository struct {
-	db    *sql.DB
-	table string
+	db *sql.DB
 }
 
 func NewSqliteBodyStyleRepo(db *sql.DB) *SqliteRepository {
 	return &SqliteRepository{
-		db:    db,
-		table: "body_styles",
+		db: db,
 	}
 }
 

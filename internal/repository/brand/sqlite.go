@@ -12,8 +12,7 @@ import (
 )
 
 type SqliteRepository struct {
-	db    *sql.DB
-	table string
+	db *sql.DB
 }
 
 func NewSqliteBrandRepo(db *sql.DB) *SqliteRepository {
@@ -44,7 +43,7 @@ func (s *SqliteRepository) GetByID(ctx context.Context, brandID uint16) (*models
 func (s *SqliteRepository) GetAll(ctx context.Context) ([]models.Brand, error) {
 	const op = "storage.brands.get_all"
 
-	const query = `SELECT marka_id, category_id, cnt, country_id, eng, name, slang, value FROM brands`
+	const query = `SELECT id, marka_id, category_id, cnt, country_id, eng, name, slang, value FROM brands`
 
 	rows, err := s.db.QueryContext(ctx, query)
 	if err != nil {
@@ -56,7 +55,7 @@ func (s *SqliteRepository) GetAll(ctx context.Context) ([]models.Brand, error) {
 	for rows.Next() {
 		var b models.Brand
 		if err := rows.Scan(
-			&b.CategoryID, &b.Count, &b.CountryID, &b.MarkaID, &b.EngName, &b.Name, &b.Slang, &b.Value); err != nil {
+			&b.ID, &b.MarkaID, &b.CategoryID, &b.Count, &b.CountryID, &b.EngName, &b.Name, &b.Slang, &b.Value); err != nil {
 			return nil, fmt.Errorf("%s: scan: %w", op, err)
 		}
 		brands = append(brands, b)

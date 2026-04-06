@@ -105,8 +105,10 @@ func setupRepositories(Storage storage.Storage) (*repositories.Repositories, err
 
 	switch Storage.GetName() {
 	case consts.MongoDB:
-		// type assertion - get object from interface
-		mongoStorage := Storage.(*mongo.MongoStorage)
+		mongoStorage, ok := Storage.(*mongo.MongoStorage)
+		if !ok {
+			return nil, fmt.Errorf("expected *mongo.MongoStorage, got %T", Storage)
+		}
 		return &repositories.Repositories{
 			Brand:      brandRepo.NewMongoBrandRepo(mongoStorage.DB),
 			BodyStyle:  bodyStyleRepo.NewMongoBodyStyleRepo(mongoStorage.DB),
@@ -118,8 +120,10 @@ func setupRepositories(Storage storage.Storage) (*repositories.Repositories, err
 		}, nil
 
 	case consts.SqLite:
-		// type assertion - get object from interface
-		sqliteStorage := Storage.(*sqlite.SqliteStorage)
+		sqliteStorage, ok := Storage.(*sqlite.SqliteStorage)
+		if !ok {
+			return nil, fmt.Errorf("expected *sqlite.SqliteStorage, got %T", Storage)
+		}
 		return &repositories.Repositories{
 			Brand:      brandRepo.NewSqliteBrandRepo(sqliteStorage.DB),
 			BodyStyle:  bodyStyleRepo.NewSqliteBodyStyleRepo(sqliteStorage.DB),

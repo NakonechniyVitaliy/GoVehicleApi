@@ -10,6 +10,7 @@ import (
 	mongoStorage "github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	mongoOptions "go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type MongoRepository struct {
@@ -121,8 +122,23 @@ func (mng *MongoRepository) GetAll(ctx context.Context) ([]models.Vehicle, error
 }
 
 func (mng *MongoRepository) GetByPage(ctx context.Context, f filter.Filter) ([]models.Vehicle, error) {
-	return nil, nil
-	//TODO
+	const op = "storage.vehicle.get_by_page"
+
+	skip := int64((f.Page - 1) * f.Limit)
+	limit := int64(f.Limit)
+
+	opts := mongoOptions.Find().SetSkip(skip).SetLimit(limit)
+	cursor, err := mng.vehicles.Find(ctx, bson.M{}, opts)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+
+	var vehicles []models.Vehicle
+	if err := cursor.All(ctx, &vehicles); err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+
+	return vehicles, nil
 }
 
 func (mng *MongoRepository) Delete(ctx context.Context, vehicleID uint16) error {

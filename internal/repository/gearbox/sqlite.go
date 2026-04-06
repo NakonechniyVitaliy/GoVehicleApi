@@ -9,8 +9,7 @@ import (
 )
 
 type SqliteRepository struct {
-	db    *sql.DB
-	table string
+	db *sql.DB
 }
 
 func NewSqliteGearboxRepo(db *sql.DB) *SqliteRepository {

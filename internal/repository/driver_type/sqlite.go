@@ -9,8 +9,7 @@ import (
 )
 
 type SqliteRepository struct {
-	db    *sql.DB
-	table string
+	db *sql.DB
 }
 
 func NewSqliteDriverTypeRepo(db *sql.DB) *SqliteRepository {

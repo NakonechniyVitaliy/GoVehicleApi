@@ -10,6 +10,10 @@ import (
 	jwtService "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/jwt"
 )
 
+type contextKey string
+
+const UserIDKey contextKey = "user_id"
+
 func JWTAuth(log *slog.Logger, jwtService *jwtService.Service) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -33,7 +37,7 @@ func JWTAuth(log *slog.Logger, jwtService *jwtService.Service) func(http.Handler
 				return
 			}
 
-			ctx := context.WithValue(r.Context(), "user_id", claims["user_id"])
+			ctx := context.WithValue(r.Context(), UserIDKey, claims["user_id"])
 
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})

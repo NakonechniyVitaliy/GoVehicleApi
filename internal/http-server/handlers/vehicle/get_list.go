@@ -43,6 +43,7 @@ func GetList(log *slog.Logger, srv *service.Service) http.HandlerFunc {
 		filter, err := filterDTO.ValidateAndToModel()
 		if err != nil {
 			response.RenderError(w, r, http.StatusBadRequest, err.Error())
+			return
 		}
 
 		vehicles, err := srv.GetList(r.Context(), *filter)

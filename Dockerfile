@@ -24,13 +24,11 @@ COPY --from=builder /app/app .
 # копируем конфиги
 COPY config ./config
 
-# (опционально) если используешь sqlite файл
 COPY storage ./storage
 
-# Для миграций
+# Миграции
 COPY internal ./internal
 
-# порт (для понимания, не обязателен)
 EXPOSE 8082
 
 # команда запуска

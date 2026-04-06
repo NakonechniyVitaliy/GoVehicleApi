@@ -3,7 +3,6 @@ package vehicle
 import (
 	"context"
 	"errors"
-	"fmt"
 	"log/slog"
 
 	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/cache"
@@ -90,7 +89,7 @@ func (s *Service) GetByID(ctx context.Context, id uint16) (*models.Vehicle, erro
 }
 
 func (s Service) GetList(ctx context.Context, f fDTO.Filter) ([]models.Vehicle, error) {
-	log := s.log.With(slog.String("op", "handlers.vehicle.get_all"))
+	log := s.log.With(slog.String("op", "services.vehicle.get_list"))
 
 	if f.Limit == 0 && f.Page == 0 {
 		vehicles, err := s.vehicleRepo.GetAll(ctx)
@@ -146,8 +145,7 @@ func (s Service) Update(ctx context.Context, vehicle models.Vehicle, id uint16) 
 		return nil, ErrUpdateVehicle
 	}
 
-	redisKey := fmt.Sprintf("vehicle:%d", id)
-	if err := s.cache.Delete(ctx, redisKey); err != nil {
+	if err := s.cache.Delete(ctx, cache_key.VehicleByID(id)); err != nil {
 		log.Error("redis delete error", slog.String("error", err.Error()))
 	}
 
@@ -167,8 +165,7 @@ func (s Service) Delete(ctx context.Context, id uint16) error {
 		return ErrGetVehicle
 	}
 
-	redisKey := fmt.Sprintf("vehicle:%d", id)
-	if err := s.cache.Delete(ctx, redisKey); err != nil {
+	if err := s.cache.Delete(ctx, cache_key.VehicleByID(id)); err != nil {
 		log.Error("redis delete error", slog.String("error", err.Error()))
 	}
 

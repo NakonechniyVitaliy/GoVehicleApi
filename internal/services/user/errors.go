@@ -4,7 +4,7 @@ import "errors"
 
 var (
 	ErrUserNotFound         = errors.New("user not found")
-	ErrIncorrectLoginOrPass = errors.New("user not found")
+	ErrIncorrectLoginOrPass = errors.New("incorrect login or password")
 	ErrUserExists           = errors.New("user already exists")
 	ErrSaveUser             = errors.New("failed to save user")
 	ErrGetUser              = errors.New("failed to get user")
