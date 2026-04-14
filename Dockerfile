@@ -27,6 +27,9 @@ COPY config ./config
 # Миграции
 COPY internal ./internal
 
+# Создаём директорию для SQLite базы данных
+RUN mkdir -p ./storage
+
 EXPOSE 8082
 
 # команда запуска
