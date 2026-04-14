@@ -24,8 +24,6 @@ COPY --from=builder /app/app .
 # копируем конфиги
 COPY config ./config
 
-COPY storage ./storage
-
 # Миграции
 COPY internal ./internal
 
