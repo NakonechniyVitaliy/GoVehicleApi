@@ -350,7 +350,6 @@ definitions:
       value:
         type: integer
     type: object
-host: localhost:8082
 info:
   contact: {}
   description: REST API для управління транспортними засобами (автомобілі, бренди,

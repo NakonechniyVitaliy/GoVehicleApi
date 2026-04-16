@@ -5,7 +5,42 @@ on:
     branches: [ "main" ]
 
 jobs:
-  test-job:
+  test:
     runs-on: ubuntu-latest
+
     steps:
-      - run: echo "test pipeline message"
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+
+      - name: Create .env file from secrets
+        run: |
+          echo "JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" >> .env
+          echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" >> .env
+          echo "AUTORIA_API_KEY=${{ secrets.AUTORIA_API_KEY }}" >> .env
+
+      - name: Start services
+        run: docker compose up -d --build
+
+      - name: Wait for API to be ready
+        run: |
+          echo "Waiting for API on localhost:8082..."
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:8082/health > /dev/null 2>&1; then
+              echo "API is ready"
+              break
+            fi
+            echo "Attempt $i/30, retrying in 3s..."
+            sleep 3
+          done
+
+      - name: Run integration tests
+        run: go test ./tests/... -v -timeout 120s
+
+      - name: Stop services
+        if: always()
+        run: docker compose down

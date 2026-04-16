@@ -9,17 +9,16 @@ import (
 	"syscall"
 	"time"
 
-	_ "github.com/NakonechniyVitaliy/GoVehicleApi/docs"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/app"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/config"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/logger"
+	docs "github.com/NakonechniyVitalii/GoVehicleApi/docs"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/app"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/config"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/lib/logger"
 )
 
 // @title           GoVehicleApi
 // @version         1.0
 // @description     REST API для управління транспортними засобами (автомобілі, бренди, категорії тощо).
 
-// @host      localhost:8082
 // @BasePath  /
 
 // @securityDefinitions.apikey BearerAuth
@@ -29,6 +28,10 @@ import (
 
 func main() {
 	cfg := config.MustLoad()
+
+	if h := os.Getenv("SWAGGER_HOST"); h != "" {
+		docs.SwaggerInfo.Host = h
+	}
 
 	log := logger.SetupLogger(cfg.Env)
 	log.Info("starting server", slog.String("env", cfg.Env))
