@@ -19,9 +19,9 @@ jobs:
 
       - name: Create .env file from secrets
         run: |
-          echo "JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" >> .env
+          echo "SECRET_JWT_KEY=${{ secrets.SECRET_JWT_KEY }}" >> .env
           echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" >> .env
-          echo "AUTORIA_API_KEY=${{ secrets.AUTORIA_API_KEY }}" >> .env
+          echo "AUTORIA_KEY=${{ secrets.AUTORIA_KEY }}" >> .env
 
       - name: Start services
         run: docker compose up -d --build
