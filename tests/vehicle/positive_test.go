@@ -36,7 +36,7 @@ func TestPositiveTests(t *testing.T) {
 			Category:   helper.PtrUint16(gofakeit.Uint16()),
 			Mileage:    helper.PtrUint32(gofakeit.Uint32()),
 			Model:      helper.PtrString(gofakeit.CarModel()),
-			Price:      helper.PtrUint16(gofakeit.Uint16()),
+			Price:      helper.PtrUint32(gofakeit.Uint32()),
 		}
 
 		t.Run(tc.CaseName, func(t *testing.T) {
