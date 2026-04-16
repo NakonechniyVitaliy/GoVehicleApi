@@ -3,8 +3,8 @@ package gearbox
 import (
 	"log/slog"
 
-	gearboxHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/gearbox"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/services"
+	gearboxHandler "github.com/NakonechniyVitalii/GoVehicleApi/internal/http-server/handlers/gearbox"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/services"
 	"github.com/go-chi/chi/v5"
 )
 

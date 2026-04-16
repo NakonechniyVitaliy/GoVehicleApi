@@ -4,9 +4,9 @@ import (
 	"log/slog"
 	"net/http"
 
-	response "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	service "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/driver_type"
+	response "github.com/NakonechniyVitalii/GoVehicleApi/internal/lib/api/response"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/models"
+	service "github.com/NakonechniyVitalii/GoVehicleApi/internal/services/driver_type"
 	"github.com/go-chi/render"
 )
 

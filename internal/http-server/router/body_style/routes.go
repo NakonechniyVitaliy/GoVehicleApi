@@ -3,8 +3,8 @@ package body_style
 import (
 	"log/slog"
 
-	handler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/body_style"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/services"
+	handler "github.com/NakonechniyVitalii/GoVehicleApi/internal/http-server/handlers/body_style"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/services"
 
 	"github.com/go-chi/chi/v5"
 )

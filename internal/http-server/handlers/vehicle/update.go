@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"strconv"
 
-	dtoErrors "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/_errors"
-	dto "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/vehicle"
-	response "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	service "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/vehicle"
+	dtoErrors "github.com/NakonechniyVitalii/GoVehicleApi/internal/http-server/dto/_errors"
+	dto "github.com/NakonechniyVitalii/GoVehicleApi/internal/http-server/dto/vehicle"
+	response "github.com/NakonechniyVitalii/GoVehicleApi/internal/lib/api/response"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/models"
+	service "github.com/NakonechniyVitalii/GoVehicleApi/internal/services/vehicle"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 )

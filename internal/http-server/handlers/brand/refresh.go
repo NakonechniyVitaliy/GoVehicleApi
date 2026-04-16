@@ -4,8 +4,8 @@ import (
 	"log/slog"
 	"net/http"
 
-	response "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
-	service "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/brand"
+	response "github.com/NakonechniyVitalii/GoVehicleApi/internal/lib/api/response"
+	service "github.com/NakonechniyVitalii/GoVehicleApi/internal/services/brand"
 	"github.com/go-chi/render"
 )
 

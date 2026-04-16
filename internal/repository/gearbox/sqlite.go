@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/models"
 )
 
 type SqliteRepository struct {

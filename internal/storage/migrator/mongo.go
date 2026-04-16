@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/config"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/config"
 	"github.com/golang-migrate/migrate/v4"
 
 	_ "github.com/golang-migrate/migrate/v4/database/mongodb"

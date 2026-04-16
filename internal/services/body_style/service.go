@@ -5,10 +5,10 @@ import (
 	"errors"
 	"log/slog"
 
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	repoErrors "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/_errors"
-	repo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/body_style"
-	requests "github.com/NakonechniyVitaliy/GoVehicleApi/internal/requests/autoria/body_styles"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/models"
+	repoErrors "github.com/NakonechniyVitalii/GoVehicleApi/internal/repository/_errors"
+	repo "github.com/NakonechniyVitalii/GoVehicleApi/internal/repository/body_style"
+	requests "github.com/NakonechniyVitalii/GoVehicleApi/internal/requests/autoria/body_styles"
 )
 
 type Service struct {

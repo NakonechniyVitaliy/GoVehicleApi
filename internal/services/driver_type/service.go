@@ -5,9 +5,9 @@ import (
 	"errors"
 	"log/slog"
 
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	driverTypeRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/driver_type"
-	requests "github.com/NakonechniyVitaliy/GoVehicleApi/internal/requests/autoria/driver_types"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/models"
+	driverTypeRepo "github.com/NakonechniyVitalii/GoVehicleApi/internal/repository/driver_type"
+	requests "github.com/NakonechniyVitalii/GoVehicleApi/internal/requests/autoria/driver_types"
 )
 
 type Service struct {

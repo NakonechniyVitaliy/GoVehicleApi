@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/config"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/migrator"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/config"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/storage/migrator"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )

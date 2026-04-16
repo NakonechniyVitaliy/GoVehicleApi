@@ -3,8 +3,8 @@ package vehicle
 import (
 	"context"
 
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/vehicle/filter"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/http-server/dto/vehicle/filter"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/models"
 )
 
 type RepositoryInterface interface {

@@ -3,8 +3,8 @@ package brand
 import (
 	"log/slog"
 
-	brandHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/brand"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/services"
+	brandHandler "github.com/NakonechniyVitalii/GoVehicleApi/internal/http-server/handlers/brand"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/services"
 	"github.com/go-chi/chi/v5"
 )
 

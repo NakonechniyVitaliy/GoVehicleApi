@@ -5,11 +5,11 @@ import (
 	"errors"
 	"log/slog"
 
-	dto "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/user"
-	repoErrors "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/_errors"
-	userRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/user"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/helper"
-	jwtService "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/jwt"
+	dto "github.com/NakonechniyVitalii/GoVehicleApi/internal/http-server/dto/user"
+	repoErrors "github.com/NakonechniyVitalii/GoVehicleApi/internal/repository/_errors"
+	userRepo "github.com/NakonechniyVitalii/GoVehicleApi/internal/repository/user"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/services/helper"
+	jwtService "github.com/NakonechniyVitalii/GoVehicleApi/internal/services/jwt"
 	"golang.org/x/crypto/bcrypt"
 )
 

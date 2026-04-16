@@ -1,8 +1,8 @@
 package driver_type
 
 import (
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/helper"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/models"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/services/helper"
 )
 
 func (dto DriverTypeDTO) ToModel() models.DriverType {

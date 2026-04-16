@@ -3,8 +3,8 @@ package brands
 import (
 	"net/http"
 
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/requests/autoria"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/models"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/requests/autoria"
 	"github.com/go-chi/render"
 )
 

@@ -3,8 +3,8 @@ package vehicle
 import (
 	"log/slog"
 
-	vehicleHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/vehicle"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/services"
+	vehicleHandler "github.com/NakonechniyVitalii/GoVehicleApi/internal/http-server/handlers/vehicle"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/services"
 	"github.com/go-chi/chi/v5"
 )
 

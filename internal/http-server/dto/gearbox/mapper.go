@@ -1,8 +1,8 @@
 package gearbox
 
 import (
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/helper"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/models"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/services/helper"
 )
 
 func (dto GearboxDTO) ToModel() models.Gearbox {

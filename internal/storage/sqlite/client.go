@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/config"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/migrator"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/config"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/storage/migrator"
 	_ "github.com/mattn/go-sqlite3"
 	// Driver for getting migrations from files
 	_ "github.com/golang-migrate/migrate/v4/source/file"

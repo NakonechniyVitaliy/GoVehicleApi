@@ -3,8 +3,8 @@ package driver_type
 import (
 	"log/slog"
 
-	handler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/driver_type"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/services"
+	handler "github.com/NakonechniyVitalii/GoVehicleApi/internal/http-server/handlers/driver_type"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/services"
 	"github.com/go-chi/chi/v5"
 )
 

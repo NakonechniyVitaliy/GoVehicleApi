@@ -3,8 +3,8 @@ package user
 import (
 	"log/slog"
 
-	userHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/user"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/services"
+	userHandler "github.com/NakonechniyVitalii/GoVehicleApi/internal/http-server/handlers/user"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/services"
 	"github.com/go-chi/chi/v5"
 )
 

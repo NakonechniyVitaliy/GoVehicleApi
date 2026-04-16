@@ -1,11 +1,11 @@
 package vehicle
 
 import (
-	bodyStyleDTO "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/body_style"
-	brandDTO "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/brand"
-	categoryDTO "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/category"
-	driverDTO "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/driver_type"
-	gearboxDTO "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/gearbox"
+	bodyStyleDTO "github.com/NakonechniyVitalii/GoVehicleApi/internal/http-server/dto/body_style"
+	brandDTO "github.com/NakonechniyVitalii/GoVehicleApi/internal/http-server/dto/brand"
+	categoryDTO "github.com/NakonechniyVitalii/GoVehicleApi/internal/http-server/dto/category"
+	driverDTO "github.com/NakonechniyVitalii/GoVehicleApi/internal/http-server/dto/driver_type"
+	gearboxDTO "github.com/NakonechniyVitalii/GoVehicleApi/internal/http-server/dto/gearbox"
 )
 
 type VehicleDTO struct {

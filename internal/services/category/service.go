@@ -5,9 +5,9 @@ import (
 	"errors"
 	"log/slog"
 
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	categoryRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/category"
-	requests "github.com/NakonechniyVitaliy/GoVehicleApi/internal/requests/autoria/categories"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/models"
+	categoryRepo "github.com/NakonechniyVitalii/GoVehicleApi/internal/repository/category"
+	requests "github.com/NakonechniyVitalii/GoVehicleApi/internal/requests/autoria/categories"
 )
 
 type Service struct {

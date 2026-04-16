@@ -1,4 +1,4 @@
-module github.com/NakonechniyVitaliy/GoVehicleApi
+module github.com/NakonechniyVitalii/GoVehicleApi
 
 go 1.24.4
 

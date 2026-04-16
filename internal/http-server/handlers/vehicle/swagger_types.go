@@ -1,6 +1,6 @@
 package vehicle
 
-import response "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
+import response "github.com/NakonechniyVitalii/GoVehicleApi/internal/lib/api/response"
 
 // VehiclePayload is the request body for POST/PUT /vehicle
 type VehiclePayload struct {

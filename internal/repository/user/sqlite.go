@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/_errors"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/models"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/repository/_errors"
 )
 
 type SqliteRepository struct {

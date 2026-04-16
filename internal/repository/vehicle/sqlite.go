@@ -8,9 +8,9 @@ import (
 
 	sqlite3 "github.com/mattn/go-sqlite3"
 
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/vehicle/filter"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/_errors"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/http-server/dto/vehicle/filter"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/models"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/repository/_errors"
 )
 
 type SqliteRepository struct {

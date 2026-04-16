@@ -5,9 +5,9 @@ import (
 	"errors"
 	"log/slog"
 
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	gearboxRepo "github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/gearbox"
-	requests "github.com/NakonechniyVitaliy/GoVehicleApi/internal/requests/autoria/gearboxes"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/models"
+	gearboxRepo "github.com/NakonechniyVitalii/GoVehicleApi/internal/repository/gearbox"
+	requests "github.com/NakonechniyVitalii/GoVehicleApi/internal/requests/autoria/gearboxes"
 )
 
 type Service struct {

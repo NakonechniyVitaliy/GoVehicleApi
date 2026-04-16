@@ -1,8 +1,8 @@
 package migrator
 
 import (
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/config"
-	consts "github.com/NakonechniyVitaliy/GoVehicleApi/internal/constants"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/config"
+	consts "github.com/NakonechniyVitalii/GoVehicleApi/internal/constants"
 )
 
 type MigratorInterface interface {

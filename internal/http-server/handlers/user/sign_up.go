@@ -5,10 +5,10 @@ import (
 	"log/slog"
 	"net/http"
 
-	dtoErrors "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/_errors"
-	dto "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/user"
-	response "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
-	service "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/user"
+	dtoErrors "github.com/NakonechniyVitalii/GoVehicleApi/internal/http-server/dto/_errors"
+	dto "github.com/NakonechniyVitalii/GoVehicleApi/internal/http-server/dto/user"
+	response "github.com/NakonechniyVitalii/GoVehicleApi/internal/lib/api/response"
+	service "github.com/NakonechniyVitalii/GoVehicleApi/internal/services/user"
 	"github.com/go-chi/render"
 )
 

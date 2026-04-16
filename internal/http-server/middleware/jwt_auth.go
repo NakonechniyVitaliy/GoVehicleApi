@@ -7,7 +7,7 @@ import (
 
 	"log/slog"
 
-	jwtService "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/jwt"
+	jwtService "github.com/NakonechniyVitalii/GoVehicleApi/internal/services/jwt"
 )
 
 type contextKey string

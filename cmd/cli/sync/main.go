@@ -6,14 +6,14 @@ import (
 	"os"
 	"time"
 
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/app"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/config"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/logger"
-	bsRequests "github.com/NakonechniyVitaliy/GoVehicleApi/internal/requests/autoria/body_styles"
-	bRequests "github.com/NakonechniyVitaliy/GoVehicleApi/internal/requests/autoria/brands"
-	cRequests "github.com/NakonechniyVitaliy/GoVehicleApi/internal/requests/autoria/categories"
-	dRequests "github.com/NakonechniyVitaliy/GoVehicleApi/internal/requests/autoria/driver_types"
-	gRequests "github.com/NakonechniyVitaliy/GoVehicleApi/internal/requests/autoria/gearboxes"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/app"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/config"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/lib/logger"
+	bsRequests "github.com/NakonechniyVitalii/GoVehicleApi/internal/requests/autoria/body_styles"
+	bRequests "github.com/NakonechniyVitalii/GoVehicleApi/internal/requests/autoria/brands"
+	cRequests "github.com/NakonechniyVitalii/GoVehicleApi/internal/requests/autoria/categories"
+	dRequests "github.com/NakonechniyVitalii/GoVehicleApi/internal/requests/autoria/driver_types"
+	gRequests "github.com/NakonechniyVitalii/GoVehicleApi/internal/requests/autoria/gearboxes"
 	"golang.org/x/sync/errgroup"
 )
 

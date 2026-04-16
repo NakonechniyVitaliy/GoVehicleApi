@@ -30,13 +30,16 @@ jobs:
         run: |
           echo "Waiting for API on localhost:8082..."
           for i in $(seq 1 30); do
-            if curl -sf http://localhost:8082/health > /dev/null 2>&1; then
+            if curl -sf http://localhost:8082/swagger/index.html > /dev/null 2>&1; then
               echo "API is ready"
-              break
+              exit 0
             fi
             echo "Attempt $i/30, retrying in 3s..."
             sleep 3
           done
+          echo "API did not start in time"
+          docker compose logs
+          exit 1
 
       - name: Run integration tests
         run: go test ./tests/... -v -timeout 120s

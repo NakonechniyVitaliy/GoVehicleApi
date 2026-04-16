@@ -3,7 +3,7 @@ package user
 import (
 	"context"
 
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/models"
 )
 
 type RepositoryInterface interface {

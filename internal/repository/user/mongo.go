@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/repository/_errors"
-	mongoStorage "github.com/NakonechniyVitaliy/GoVehicleApi/internal/storage/mongo"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/models"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/repository/_errors"
+	mongoStorage "github.com/NakonechniyVitalii/GoVehicleApi/internal/storage/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )

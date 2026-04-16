@@ -3,7 +3,7 @@ package user
 import (
 	"fmt"
 
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/_errors"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/http-server/dto/_errors"
 )
 
 func (dto SignUpDTO) Validate() error {

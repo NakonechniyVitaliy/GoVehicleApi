@@ -4,7 +4,7 @@ import (
 	"log/slog"
 	"os"
 
-	consts "github.com/NakonechniyVitaliy/GoVehicleApi/internal/constants"
+	consts "github.com/NakonechniyVitalii/GoVehicleApi/internal/constants"
 )
 
 func SetupLogger(env string) *slog.Logger {

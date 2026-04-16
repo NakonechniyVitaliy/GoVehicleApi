@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
-	response "github.com/NakonechniyVitaliy/GoVehicleApi/internal/lib/api/response"
-	service "github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/body_style"
+	response "github.com/NakonechniyVitalii/GoVehicleApi/internal/lib/api/response"
+	service "github.com/NakonechniyVitalii/GoVehicleApi/internal/services/body_style"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 )

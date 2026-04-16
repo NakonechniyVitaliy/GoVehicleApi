@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	testHelper "github.com/NakonechniyVitaliy/GoVehicleApi/tests/helper"
+	testHelper "github.com/NakonechniyVitalii/GoVehicleApi/tests/helper"
 	"github.com/gavv/httpexpect/v2"
 )
 

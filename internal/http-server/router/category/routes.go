@@ -3,8 +3,8 @@ package category
 import (
 	"log/slog"
 
-	categoryHandler "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/handlers/category"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/services"
+	categoryHandler "github.com/NakonechniyVitalii/GoVehicleApi/internal/http-server/handlers/category"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/services"
 	"github.com/go-chi/chi/v5"
 )
 

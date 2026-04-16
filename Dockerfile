@@ -11,7 +11,7 @@ RUN go mod download
 COPY . .
 
 # собираем бинарник
-RUN CGO_ENABLED=1 GOOS=linux go build -o app cmd/main.go
+RUN CGO_ENABLED=1 GOOS=linux go build -o app ./cmd/
 
 # ---------- STAGE 2: runtime ----------
 FROM debian:bookworm-slim

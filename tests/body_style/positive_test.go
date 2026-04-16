@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"testing"
 
-	dto "github.com/NakonechniyVitaliy/GoVehicleApi/internal/http-server/dto/body_style"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/helper"
-	testHelper "github.com/NakonechniyVitaliy/GoVehicleApi/tests/helper"
+	dto "github.com/NakonechniyVitalii/GoVehicleApi/internal/http-server/dto/body_style"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/services/helper"
+	testHelper "github.com/NakonechniyVitalii/GoVehicleApi/tests/helper"
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/gavv/httpexpect/v2"
 )

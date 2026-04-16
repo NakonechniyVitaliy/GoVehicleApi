@@ -1,8 +1,8 @@
 package vehicle
 
 import (
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/models"
-	"github.com/NakonechniyVitaliy/GoVehicleApi/internal/services/helper"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/models"
+	"github.com/NakonechniyVitalii/GoVehicleApi/internal/services/helper"
 )
 
 func (dto VehicleDTO) ToModel() models.Vehicle {
