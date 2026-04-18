@@ -13,9 +13,27 @@ import (
 )
 
 func TestPositiveTests(t *testing.T) {
+	e := testHelper.NewExpect(t)
+
+	e.PUT("/brand/refresh").Expect().Status(http.StatusOK)
+	e.PUT("/body-style/refresh").Expect().Status(http.StatusOK)
+	e.PUT("/category/refresh").Expect().Status(http.StatusOK)
+	e.PUT("/driver-type/refresh").Expect().Status(http.StatusOK)
+	e.PUT("/gearbox/refresh").Expect().Status(http.StatusOK)
+
+	brandID := fetchFirstID(e, "/brand/all", "Brands")
+	bodyStyleID := fetchFirstID(e, "/body-style/all", "BodyStyles")
+	categoryID := fetchFirstID(e, "/category/all", "Categories")
+	driverTypeID := fetchFirstID(e, "/driver-type/all", "DriverTypes")
+	gearboxID := fetchFirstID(e, "/gearbox/all", "Gearboxes")
 
 	for _, tc := range PositiveCases {
 		tc := tc
+		tc.Brand = helper.PtrUint16(brandID)
+		tc.DriverType = helper.PtrUint16(driverTypeID)
+		tc.Gearbox = helper.PtrUint16(gearboxID)
+		tc.BodyStyle = helper.PtrUint16(bodyStyleID)
+		tc.Category = helper.PtrUint16(categoryID)
 
 		original := dto.VehicleDTO{
 			Brand:      tc.Brand,
@@ -29,11 +47,11 @@ func TestPositiveTests(t *testing.T) {
 		}
 
 		updatedVehicleData := dto.VehicleDTO{
-			Brand:      helper.PtrUint16(gofakeit.Uint16()),
-			DriverType: helper.PtrUint16(gofakeit.Uint16()),
-			Gearbox:    helper.PtrUint16(gofakeit.Uint16()),
-			BodyStyle:  helper.PtrUint16(gofakeit.Uint16()),
-			Category:   helper.PtrUint16(gofakeit.Uint16()),
+			Brand:      helper.PtrUint16(brandID),
+			DriverType: helper.PtrUint16(driverTypeID),
+			Gearbox:    helper.PtrUint16(gearboxID),
+			BodyStyle:  helper.PtrUint16(bodyStyleID),
+			Category:   helper.PtrUint16(categoryID),
 			Mileage:    helper.PtrUint32(gofakeit.Uint32()),
 			Model:      helper.PtrString(gofakeit.CarModel()),
 			Price:      helper.PtrUint32(gofakeit.Uint32()),
@@ -50,6 +68,11 @@ func TestPositiveTests(t *testing.T) {
 			doTestDeletePositive(e, vehicleID)
 		})
 	}
+}
+
+func fetchFirstID(e *httpexpect.Expect, path string, key string) uint16 {
+	obj := e.GET(path).Expect().Status(http.StatusOK).JSON().Object()
+	return uint16(obj.Value(key).Array().Value(0).Object().Value("id").Number().Raw())
 }
 
 func doTestSave(e *httpexpect.Expect, tc PositiveTestCase) uint16 {
