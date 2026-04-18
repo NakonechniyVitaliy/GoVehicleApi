@@ -11,7 +11,7 @@ import (
 func TestPositiveTests(t *testing.T) {
 
 	t.Run("RefreshAndGetAll", func(t *testing.T) {
-		e := httpexpect.Default(t, testHelper.TcUrl.String())
+		e := testHelper.NewExpect(t)
 
 		doTestRefreshPositive(e)
 		doTestGetAllPositive(e)

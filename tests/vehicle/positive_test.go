@@ -40,7 +40,7 @@ func TestPositiveTests(t *testing.T) {
 		}
 
 		t.Run(tc.CaseName, func(t *testing.T) {
-			e := httpexpect.Default(t, testHelper.TcUrl.String())
+			e := testHelper.NewExpect(t)
 
 			vehicleID := doTestSave(e, tc)
 			doTestGetPositive(e, original, vehicleID)
@@ -114,6 +114,6 @@ func doTestDeletePositive(e *httpexpect.Expect, vehicleID uint16) {
 }
 
 func doTestGetAllPositive(e *httpexpect.Expect) {
-	obj := e.GET("/vehicle/all").Expect().Status(http.StatusOK).JSON().Object()
+	obj := e.GET("/vehicle/").Expect().Status(http.StatusOK).JSON().Object()
 	obj.Value("Vehicles").Array().NotEmpty()
 }

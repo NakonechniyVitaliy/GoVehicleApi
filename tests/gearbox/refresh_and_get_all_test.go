@@ -11,7 +11,7 @@ import (
 func TestPositiveTests(t *testing.T) {
 
 	t.Run("RefreshAndGetAll", func(t *testing.T) {
-		e := httpexpect.Default(t, testHelper.TcUrl.String())
+		e := testHelper.NewExpect(t)
 
 		doTestRefreshPositive(e)
 		doTestGetAllPositive(e)
@@ -19,10 +19,10 @@ func TestPositiveTests(t *testing.T) {
 }
 
 func doTestRefreshPositive(e *httpexpect.Expect) {
-	e.PUT("/body-style/refresh").Expect().Status(http.StatusOK)
+	e.PUT("/gearbox/refresh").Expect().Status(http.StatusOK)
 }
 
 func doTestGetAllPositive(e *httpexpect.Expect) {
-	obj := e.GET("/body-style/all").Expect().Status(http.StatusOK).JSON().Object()
-	obj.Value("BodyStyles").Array().NotEmpty()
+	obj := e.GET("/gearbox/all").Expect().Status(http.StatusOK).JSON().Object()
+	obj.Value("Gearboxes").Array().NotEmpty()
 }

@@ -16,6 +16,8 @@ RUN CGO_ENABLED=1 GOOS=linux go build -o app ./cmd/
 # ---------- STAGE 2: runtime ----------
 FROM debian:bookworm-slim
 
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 # копируем бинарник

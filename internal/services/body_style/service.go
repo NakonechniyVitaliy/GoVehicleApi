@@ -37,6 +37,7 @@ func (s Service) Fetch(ctx context.Context) error {
 		case errors.Is(err, requests.ErrDecodeBodyStyles):
 			log.Error(ErrDecodeBodyStyles.Error(), slog.String("error", err.Error()))
 		}
+		log.Error(ErrDecodeBodyStyles.Error(), slog.String("error", err.Error()))
 		return ErrRefreshBodyStyles
 	}
 

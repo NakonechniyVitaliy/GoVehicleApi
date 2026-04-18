@@ -10,7 +10,7 @@ import (
 )
 
 func TestInvalidJsonTest(t *testing.T) {
-	e := httpexpect.Default(t, testHelper.TcUrl.String())
+	e := testHelper.NewExpect(t)
 
 	for _, tc := range NoFieldsCases {
 		tc := tc

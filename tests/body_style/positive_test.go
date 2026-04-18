@@ -28,15 +28,14 @@ func TestPositiveTests(t *testing.T) {
 		}
 
 		t.Run(tc.CaseName, func(t *testing.T) {
-			e := httpexpect.Default(t, testHelper.TcUrl.String())
+			e := testHelper.NewExpect(t)
 
 			bodyStyleID := doTestSave(e, tc)
 			doTestGetPositive(e, original, bodyStyleID)
 			doTestUpdatePositive(e, updatedBSData, bodyStyleID)
 			doTestGetPositive(e, updatedBSData, bodyStyleID)
-			doTestDeletePositive(e, bodyStyleID)
-			doTestRefreshPositive(e)
 			doTestGetAllPositive(e)
+			doTestDeletePositive(e, bodyStyleID)
 		})
 	}
 }

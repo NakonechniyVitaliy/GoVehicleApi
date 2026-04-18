@@ -3,6 +3,7 @@ package body_style
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -30,6 +31,9 @@ func (s *SqliteRepository) GetByID(ctx context.Context, bodyStyleID uint16) (*mo
 		&bodyStyle.ID, &bodyStyle.Name, &bodyStyle.Value,
 	)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, _errors.ErrBodyStyleNotFound
+		}
 		return nil, fmt.Errorf("%s: error to return body style %w", op, err)
 	}
 

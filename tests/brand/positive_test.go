@@ -40,7 +40,7 @@ func TestPositiveTests(t *testing.T) {
 		}
 
 		t.Run(tc.CaseName, func(t *testing.T) {
-			e := httpexpect.Default(t, testHelper.TcUrl.String())
+			e := testHelper.NewExpect(t)
 
 			brandID := doTestSave(e, tc)
 			doTestGetPositive(e, original, brandID)

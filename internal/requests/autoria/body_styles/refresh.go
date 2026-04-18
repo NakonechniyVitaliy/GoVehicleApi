@@ -13,8 +13,9 @@ func GetBodyStyles(key string) ([]models.BodyStyle, error) {
 	url := autoria.GET_BODY_STYLES + key
 
 	resp, err := http.Get(url)
+
 	if err != nil {
-		return nil, ErrBodyStylesFetch
+		return nil, err
 	}
 	defer resp.Body.Close()
 
