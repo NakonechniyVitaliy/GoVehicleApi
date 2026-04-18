@@ -355,7 +355,7 @@ info:
   description: REST API для управління транспортними засобами (автомобілі, бренди,
     категорії тощо).
   title: GoVehicleApi
-  version: "1.0"
+  version: "1.1"
 paths:
   /body-style/:
     post:
