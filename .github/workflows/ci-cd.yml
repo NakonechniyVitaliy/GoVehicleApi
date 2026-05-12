@@ -150,5 +150,5 @@ jobs:
             EOF
 
             docker compose -f ~/app/docker-compose.yaml pull api
-            docker compose -f ~/app/docker-compose.yaml up -d
+            docker compose -f ~/app/docker-compose.yaml up -d --force-recreate
             docker image prune -f
