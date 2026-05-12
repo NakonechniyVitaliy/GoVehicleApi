@@ -26,6 +26,9 @@ COPY --from=builder /app/app .
 # копируем конфиги
 COPY config ./config
 
+# Swagger документация
+COPY docs ./docs
+
 # Миграции
 COPY internal ./internal
 
