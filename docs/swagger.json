@@ -4,7 +4,7 @@
         "description": "REST API для управління транспортними засобами (автомобілі, бренди, категорії тощо).",
         "title": "GoVehicleApi",
         "contact": {},
-        "version": "1.3"
+        "version": "1.4"
     },
     "basePath": "/",
     "paths": {
